@@ -141,6 +141,28 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
     return MOCK_PRODUCTS.filter(p => p.isNew).slice(0, 4);
 };
 
+// Helper to map URL slugs to Category names
+const slugToCategoryMap: Record<string, string> = {
+    'hijabs': 'Hijab',
+    'abayas': 'Abaya',
+    'dresses': 'Dress',
+    'accessories': 'Accessories',
+};
+
+export const getProductsBySlug = async (slug: string): Promise<{ categoryName: string, products: Product[] }> => {
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    const categoryName = slugToCategoryMap[slug.toLowerCase()];
+
+    if (!categoryName) {
+        return { categoryName: '', products: [] };
+    }
+
+    const products = MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
+    return { categoryName, products };
+};
+
 export const getProductsByCategory = async (category: string, limit: number = 4): Promise<Product[]> => {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 300));
