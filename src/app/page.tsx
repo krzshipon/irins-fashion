@@ -8,6 +8,7 @@ import { getFeaturedProducts } from '@/services/api/products';
 import { getHeroBanners } from '@/services/api/marketing';
 import { Product, Banner } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
+import CategorySection from '@/components/home/CategorySection';
 
 export default function Home() {
   const { t } = useLocalization();
@@ -80,6 +81,10 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <section className="container">
+        <CategorySection />
+      </section>
 
       <section className={`container ${styles.section}`}>
         <h2 className={styles.sectionTitle}>{t('products.newArrival')}</h2>

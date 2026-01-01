@@ -2,7 +2,7 @@
   position: relative;
   height: 600px;
   overflow: hidden;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .heroSlide {
@@ -95,7 +95,7 @@
 }
 
 .section {
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) 0;
 }
 
 .sectionTitle {

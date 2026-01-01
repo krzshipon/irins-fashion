@@ -15,6 +15,15 @@ interface Dictionary {
     hero: {
         cta: string;
     };
+    section: {
+        categories: string;
+    };
+    categories: {
+        hijab: string;
+        abaya: string;
+        dress: string;
+        accessories: string;
+    };
     products: {
         newArrival: string;
         addToCart: string;
@@ -33,6 +42,15 @@ const dictionaries: Record<Locale, Dictionary> = {
         hero: {
             cta: 'Shop Now',
         },
+        section: {
+            categories: 'Shop by Category',
+        },
+        categories: {
+            hijab: 'Hijabs',
+            abaya: 'Abayas',
+            dress: 'Dresses',
+            accessories: 'Accessories',
+        },
         products: {
             newArrival: 'New Arrival',
             addToCart: 'Add to Cart',
@@ -48,6 +66,15 @@ const dictionaries: Record<Locale, Dictionary> = {
         },
         hero: {
             cta: 'এখন কিনুন',
+        },
+        section: {
+            categories: 'বিভাগ অনুযায়ী কেনাকাটা',
+        },
+        categories: {
+            hijab: 'হিজাব',
+            abaya: 'আবায়া',
+            dress: 'জুব্বা',
+            accessories: 'অন্যান্য',
         },
         products: {
             newArrival: 'নতুন আগমন',
