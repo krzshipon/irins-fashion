@@ -4,6 +4,7 @@ export const MOCK_PRODUCTS: Product[] = [
     // Hijabs
     {
         id: 'h1',
+        sku: 'IF-HJB-EM-001',
         name: 'Premium Silk Hijab - Emerald',
         price: 1250.0,
         currency: 'BDT',
@@ -27,6 +28,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'h2',
+        sku: 'IF-HJB-DR-002',
         name: 'Chiffon Hijab - Dusty Rose',
         price: 850.0,
         currency: 'BDT',
@@ -36,6 +38,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'h3',
+        sku: 'IF-HJB-BK-003',
         name: 'Jersey Hijab - Black',
         price: 650.0,
         currency: 'BDT',
@@ -44,6 +47,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'h4',
+        sku: 'IF-HJB-NV-004',
         name: 'Georgette Hijab - Navy',
         price: 750.0,
         currency: 'BDT',
@@ -52,6 +56,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'h5',
+        sku: 'IF-HJB-GD-005',
         name: 'Satin Hijab - Gold',
         price: 1450.0,
         currency: 'BDT',
@@ -62,6 +67,7 @@ export const MOCK_PRODUCTS: Product[] = [
     // Abayas
     {
         id: 'a1',
+        sku: 'IF-ABY-BK-001',
         name: 'Classic Black Abaya',
         price: 4500.0,
         currency: 'BDT',
@@ -70,6 +76,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'a2',
+        sku: 'IF-ABY-EM-002',
         name: 'Embroidered Open Abaya',
         price: 6500.0,
         currency: 'BDT',
@@ -79,6 +86,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'a3',
+        sku: 'IF-ABY-KM-003',
         name: 'Kimono Style Abaya',
         price: 5200.0,
         currency: 'BDT',
@@ -87,6 +95,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'a4',
+        sku: 'IF-ABY-BF-004',
         name: 'Butterfly Abaya - Beige',
         price: 4800.0,
         currency: 'BDT',
@@ -98,6 +107,7 @@ export const MOCK_PRODUCTS: Product[] = [
     // Dresses
     {
         id: 'd1',
+        sku: 'IF-DRS-FL-001',
         name: 'Floral Maxi Dress',
         price: 3500.0,
         currency: 'BDT',
@@ -107,6 +117,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'd2',
+        sku: 'IF-DRS-EV-002',
         name: 'Elegant Evening Gown',
         price: 8500.0,
         currency: 'BDT',
@@ -115,6 +126,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'd3',
+        sku: 'IF-DRS-CT-003',
         name: 'Summer Cotton Dress',
         price: 2200.0,
         currency: 'BDT',
@@ -123,6 +135,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'd4',
+        sku: 'IF-DRS-PL-004',
         name: 'Pleated Midi Dress',
         price: 2800.0,
         currency: 'BDT',
@@ -133,6 +146,7 @@ export const MOCK_PRODUCTS: Product[] = [
     // Accessories
     {
         id: 'ac1',
+        sku: 'IF-ACC-HB-001',
         name: 'Leather Handbag',
         price: 3200.0,
         currency: 'BDT',
@@ -141,6 +155,7 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'ac2',
+        sku: 'IF-ACC-NK-002',
         name: 'Statement Necklace',
         price: 1200.0,
         currency: 'BDT',
@@ -230,4 +245,10 @@ export const getProductById = async (id: string): Promise<Product | undefined> =
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 300));
     return MOCK_PRODUCTS.find(p => p.id === id);
+};
+
+export const getProductBySku = async (sku: string): Promise<Product | undefined> => {
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return MOCK_PRODUCTS.find(p => p.sku === sku);
 };

@@ -18,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     return (
         <div className={styles.card}>
             <div style={{ position: 'relative', height: '350px' }}>
-                <Link href={`/product/${product.id}`} style={{ display: 'block', height: '100%', width: '100%' }}>
+                <Link href={`/product/${product.sku}`} style={{ display: 'block', height: '100%', width: '100%' }}>
                     <Image
                         src={product.image}
                         alt={product.name}
@@ -39,7 +39,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <ShoppingBag size={20} />
                 </button>
             </div>
-            <Link href={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`/product/${product.sku}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className={styles.cardContent}>
                     <div className={styles.cardCategory}>{product.category}</div>
                     <h3 className={styles.cardTitle}>{product.name}</h3>

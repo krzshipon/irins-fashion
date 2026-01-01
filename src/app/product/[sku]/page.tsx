@@ -1,4 +1,4 @@
-import { getProductById } from '@/services/api/products';
+import { getProductBySku } from '@/services/api/products';
 import ProductDetailsContainer from '@/components/product/ProductDetailsContainer';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import styles from '@/components/product/ProductDetails.module.css';
@@ -6,13 +6,13 @@ import { notFound } from 'next/navigation';
 
 interface ProductPageProps {
     params: Promise<{
-        id: string;
+        sku: string;
     }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { id } = await params;
-    const product = await getProductById(id);
+    const { sku } = await params;
+    const product = await getProductBySku(sku);
 
     if (!product) {
         notFound();
@@ -63,8 +63,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 export async function generateMetadata({ params }: ProductPageProps) {
-    const { id } = await params;
-    const product = await getProductById(id);
+    const { sku } = await params;
+    const product = await getProductBySku(sku);
 
     if (!product) {
         return {
