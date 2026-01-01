@@ -3,9 +3,12 @@
 import Link from 'next/link';
 import styles from './Header.module.css';
 import { useLocalization } from '@/context/LocalizationContext';
+import { useCart } from '@/context/CartContext';
+import { ShoppingBag } from 'lucide-react';
 
 export default function Header() {
     const { t, locale, setLocale } = useLocalization();
+    const { cartCount } = useCart();
 
     const toggleLocale = () => {
         setLocale(locale === 'en' ? 'bn' : 'en');
@@ -29,8 +32,9 @@ export default function Header() {
                     <button onClick={toggleLocale} className={styles.langSwitch}>
                         {locale === 'en' ? 'BN' : 'EN'}
                     </button>
-                    <Link href="/cart" className={styles.navLink}>
-                        {t('nav.cart')} (0)
+                    <Link href="/cart" className={styles.cartLink} aria-label={t('nav.cart')}>
+                        <ShoppingBag size={22} className={styles.cartIcon} />
+                        {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
                     </Link>
                 </div>
             </div>

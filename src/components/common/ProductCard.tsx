@@ -5,6 +5,7 @@ import Image from 'next/image';
 import styles from '@/app/page.module.css'; // Reusing styles for now to ensure consistency
 import { Product } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
+import { useCart } from '@/context/CartContext';
 
 import { ShoppingBag } from 'lucide-react';
 
@@ -14,6 +15,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const { t } = useLocalization();
+    const { addToCart } = useCart();
 
     return (
         <div className={styles.card}>
@@ -33,7 +35,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('Add to cart clicked');
+                        addToCart(product);
+                        // Optional: Add visual feedback (toast/animation) here
                     }}
                 >
                     <ShoppingBag size={20} />

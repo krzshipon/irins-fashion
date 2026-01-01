@@ -9,21 +9,20 @@ export const MOCK_PRODUCTS: Product[] = [
         price: 1250.0,
         currency: 'BDT',
         category: 'Hijab',
-        image: '/images/products/hijab-emerald.png', // Using placeholder for now, ideally unique
+        image: '/images/products/hijab-emerald.png',
         isNew: true,
         description: 'Experience the luxury of our Premium Silk Hijab in Emerald. Crafted from the finest silk, this hijab offers a smooth, lustrous finish that drapes beautifully. Perfect for special occasions or adding a touch of elegance to your everyday look. The rich emerald color is vibrant and long-lasting.',
         images: [
             '/images/products/hijab-emerald.png',
-            '/images/products/hijab-rose.png', // Placeholder additional images
+            '/images/products/hijab-rose.png',
             '/images/products/hijab-black.png'
         ],
         sizes: ['One Size'],
-        colors: ['Emerald', 'Dusty Rose', 'Black', 'Navy'],
+        colors: ['Emerald', 'Dusty Rose', 'Black'],
         colorImages: {
             'Emerald': '/images/products/hijab-emerald.png',
             'Dusty Rose': '/images/products/hijab-rose.png',
-            'Black': '/images/products/hijab-black.png',
-            'Navy': '/images/products/hijab-navy.png'
+            'Black': '/images/products/hijab-black.png'
         }
     },
     {
@@ -35,6 +34,19 @@ export const MOCK_PRODUCTS: Product[] = [
         category: 'Hijab',
         image: '/images/products/hijab-rose.png',
         isNew: true,
+        description: 'Our Chiffon Hijab in Dusty Rose is perfect for everyday wear. Lightweight, breathable, and easy to style, it adds a soft, feminine touch to any outfit. The slightly textured fabric ensures it stays in place all day.',
+        images: [
+            '/images/products/hijab-rose.png',
+            '/images/products/hijab-emerald.png',
+            '/images/products/hijab-navy.png'
+        ],
+        sizes: ['One Size'],
+        colors: ['Dusty Rose', 'Emerald', 'Navy'],
+        colorImages: {
+            'Dusty Rose': '/images/products/hijab-rose.png',
+            'Emerald': '/images/products/hijab-emerald.png',
+            'Navy': '/images/products/hijab-navy.png'
+        }
     },
     {
         id: 'h3',
@@ -44,6 +56,17 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Hijab',
         image: '/images/products/hijab-black.png',
+        description: 'The essential Jersey Hijab in Black. Made from high-quality stretch cotton jersey, this hijab provides ultimate comfort and versatility. No pins needed – just wrap and go. A must-have staple for every wardrobe.',
+        images: [
+            '/images/products/hijab-black.png',
+            '/images/products/hijab-navy.png'
+        ],
+        sizes: ['One Size'],
+        colors: ['Black', 'Navy'],
+        colorImages: {
+            'Black': '/images/products/hijab-black.png',
+            'Navy': '/images/products/hijab-navy.png'
+        }
     },
     {
         id: 'h4',
@@ -53,6 +76,17 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Hijab',
         image: '/images/products/hijab-navy.png',
+        description: 'Elegant Georgette Hijab in deep Navy. The semi-sheer, matte fabric drapes effortlessly, making it ideal for both casual and formal looks. Pair it with an abaya or a contemporary outfit for a polished finish.',
+        images: [
+            '/images/products/hijab-navy.png',
+            '/images/products/hijab-rose.png'
+        ],
+        sizes: ['One Size'],
+        colors: ['Navy', 'Dusty Rose'],
+        colorImages: {
+            'Navy': '/images/products/hijab-navy.png',
+            'Dusty Rose': '/images/products/hijab-rose.png'
+        }
     },
     {
         id: 'h5',
@@ -61,7 +95,16 @@ export const MOCK_PRODUCTS: Product[] = [
         price: 1450.0,
         currency: 'BDT',
         category: 'Hijab',
-        image: '/images/products/hijab-emerald.png', // Reuse for now
+        image: '/images/products/hijab-emerald.png', // Fallback
+        description: 'Radiate elegance with our Satin Hijab in Gold. The high-shine finish and silky feel make this hijab a showstopper. Perfect for weddings, parties, or whenever you want to feel like royalty.',
+        images: [
+            '/images/products/hijab-emerald.png' // Fallback
+        ],
+        sizes: ['One Size'],
+        colors: ['Gold'],
+        colorImages: {
+            'Gold': '/images/products/hijab-emerald.png'
+        }
     },
 
     // Abayas
@@ -73,6 +116,12 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Abaya',
         image: '/images/product-abaya.png',
+        description: 'A timeless Classic Black Abaya that embodies simplicity and grace. Designed with a flowing silhouette and comfortable fabric, this abaya is reliable for daily wear or religious gatherings. Includes a matching shayla.',
+        images: ['/images/product-abaya.png'],
+        sizes: ['52', '54', '56', '58', '60'],
+        colors: ['Black'],
+        colorImages: { 'Black': '/images/product-abaya.png' }
+
     },
     {
         id: 'a2',
@@ -83,6 +132,14 @@ export const MOCK_PRODUCTS: Product[] = [
         category: 'Abaya',
         image: '/images/product-abaya.png',
         isNew: true,
+        description: 'Elevate your style with this Embroidered Open Abaya. Featuring intricate floral embroidery along the sleeves and hem, this piece can be worn open over a dress or closed. Perfect for Eid and special events.',
+        images: ['/images/product-abaya.png'],
+        sizes: ['52', '54', '56', '58'],
+        colors: ['Black/Gold', 'Black/Silver'],
+        colorImages: {
+            'Black/Gold': '/images/product-abaya.png',
+            'Black/Silver': '/images/product-abaya.png'
+        }
     },
     {
         id: 'a3',
@@ -92,6 +149,15 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Abaya',
         image: '/images/product-abaya.png',
+        description: 'Modern Kimono Style Abaya with wide sleeves and a relaxed fit. Made from premium crepe fabric, it offers a contemporary twist on traditional modest wear. Available in versatile shades.',
+        images: ['/images/product-abaya.png'],
+        sizes: ['Free Size'],
+        colors: ['Grey', 'Beige', 'Black'],
+        colorImages: {
+            'Grey': '/images/product-abaya.png',
+            'Beige': '/images/product-abaya.png',
+            'Black': '/images/product-abaya.png'
+        }
     },
     {
         id: 'a4',
@@ -100,8 +166,13 @@ export const MOCK_PRODUCTS: Product[] = [
         price: 4800.0,
         currency: 'BDT',
         category: 'Abaya',
-        image: '/images/product-abaya.png',
+        image: '/images/product-abaya.png', // Fallback
         isNew: true,
+        description: 'Float through your day in this ethereal Butterfly Abaya in Beige. The ultra-wide cut provides maximum coverage and freedom of movement, while the cinchable inner belt allows for a custom fit.',
+        images: ['/images/product-abaya.png'],
+        sizes: ['One Size'],
+        colors: ['Beige'],
+        colorImages: { 'Beige': '/images/product-abaya.png' }
     },
 
     // Dresses
@@ -114,6 +185,14 @@ export const MOCK_PRODUCTS: Product[] = [
         category: 'Dress',
         image: '/images/product-dress.png',
         isNew: true,
+        description: 'Embrace the season with our Floral Maxi Dress. Featuring a vibrant botanical print and a flattering A-line cut, this dress is perfect for brunch or a day out. Long sleeves and a high neckline ensure modest coverage.',
+        images: ['/images/product-dress.png'],
+        sizes: ['S', 'M', 'L', 'XL'],
+        colors: ['Floral Pink', 'Floral Blue'],
+        colorImages: {
+            'Floral Pink': '/images/product-dress.png',
+            'Floral Blue': '/images/product-dress.png'
+        }
     },
     {
         id: 'd2',
@@ -123,6 +202,14 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Dress',
         image: '/images/product-dress.png',
+        description: 'Make an entrance in this Elegant Evening Gown. With detailed beading on the bodice and a sweeping skirt, this gown radiates sophistication. Fully lined for comfort and modesty.',
+        images: ['/images/product-dress.png'],
+        sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+        colors: ['Midnight Blue', 'Burgundy'],
+        colorImages: {
+            'Midnight Blue': '/images/product-dress.png',
+            'Burgundy': '/images/product-dress.png'
+        }
     },
     {
         id: 'd3',
@@ -132,6 +219,14 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Dress',
         image: '/images/product-dress.png',
+        description: 'Stay cool and chic in our Summer Cotton Dress. Made from 100% organic cotton, this breathable dress features functional pockets and a relaxed fit. Your go-to choice for hot days.',
+        images: ['/images/product-dress.png'],
+        sizes: ['S', 'M', 'L', 'XL'],
+        colors: ['White', 'Sage Green'],
+        colorImages: {
+            'White': '/images/product-dress.png',
+            'Sage Green': '/images/product-dress.png'
+        }
     },
     {
         id: 'd4',
@@ -141,6 +236,14 @@ export const MOCK_PRODUCTS: Product[] = [
         currency: 'BDT',
         category: 'Dress',
         image: '/images/product-dress.png',
+        description: 'Style meets texture in this Pleated Midi Dress. The accordion pleats add movement and depth, while the belted waist defines your silhouette. Pairs perfectly with boots or heels.',
+        images: ['/images/product-dress.png'],
+        sizes: ['M', 'L', 'XL'],
+        colors: ['Rust', 'Black'],
+        colorImages: {
+            'Rust': '/images/product-dress.png',
+            'Black': '/images/product-dress.png'
+        }
     },
 
     // Accessories
@@ -151,7 +254,15 @@ export const MOCK_PRODUCTS: Product[] = [
         price: 3200.0,
         currency: 'BDT',
         category: 'Accessories',
-        image: '/images/product-cardigan.png', // Reusing placeholder
+        image: '/images/product-cardigan.png', // Reusing placeholder as per plan
+        description: 'Complete your look with this premium Leather Handbag. Spacious enough for all your essentials yet compact enough for daily carry. Features gold-tone hardware and a detachable shoulder strap.',
+        images: ['/images/product-cardigan.png'],
+        sizes: ['One Size'],
+        colors: ['Tan', 'Black'],
+        colorImages: {
+            'Tan': '/images/product-cardigan.png',
+            'Black': '/images/product-cardigan.png'
+        }
     },
     {
         id: 'ac2',
@@ -160,7 +271,15 @@ export const MOCK_PRODUCTS: Product[] = [
         price: 1200.0,
         currency: 'BDT',
         category: 'Accessories',
-        image: '/images/product-cardigan.png',
+        image: '/images/product-cardigan.png', // Reusing placeholder
+        description: 'Add a touch of sparkle with our Statement Necklace. This bold piece features layered chains and crystal accents. The perfect accessory to dress up a simple abaya or dress.',
+        images: ['/images/product-cardigan.png'],
+        sizes: ['Adjustable'],
+        colors: ['Gold', 'Silver'],
+        colorImages: {
+            'Gold': '/images/product-cardigan.png',
+            'Silver': '/images/product-cardigan.png'
+        }
     },
 ];
 

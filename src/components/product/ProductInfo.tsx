@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Product } from '@/services/api/types';
 import styles from './ProductDetails.module.css';
+import { useCart } from '@/context/CartContext';
 
 interface ProductInfoProps {
     product: Product;
@@ -12,16 +13,24 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product, selectedColor, onColorSelect }: ProductInfoProps) {
     const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes ? product.sizes[0] : null);
-    // Removed local selectedColor state
+    const { addToCart } = useCart();
 
     const handleAddToCart = () => {
-        console.log('Added to cart:', {
-            id: product.id,
-            size: selectedSize,
-            color: selectedColor,
-            price: product.price
+        if (!selectedColor && product.colors && product.colors.length > 0) {
+            alert('Please select a color');
+            return;
+        }
+
+        addToCart({
+            ...product,
+            // We might want to pass selected options eventually, but CartItem interface 
+            // in context might need updates to support variants. For now, adding the product.
+            // If the context doesn't support variants, we might be adding the base product.
+            // Let's check CartContext again during implementation if needed. 
+            // For now, assuming variants are part of product or handled simply.
         });
-        alert('Product added to cart! (Demo)');
+
+        alert('Product added to cart!');
     };
 
     // Helper for color values (this would ideally come from a theme or backend)

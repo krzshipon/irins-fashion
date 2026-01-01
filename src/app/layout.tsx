@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "@/styles/globals.css";
 import { LocalizationProvider } from "@/context/LocalizationContext";
+import { CartProvider } from "@/context/CartContext";
 import MainLayout from "@/components/layout/MainLayout";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -21,9 +22,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable}`}>
         <LocalizationProvider>
-          <MainLayout>
-            {children}
-          </MainLayout>
+          <CartProvider>
+            <MainLayout>
+              {children}
+            </MainLayout>
+          </CartProvider>
         </LocalizationProvider>
       </body>
     </html>
