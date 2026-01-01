@@ -23,8 +23,30 @@ export default async function ProductPage({ params }: ProductPageProps) {
         ? product.images
         : [product.image];
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        image: product.image,
+        description: product.description,
+        brand: {
+            '@type': 'Brand',
+            name: 'IF' // Replace with actual brand name if available
+        },
+        offers: {
+            '@type': 'Offer',
+            priceCurrency: 'USD', // Assuming USD, adjust as needed
+            price: product.price,
+            availability: 'https://schema.org/InStock'
+        }
+    };
+
     return (
         <div>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <ProductDetailsContainer
                 product={product}
                 initialGalleryImages={galleryImages}
@@ -38,4 +60,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
         </div>
     );
+}
+
+export async function generateMetadata({ params }: ProductPageProps) {
+    const { id } = await params;
+    const product = await getProductById(id);
+
+    if (!product) {
+        return {
+            title: 'Product Not Found',
+        };
+    }
+
+    return {
+        title: `${product.name} | IF Shop`,
+        description: product.description,
+        openGraph: {
+            images: [product.image],
+        },
+    };
 }

@@ -11,7 +11,7 @@
 
 @media (min-width: 1024px) {
     .productContainer {
-        grid-template-columns: 65% 35%;
+        grid-template-columns: 1.8fr 1fr;
         /* Give even more space to image */
         gap: 4rem;
         padding-top: 1rem;
