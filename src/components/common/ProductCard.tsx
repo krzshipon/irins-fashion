@@ -18,27 +18,36 @@ export default function ProductCard({ product }: ProductCardProps) {
     return (
         <div className={styles.card}>
             <div style={{ position: 'relative', height: '350px' }}>
-                <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                />
+                <Link href={`/product/${product.id}`} style={{ display: 'block', height: '100%', width: '100%' }}>
+                    <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                    />
+                </Link>
                 <button
                     className={styles.addToCartBtn}
                     title={t('products.addToCart')}
                     aria-label={t('products.addToCart')}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Add to cart clicked');
+                    }}
                 >
                     <ShoppingBag size={20} />
                 </button>
             </div>
-            <div className={styles.cardContent}>
-                <div className={styles.cardCategory}>{product.category}</div>
-                <h3 className={styles.cardTitle}>{product.name}</h3>
-                <div className={styles.cardPrice}>
-                    {product.currency} {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            <Link href={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div className={styles.cardContent}>
+                    <div className={styles.cardCategory}>{product.category}</div>
+                    <h3 className={styles.cardTitle}>{product.name}</h3>
+                    <div className={styles.cardPrice}>
+                        {product.currency} {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </div>
                 </div>
-            </div>
+            </Link>
         </div>
     );
 }

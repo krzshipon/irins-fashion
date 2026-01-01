@@ -10,6 +10,20 @@ export const MOCK_PRODUCTS: Product[] = [
         category: 'Hijab',
         image: '/images/products/hijab-emerald.png', // Using placeholder for now, ideally unique
         isNew: true,
+        description: 'Experience the luxury of our Premium Silk Hijab in Emerald. Crafted from the finest silk, this hijab offers a smooth, lustrous finish that drapes beautifully. Perfect for special occasions or adding a touch of elegance to your everyday look. The rich emerald color is vibrant and long-lasting.',
+        images: [
+            '/images/products/hijab-emerald.png',
+            '/images/products/hijab-rose.png', // Placeholder additional images
+            '/images/products/hijab-black.png'
+        ],
+        sizes: ['One Size'],
+        colors: ['Emerald', 'Dusty Rose', 'Black', 'Navy'],
+        colorImages: {
+            'Emerald': '/images/products/hijab-emerald.png',
+            'Dusty Rose': '/images/products/hijab-rose.png',
+            'Black': '/images/products/hijab-black.png',
+            'Navy': '/images/products/hijab-navy.png'
+        }
     },
     {
         id: 'h2',
@@ -211,3 +225,9 @@ export const getProductsByCategory = async (category: string, limit: number = 4)
     // Case insensitive match
     return MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === category.toLowerCase()).slice(0, limit);
 }
+
+export const getProductById = async (id: string): Promise<Product | undefined> => {
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return MOCK_PRODUCTS.find(p => p.id === id);
+};

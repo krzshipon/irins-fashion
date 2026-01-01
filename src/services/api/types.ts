@@ -6,6 +6,11 @@ export interface Product {
   category: string;
   image: string;
   isNew?: boolean;
+  description?: string;
+  images?: string[];
+  sizes?: string[];
+  colors?: string[];
+  colorImages?: Record<string, string>;
 }
 
 export interface Banner {
