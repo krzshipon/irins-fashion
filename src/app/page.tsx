@@ -9,6 +9,8 @@ import { getHeroBanners } from '@/services/api/marketing';
 import { Product, Banner } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
 import CategorySection from '@/components/home/CategorySection';
+import CategoryProductRow from '@/components/home/CategoryProductRow';
+import ProductCard from '@/components/common/ProductCard';
 
 export default function Home() {
   const { t } = useLocalization();
@@ -91,26 +93,34 @@ export default function Home() {
 
         <div className={styles.grid}>
           {products.map((product) => (
-            <div key={product.id} className={styles.card}>
-              <div style={{ position: 'relative', height: '350px' }}>
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-              <div className={styles.cardContent}>
-                <div className={styles.cardCategory}>{product.category}</div>
-                <h3 className={styles.cardTitle}>{product.name}</h3>
-                <div className={styles.cardPrice}>
-                  {product.currency} {product.price.toFixed(2)}
-                </div>
-              </div>
-            </div>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
+
+      <CategoryProductRow
+        titleKey="categories.hijab"
+        categorySlug="Hijab"
+        link="/collection/hijabs"
+      />
+
+      <CategoryProductRow
+        titleKey="categories.abaya"
+        categorySlug="Abaya"
+        link="/collection/abayas"
+      />
+
+      <CategoryProductRow
+        titleKey="categories.dress"
+        categorySlug="Dress"
+        link="/collection/dresses"
+      />
+
+      <CategoryProductRow
+        titleKey="categories.accessories"
+        categorySlug="Accessories"
+        link="/collection/accessories"
+      />
     </div>
   );
 }

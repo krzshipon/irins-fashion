@@ -1,38 +1,136 @@
 import { Product } from './types';
 
 export const MOCK_PRODUCTS: Product[] = [
+    // Hijabs
     {
-        id: '1',
-        name: 'Silk Hijab - Emerald',
-        price: 25.0,
-        currency: 'USD',
+        id: 'h1',
+        name: 'Premium Silk Hijab - Emerald',
+        price: 1250.0,
+        currency: 'BDT',
         category: 'Hijab',
-        image: '/images/product-hijab.png',
+        image: '/images/products/hijab-emerald.png', // Using placeholder for now, ideally unique
         isNew: true,
     },
     {
-        id: '2',
-        name: 'Classic Abaya - Black',
-        price: 89.99,
-        currency: 'USD',
+        id: 'h2',
+        name: 'Chiffon Hijab - Dusty Rose',
+        price: 850.0,
+        currency: 'BDT',
+        category: 'Hijab',
+        image: '/images/products/hijab-rose.png',
+        isNew: true,
+    },
+    {
+        id: 'h3',
+        name: 'Jersey Hijab - Black',
+        price: 650.0,
+        currency: 'BDT',
+        category: 'Hijab',
+        image: '/images/products/hijab-black.png',
+    },
+    {
+        id: 'h4',
+        name: 'Georgette Hijab - Navy',
+        price: 750.0,
+        currency: 'BDT',
+        category: 'Hijab',
+        image: '/images/products/hijab-navy.png',
+    },
+    {
+        id: 'h5',
+        name: 'Satin Hijab - Gold',
+        price: 1450.0,
+        currency: 'BDT',
+        category: 'Hijab',
+        image: '/images/products/hijab-emerald.png', // Reuse for now
+    },
+
+    // Abayas
+    {
+        id: 'a1',
+        name: 'Classic Black Abaya',
+        price: 4500.0,
+        currency: 'BDT',
         category: 'Abaya',
         image: '/images/product-abaya.png',
     },
     {
-        id: '3',
+        id: 'a2',
+        name: 'Embroidered Open Abaya',
+        price: 6500.0,
+        currency: 'BDT',
+        category: 'Abaya',
+        image: '/images/product-abaya.png',
+        isNew: true,
+    },
+    {
+        id: 'a3',
+        name: 'Kimono Style Abaya',
+        price: 5200.0,
+        currency: 'BDT',
+        category: 'Abaya',
+        image: '/images/product-abaya.png',
+    },
+    {
+        id: 'a4',
+        name: 'Butterfly Abaya - Beige',
+        price: 4800.0,
+        currency: 'BDT',
+        category: 'Abaya',
+        image: '/images/product-abaya.png',
+        isNew: true,
+    },
+
+    // Dresses
+    {
+        id: 'd1',
         name: 'Floral Maxi Dress',
-        price: 120.0,
-        currency: 'USD',
+        price: 3500.0,
+        currency: 'BDT',
         category: 'Dress',
         image: '/images/product-dress.png',
         isNew: true,
     },
     {
-        id: '4',
-        name: 'Wool Cardigan - Beige',
-        price: 65.0,
-        currency: 'USD',
-        category: 'Outerwear',
+        id: 'd2',
+        name: 'Elegant Evening Gown',
+        price: 8500.0,
+        currency: 'BDT',
+        category: 'Dress',
+        image: '/images/product-dress.png',
+    },
+    {
+        id: 'd3',
+        name: 'Summer Cotton Dress',
+        price: 2200.0,
+        currency: 'BDT',
+        category: 'Dress',
+        image: '/images/product-dress.png',
+    },
+    {
+        id: 'd4',
+        name: 'Pleated Midi Dress',
+        price: 2800.0,
+        currency: 'BDT',
+        category: 'Dress',
+        image: '/images/product-dress.png',
+    },
+
+    // Accessories
+    {
+        id: 'ac1',
+        name: 'Leather Handbag',
+        price: 3200.0,
+        currency: 'BDT',
+        category: 'Accessories',
+        image: '/images/product-cardigan.png', // Reusing placeholder
+    },
+    {
+        id: 'ac2',
+        name: 'Statement Necklace',
+        price: 1200.0,
+        currency: 'BDT',
+        category: 'Accessories',
         image: '/images/product-cardigan.png',
     },
 ];
@@ -40,5 +138,12 @@ export const MOCK_PRODUCTS: Product[] = [
 export const getFeaturedProducts = async (): Promise<Product[]> => {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 500));
-    return MOCK_PRODUCTS.slice(0, 4);
+    return MOCK_PRODUCTS.filter(p => p.isNew).slice(0, 4);
 };
+
+export const getProductsByCategory = async (category: string, limit: number = 4): Promise<Product[]> => {
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    // Case insensitive match
+    return MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === category.toLowerCase()).slice(0, limit);
+}

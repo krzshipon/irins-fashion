@@ -28,6 +28,9 @@ interface Dictionary {
         newArrival: string;
         addToCart: string;
     };
+    common: {
+        seeMore: string;
+    };
 }
 
 const dictionaries: Record<Locale, Dictionary> = {
@@ -55,6 +58,9 @@ const dictionaries: Record<Locale, Dictionary> = {
             newArrival: 'New Arrival',
             addToCart: 'Add to Cart',
         },
+        common: {
+            seeMore: 'See More',
+        },
     },
     bn: {
         nav: {
@@ -79,6 +85,9 @@ const dictionaries: Record<Locale, Dictionary> = {
         products: {
             newArrival: 'নতুন আগমন',
             addToCart: 'কার্টে যোগ করুন',
+        },
+        common: {
+            seeMore: 'আরও দেখুন',
         },
     },
 };

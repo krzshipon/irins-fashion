@@ -144,6 +144,31 @@
   margin-bottom: var(--spacing-xs);
 }
 
+.addToCartBtn {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-main);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.addToCartBtn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  transform: scale(1.1);
+}
+
 .cardTitle {
   font-size: 1.1rem;
   margin-bottom: var(--spacing-sm);
