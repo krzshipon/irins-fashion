@@ -149,7 +149,19 @@ const slugToCategoryMap: Record<string, string> = {
     'accessories': 'Accessories',
 };
 
-export const getProductsBySlug = async (slug: string): Promise<{ categoryName: string, products: Product[] }> => {
+export type FilterOptions = {
+    minPrice?: number;
+    maxPrice?: number;
+    isNew?: boolean;
+};
+
+export type SortOption = 'price_asc' | 'price_desc' | 'newest';
+
+export const getProductsBySlug = async (
+    slug: string,
+    filters?: FilterOptions,
+    sort?: SortOption
+): Promise<{ categoryName: string, products: Product[] }> => {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -159,7 +171,37 @@ export const getProductsBySlug = async (slug: string): Promise<{ categoryName: s
         return { categoryName: '', products: [] };
     }
 
-    const products = MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
+    let products = MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
+
+    // Filtering
+    if (filters) {
+        if (filters.minPrice !== undefined) {
+            products = products.filter(p => p.price >= filters.minPrice!);
+        }
+        if (filters.maxPrice !== undefined) {
+            products = products.filter(p => p.price <= filters.maxPrice!);
+        }
+        if (filters.isNew) {
+            products = products.filter(p => p.isNew);
+        }
+    }
+
+    // Sorting
+    if (sort) {
+        products.sort((a, b) => {
+            switch (sort) {
+                case 'price_asc':
+                    return a.price - b.price;
+                case 'price_desc':
+                    return b.price - a.price;
+                case 'newest':
+                    return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0); // Put New items first
+                default:
+                    return 0;
+            }
+        });
+    }
+
     return { categoryName, products };
 };
 
