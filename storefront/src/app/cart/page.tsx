@@ -34,16 +34,22 @@ export default function CartPage() {
                             <div key={item.cartItemId} className={styles.cartItem}>
                                 <div className={styles.itemImageContainer}>
                                     {/* Using a placeholder if image is missing, or the item image */}
-                                    {item.image ? (
-                                        <Image
-                                            src={item.image}
-                                            alt={item.name}
-                                            fill
-                                            className={styles.itemImage}
-                                        />
-                                    ) : (
-                                        <div style={{ width: '100%', height: '100%', background: '#eee' }} />
-                                    )}
+                                    {(() => {
+                                        const displayImage = (item.selectedColor && item.colorImages && item.colorImages[item.selectedColor])
+                                            ? item.colorImages[item.selectedColor]
+                                            : item.image;
+
+                                        return displayImage ? (
+                                            <Image
+                                                src={displayImage}
+                                                alt={item.name}
+                                                fill
+                                                className={styles.itemImage}
+                                            />
+                                        ) : (
+                                            <div style={{ width: '100%', height: '100%', background: '#eee' }} />
+                                        );
+                                    })()}
                                 </div>
 
                                 <div className={styles.itemDetails}>
