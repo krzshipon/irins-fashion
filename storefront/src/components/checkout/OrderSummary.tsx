@@ -6,12 +6,13 @@ import Image from 'next/image';
 interface OrderSummaryProps {
     items: CartItem[];
     subtotal: number;
+    shippingCost: number;
     total: number;
     onPlaceOrder: () => void;
     isSubmitting: boolean;
 }
 
-export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, total, onPlaceOrder, isSubmitting }) => {
+export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shippingCost, total, onPlaceOrder, isSubmitting }) => {
     const { dictionary: t } = useLocalization();
 
     return (
@@ -98,7 +99,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, tot
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.checkout.shippingFee}</span>
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FREE</span>
+                    <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳ {shippingCost}</span>
                 </div>
             </div>
 

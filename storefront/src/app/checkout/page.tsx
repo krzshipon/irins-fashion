@@ -6,8 +6,8 @@ import { useCart } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
 import { ShippingForm } from '@/components/checkout/ShippingForm';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { ShippingDetails, Order } from '@/types/checkout';
-import { submitOrder } from '@/services/api/checkout';
+import { ShippingDetails, ShippingRates, Order } from '@/types/checkout';
+import { submitOrder, getShippingRates } from '@/services/api/checkout';
 
 const CheckoutPage = () => {
     const router = useRouter();
@@ -21,7 +21,13 @@ const CheckoutPage = () => {
         phone: '',
         address: '',
         city: '',
-        postalCode: ''
+        postalCode: '',
+        deliveryZone: 'inside_dhaka',
+    });
+
+    const [shippingRates, setShippingRates] = useState<ShippingRates>({
+        insideDhaka: 80,
+        outsideDhaka: 120,
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof ShippingDetails, string>>>({});
@@ -31,6 +37,12 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         setIsMounted(true);
+        // Fetch shipping rates on mount
+        const fetchRates = async () => {
+            const rates = await getShippingRates();
+            setShippingRates(rates);
+        };
+        fetchRates();
     }, []);
 
     useEffect(() => {
@@ -41,7 +53,7 @@ const CheckoutPage = () => {
 
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof ShippingDetails, string>> = {};
-        const requiredFields: (keyof ShippingDetails)[] = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'postalCode'];
+        const requiredFields: (keyof ShippingDetails)[] = ['firstName', 'lastName', 'phone', 'address', 'city', 'postalCode'];
 
         requiredFields.forEach(field => {
             if (!shippingDetails[field] || shippingDetails[field].trim() === '') {
@@ -49,8 +61,22 @@ const CheckoutPage = () => {
             }
         });
 
+        // BD Mobile validation (01XXXXXXXXX - 11 digits starting with 01)
+        if (shippingDetails.phone) {
+            const phoneRegex = /^01[3-9]\d{8}$/;
+            if (!phoneRegex.test(shippingDetails.phone)) {
+                newErrors.phone = 'Invalid BD mobile number (01XXXXXXXXX)';
+            }
+        }
+
+        // Email validation
         if (shippingDetails.email && !/\S+@\S+\.\S+/.test(shippingDetails.email)) {
             newErrors.email = 'Invalid email';
+        }
+
+        // Delivery zone validation
+        if (!shippingDetails.deliveryZone) {
+            newErrors.deliveryZone = 'Please select a delivery zone';
         }
 
         setErrors(newErrors);
@@ -61,16 +87,28 @@ const CheckoutPage = () => {
         return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
+    const getShippingCost = () => {
+        return shippingDetails.deliveryZone === 'inside_dhaka'
+            ? shippingRates.insideDhaka
+            : shippingRates.outsideDhaka;
+    };
+
+    const calculateTotal = () => {
+        return calculateSubtotal() + getShippingCost();
+    };
+
     const handlePlaceOrder = async () => {
         if (!validateForm()) return;
 
         setIsSubmitting(true);
         const subtotal = calculateSubtotal();
-        const total = subtotal;
+        const shippingCost = getShippingCost();
+        const total = subtotal + shippingCost;
 
         const order: Order = {
             items: cartItems,
             subtotal,
+            shippingCost,
             total,
             shippingDetails,
             paymentMethod: 'cod'
@@ -98,9 +136,7 @@ const CheckoutPage = () => {
 
     return (
         <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
-            {/* Centered Container */}
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px' }}>
-                {/* Page Title */}
                 <h1 style={{
                     fontSize: '32px',
                     fontWeight: '600',
@@ -111,22 +147,20 @@ const CheckoutPage = () => {
                     {t.checkout.title}
                 </h1>
 
-                {/* Two Column Layout */}
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr',
                     gap: '40px'
                 }} className="lg:!grid-cols-[1fr_420px]">
-                    {/* Left Column - Form */}
                     <div>
                         <ShippingForm
                             value={shippingDetails}
                             onChange={setShippingDetails}
                             errors={errors}
+                            shippingRates={shippingRates}
                         />
                     </div>
 
-                    {/* Right Column - Order Summary */}
                     <div>
                         <div style={{
                             backgroundColor: '#f8f8f8',
@@ -139,7 +173,8 @@ const CheckoutPage = () => {
                             <OrderSummary
                                 items={cartItems}
                                 subtotal={calculateSubtotal()}
-                                total={calculateSubtotal()}
+                                shippingCost={getShippingCost()}
+                                total={calculateTotal()}
                                 onPlaceOrder={handlePlaceOrder}
                                 isSubmitting={isSubmitting}
                             />

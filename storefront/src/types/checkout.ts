@@ -1,5 +1,7 @@
 import { CartItem } from '@/context/CartContext';
 
+export type DeliveryZone = 'inside_dhaka' | 'outside_dhaka';
+
 export interface ShippingDetails {
     firstName: string;
     lastName: string;
@@ -8,12 +10,19 @@ export interface ShippingDetails {
     address: string;
     city: string;
     postalCode: string;
+    deliveryZone: DeliveryZone;
+}
+
+export interface ShippingRates {
+    insideDhaka: number;
+    outsideDhaka: number;
 }
 
 export interface Order {
     items: CartItem[];
     subtotal: number;
+    shippingCost: number;
     shippingDetails: ShippingDetails;
-    paymentMethod: 'cod'; // Only Cash on Delivery for now
+    paymentMethod: 'cod';
     total: number;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useLocalization } from '@/context/LocalizationContext';
@@ -9,13 +9,22 @@ const SuccessContent = () => {
     const searchParams = useSearchParams();
     const orderId = searchParams?.get('orderId');
     const { dictionary: t } = useLocalization();
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyOrderId = async () => {
+        if (orderId) {
+            try {
+                await navigator.clipboard.writeText(orderId);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+    };
 
     return (
-        <div style={{
-            maxWidth: '1100px',
-            margin: '0 auto',
-            padding: '32px 24px',
-        }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
             {/* Main Success Card */}
             <div style={{
                 backgroundColor: '#fff',
@@ -64,20 +73,50 @@ const SuccessContent = () => {
                                 borderRadius: '14px',
                                 padding: '24px',
                                 marginBottom: '24px',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
                             }}>
-                                <div>
-                                    <span style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
-                                        {t.checkout.success.orderId}
-                                    </span>
-                                    <span style={{ fontSize: '24px', fontWeight: '800', color: '#111', fontFamily: 'monospace' }}>
-                                        #{orderId}
-                                    </span>
-                                </div>
-                                <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '8px 16px', borderRadius: '24px', fontSize: '12px', fontWeight: '700' }}>
-                                    Processing
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div>
+                                            <span style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
+                                                {t.checkout.success.orderId}
+                                            </span>
+                                            <span style={{ fontSize: '24px', fontWeight: '800', color: '#111', fontFamily: 'monospace' }}>
+                                                #{orderId}
+                                            </span>
+                                        </div>
+                                        {/* Small Copy Button */}
+                                        <button
+                                            onClick={handleCopyOrderId}
+                                            title={copied ? 'Copied!' : 'Copy Order ID'}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: '32px',
+                                                height: '32px',
+                                                backgroundColor: copied ? '#10b981' : '#fff',
+                                                color: copied ? '#fff' : '#6b7280',
+                                                border: `1px solid ${copied ? '#10b981' : '#d1d5db'}`,
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                marginTop: '6px',
+                                            }}
+                                        >
+                                            {copied ? (
+                                                <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            ) : (
+                                                <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                </svg>
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '8px 16px', borderRadius: '24px', fontSize: '12px', fontWeight: '700' }}>
+                                        Processing
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -106,18 +145,46 @@ const SuccessContent = () => {
                                 <span style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>Cash on Delivery</span>
                             </div>
                             <div style={{ backgroundColor: '#f9fafb', padding: '18px', borderRadius: '10px', border: '1px solid #e5e5e5' }}>
-                                <span style={{ display: 'block', fontSize: '12px', color: '#9ca3af', marginBottom: '6px' }}>Shipping</span>
-                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#10b981' }}>FREE</span>
+                                <span style={{ display: 'block', fontSize: '12px', color: '#9ca3af', marginBottom: '6px' }}>Status</span>
+                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#f59e0b' }}>Processing</span>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '16px' }} className="!flex-col sm:!flex-row">
-                            <Link href="/" style={{ flex: 1, display: 'block', padding: '18px', backgroundColor: '#111', color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', borderRadius: '10px', textAlign: 'center' }}>
-                                {t.checkout.success.backToHome}
+                        {/* Action Buttons */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <Link
+                                href={`/orders/${orderId}`}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    padding: '18px',
+                                    backgroundColor: '#111',
+                                    color: '#fff',
+                                    textDecoration: 'none',
+                                    fontSize: '14px',
+                                    fontWeight: '700',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                    borderRadius: '10px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                <svg style={{ width: '18px', height: '18px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                View Order Details
                             </Link>
-                            <Link href="/collection/all" style={{ flex: 1, display: 'block', padding: '18px', backgroundColor: '#fff', color: '#111', textDecoration: 'none', fontSize: '14px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', border: '2px solid #e5e5e5', borderRadius: '10px', textAlign: 'center' }}>
-                                {t.checkout.success.continueShopping}
-                            </Link>
+
+                            <div style={{ display: 'flex', gap: '12px' }} className="!flex-col sm:!flex-row">
+                                <Link href="/" style={{ flex: 1, display: 'block', padding: '16px', backgroundColor: '#fff', color: '#111', textDecoration: 'none', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', border: '2px solid #e5e5e5', borderRadius: '10px', textAlign: 'center' }}>
+                                    {t.checkout.success.backToHome}
+                                </Link>
+                                <Link href="/collection/all" style={{ flex: 1, display: 'block', padding: '16px', backgroundColor: '#fff', color: '#111', textDecoration: 'none', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', border: '2px solid #e5e5e5', borderRadius: '10px', textAlign: 'center' }}>
+                                    {t.checkout.success.continueShopping}
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
