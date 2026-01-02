@@ -13,7 +13,7 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product, selectedColor, onColorSelect }: ProductInfoProps) {
     const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes ? product.sizes[0] : null);
-    const { addToCart } = useCart();
+    const { addToCart, cartItems } = useCart();
 
     const handleAddToCart = () => {
         if (!selectedColor && product.colors && product.colors.length > 0) {
@@ -21,13 +21,9 @@ export default function ProductInfo({ product, selectedColor, onColorSelect }: P
             return;
         }
 
-        addToCart({
-            ...product,
-            // We might want to pass selected options eventually, but CartItem interface 
-            // in context might need updates to support variants. For now, adding the product.
-            // If the context doesn't support variants, we might be adding the base product.
-            // Let's check CartContext again during implementation if needed. 
-            // For now, assuming variants are part of product or handled simply.
+        addToCart(product, {
+            selectedColor: selectedColor || undefined,
+            selectedSize: selectedSize || undefined
         });
 
         alert('Product added to cart!');
@@ -105,12 +101,22 @@ export default function ProductInfo({ product, selectedColor, onColorSelect }: P
             )}
 
             <div className={styles.actions}>
-                <button
-                    className={styles.addToCartBtn}
-                    onClick={handleAddToCart}
-                >
-                    Add to Cart
-                </button>
+                {cartItems.some(item => item.id === product.id) ? (
+                    <button
+                        className={styles.addToCartBtn}
+                        style={{ backgroundColor: '#333', cursor: 'default' }}
+                        disabled
+                    >
+                        Added to Cart
+                    </button>
+                ) : (
+                    <button
+                        className={styles.addToCartBtn}
+                        onClick={handleAddToCart}
+                    >
+                        Add to Cart
+                    </button>
+                )}
             </div>
         </div>
     );

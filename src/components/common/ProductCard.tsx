@@ -15,7 +15,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const { t } = useLocalization();
-    const { addToCart } = useCart();
+    const { addToCart, cartItems } = useCart();
 
     return (
         <div className={styles.card}>
@@ -36,7 +36,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                         e.preventDefault();
                         e.stopPropagation();
                         addToCart(product);
-                        // Optional: Add visual feedback (toast/animation) here
                     }}
                 >
                     <ShoppingBag size={20} />
