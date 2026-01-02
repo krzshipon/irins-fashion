@@ -46,13 +46,7 @@ const getMockOrder = (orderId: string) => ({
     paymentMethod: 'cod',
 });
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-    processing: { label: 'Processing', color: '#92400e', bgColor: '#fef3c7' },
-    confirmed: { label: 'Confirmed', color: '#1e40af', bgColor: '#dbeafe' },
-    shipped: { label: 'Shipped', color: '#7c3aed', bgColor: '#ede9fe' },
-    delivered: { label: 'Delivered', color: '#065f46', bgColor: '#d1fae5' },
-    cancelled: { label: 'Cancelled', color: '#991b1b', bgColor: '#fee2e2' },
-};
+type OrderStatus = 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
 
 const OrderDetailsPage = () => {
     const params = useParams();
@@ -62,7 +56,19 @@ const OrderDetailsPage = () => {
 
     // In production, fetch order from API
     const order = getMockOrder(orderId);
-    const status = statusConfig[order.status] || statusConfig.processing;
+
+    const getStatusConfig = (status: OrderStatus) => {
+        const configs: Record<OrderStatus, { label: string; color: string; bgColor: string }> = {
+            processing: { label: t.orders.status.processing, color: '#92400e', bgColor: '#fef3c7' },
+            confirmed: { label: t.orders.status.confirmed, color: '#1e40af', bgColor: '#dbeafe' },
+            shipped: { label: t.orders.status.shipped, color: '#7c3aed', bgColor: '#ede9fe' },
+            delivered: { label: t.orders.status.delivered, color: '#065f46', bgColor: '#d1fae5' },
+            cancelled: { label: t.orders.status.cancelled, color: '#991b1b', bgColor: '#fee2e2' },
+        };
+        return configs[status] || configs.processing;
+    };
+
+    const statusConfig = getStatusConfig(order.status as OrderStatus);
 
     const handleCopyOrderId = async () => {
         try {
@@ -100,7 +106,7 @@ const OrderDetailsPage = () => {
                     <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Back to Home
+                    {t.common.backToHome}
                 </Link>
 
                 {/* Header */}
@@ -114,14 +120,14 @@ const OrderDetailsPage = () => {
                 }}>
                     <div>
                         <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#111', marginBottom: '8px' }}>
-                            Order Details
+                            {t.orders.orderDetails}
                         </h1>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <span style={{ fontSize: '16px', color: '#6b7280' }}>Order</span>
+                            <span style={{ fontSize: '16px', color: '#6b7280' }}>{t.orders.orderNumber}</span>
                             <span style={{ fontSize: '18px', fontWeight: '700', color: '#111', fontFamily: 'monospace' }}>#{orderId}</span>
                             <button
                                 onClick={handleCopyOrderId}
-                                title={copied ? 'Copied!' : 'Copy Order ID'}
+                                title={copied ? t.checkout.success.copied : t.checkout.success.copyOrderId}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -148,18 +154,18 @@ const OrderDetailsPage = () => {
                             </button>
                         </div>
                         <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '8px' }}>
-                            Placed on {formatDate(order.createdAt)}
+                            {t.orders.placedOn} {formatDate(order.createdAt)}
                         </p>
                     </div>
                     <div style={{
-                        backgroundColor: status.bgColor,
-                        color: status.color,
+                        backgroundColor: statusConfig.bgColor,
+                        color: statusConfig.color,
                         padding: '10px 20px',
                         borderRadius: '24px',
                         fontSize: '14px',
                         fontWeight: '700',
                     }}>
-                        {status.label}
+                        {statusConfig.label}
                     </div>
                 </div>
 
@@ -181,7 +187,7 @@ const OrderDetailsPage = () => {
                                 backgroundColor: '#f9fafb',
                             }}>
                                 <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>
-                                    Items ({order.items.length})
+                                    {t.orders.items} ({order.items.length})
                                 </h2>
                             </div>
                             <div style={{ padding: '24px' }}>
@@ -262,7 +268,7 @@ const OrderDetailsPage = () => {
                                 backgroundColor: '#f9fafb',
                             }}>
                                 <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>
-                                    Shipping Address
+                                    {t.orders.shippingAddress}
                                 </h2>
                             </div>
                             <div style={{ padding: '24px' }}>
@@ -309,23 +315,23 @@ const OrderDetailsPage = () => {
                                 backgroundColor: '#f9fafb',
                             }}>
                                 <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>
-                                    Order Summary
+                                    {t.orders.orderSummary}
                                 </h2>
                             </div>
                             <div style={{ padding: '24px' }}>
                                 <div style={{ marginBottom: '20px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>Subtotal</span>
+                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.orders.subtotal}</span>
                                         <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳{order.subtotal.toLocaleString()}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>Shipping</span>
+                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.orders.shipping}</span>
                                         <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳{order.shippingCost}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>Delivery Zone</span>
+                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.orders.deliveryZone}</span>
                                         <span style={{ fontSize: '13px', fontWeight: '500', color: '#6b7280' }}>
-                                            {order.shippingDetails.deliveryZone === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'}
+                                            {order.shippingDetails.deliveryZone === 'inside_dhaka' ? t.orders.insideDhaka : t.orders.outsideDhaka}
                                         </span>
                                     </div>
                                 </div>
@@ -337,7 +343,7 @@ const OrderDetailsPage = () => {
                                     paddingTop: '20px',
                                     borderTop: '3px solid #111',
                                 }}>
-                                    <span style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>Total</span>
+                                    <span style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>{t.orders.total}</span>
                                     <div style={{ textAlign: 'right' }}>
                                         <span style={{ fontSize: '24px', fontWeight: '800', color: '#111' }}>৳{order.total.toLocaleString()}</span>
                                         <span style={{ display: 'block', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>BDT</span>
@@ -358,8 +364,8 @@ const OrderDetailsPage = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
                                     </svg>
                                     <div>
-                                        <span style={{ display: 'block', fontSize: '12px', color: '#9ca3af' }}>Payment Method</span>
-                                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>Cash on Delivery</span>
+                                        <span style={{ display: 'block', fontSize: '12px', color: '#9ca3af' }}>{t.orders.paymentMethod}</span>
+                                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>{t.orders.cod}</span>
                                     </div>
                                 </div>
                             </div>
@@ -375,7 +381,7 @@ const OrderDetailsPage = () => {
                             textAlign: 'center',
                         }}>
                             <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '12px' }}>
-                                Need help with your order?
+                                {t.orders.needHelp}
                             </p>
                             <Link href="/contact" style={{
                                 display: 'inline-flex',
@@ -386,7 +392,7 @@ const OrderDetailsPage = () => {
                                 fontSize: '14px',
                                 textDecoration: 'none',
                             }}>
-                                Contact Support
+                                {t.orders.contactSupport}
                                 <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>

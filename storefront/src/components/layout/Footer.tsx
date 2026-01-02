@@ -2,44 +2,44 @@
 
 import Link from 'next/link';
 import styles from './Footer.module.css';
-// import { useLocalization } from '@/context/LocalizationContext';
+import { useLocalization } from '@/context/LocalizationContext';
 
 export default function Footer() {
-    // const { t } = useLocalization();
+    const { dictionary: t } = useLocalization();
 
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.grid}`}>
                 <div className={styles.column}>
                     <h3>IRIN&apos;S FASHION</h3>
-                    <p>Modest fashion for the modern woman.</p>
+                    <p>{t.footer.brandTagline}</p>
                 </div>
                 <div className={styles.column}>
-                    <h3>Shop</h3>
+                    <h3>{t.footer.shop}</h3>
                     <ul>
-                        <li><Link href="/new">New Arrivals</Link></li>
-                        <li><Link href="/abayas">Abayas</Link></li>
-                        <li><Link href="/hijabs">Hijabs</Link></li>
+                        <li><Link href="/new">{t.footer.newArrivals}</Link></li>
+                        <li><Link href="/abayas">{t.footer.abayas}</Link></li>
+                        <li><Link href="/hijabs">{t.footer.hijabs}</Link></li>
                     </ul>
                 </div>
                 <div className={styles.column}>
-                    <h3>Company</h3>
+                    <h3>{t.footer.company}</h3>
                     <ul>
-                        <li><Link href="/about">About Us</Link></li>
-                        <li><Link href="/contact">Contact Us</Link></li>
+                        <li><Link href="/about">{t.footer.aboutUs}</Link></li>
+                        <li><Link href="/contact">{t.footer.contactUs}</Link></li>
                     </ul>
                 </div>
                 <div className={styles.column}>
-                    <h3>Support</h3>
+                    <h3>{t.footer.support}</h3>
                     <ul>
-                        <li><Link href="/faq">FAQ</Link></li>
-                        <li><Link href="/shipping">Shipping</Link></li>
-                        <li><Link href="/returns">Returns</Link></li>
+                        <li><Link href="/faq">{t.footer.faq}</Link></li>
+                        <li><Link href="/shipping">{t.footer.shipping}</Link></li>
+                        <li><Link href="/returns">{t.footer.returns}</Link></li>
                     </ul>
                 </div>
             </div>
             <div className={styles.copyright}>
-                &copy; {new Date().getFullYear()} Irin&apos;s Fashion. All rights reserved.
+                &copy; {new Date().getFullYear()} Irin&apos;s Fashion. {t.common.allRightsReserved}
             </div>
         </footer>
     );

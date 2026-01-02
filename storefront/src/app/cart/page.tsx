@@ -3,28 +3,28 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
+import { useLocalization } from '@/context/LocalizationContext';
 import styles from './cart.module.css';
 
 export default function CartPage() {
     const { cartItems, updateQuantity, removeFromCart } = useCart();
+    const { dictionary: t } = useLocalization();
 
     const totalPrice = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-
-    // Filter valid items and unique count for summary
     const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Shopping Cart</h1>
+                <h1 className={styles.title}>{t.cart.title}</h1>
             </div>
 
             {cartItems.length === 0 ? (
                 <div className={styles.emptyCart}>
-                    <h2 className={styles.emptyTitle}>Your cart is currently empty.</h2>
-                    <p>Looks like you haven&apos;t made your choice yet.</p>
+                    <h2 className={styles.emptyTitle}>{t.cart.emptyTitle}</h2>
+                    <p>{t.cart.emptyMessage}</p>
                     <Link href="/" className={styles.continueShoppingBtn}>
-                        Continue Shopping
+                        {t.cart.continueShopping}
                     </Link>
                 </div>
             ) : (
@@ -33,7 +33,6 @@ export default function CartPage() {
                         {cartItems.map((item) => (
                             <div key={item.cartItemId} className={styles.cartItem}>
                                 <div className={styles.itemImageContainer}>
-                                    {/* Using a placeholder if image is missing, or the item image */}
                                     {(() => {
                                         const displayImage = (item.selectedColor && item.colorImages && item.colorImages[item.selectedColor])
                                             ? item.colorImages[item.selectedColor]
@@ -69,8 +68,8 @@ export default function CartPage() {
                                         <div className={styles.itemMeta}>
                                             {(item.selectedColor || item.selectedSize) && (
                                                 <div className={styles.itemVariants}>
-                                                    {item.selectedColor && <span className={styles.variantOption}>Color: {item.selectedColor}</span>}
-                                                    {item.selectedSize && <span className={styles.variantOption}>Size: {item.selectedSize}</span>}
+                                                    {item.selectedColor && <span className={styles.variantOption}>{t.cart.color}: {item.selectedColor}</span>}
+                                                    {item.selectedSize && <span className={styles.variantOption}>{t.cart.size}: {item.selectedSize}</span>}
                                                 </div>
                                             )}
                                             <div className={styles.quantityControls}>
@@ -99,7 +98,7 @@ export default function CartPage() {
                                         className={styles.removeBtn}
                                         onClick={() => removeFromCart(item.cartItemId)}
                                     >
-                                        Remove
+                                        {t.common.remove}
                                     </button>
                                 </div>
 
@@ -111,28 +110,28 @@ export default function CartPage() {
                     </div>
 
                     <div className={styles.summaryCard}>
-                        <h2 className={styles.summaryTitle}>Order Summary</h2>
+                        <h2 className={styles.summaryTitle}>{t.cart.orderSummary}</h2>
 
                         <div className={styles.summaryRow}>
-                            <span>Subtotal ({itemCount} items)</span>
+                            <span>{t.cart.subtotal} ({itemCount} {t.cart.items})</span>
                             <span>{cartItems[0]?.currency || 'BDT'} {totalPrice.toLocaleString()}</span>
                         </div>
                         <div className={styles.summaryRow}>
-                            <span>Shipping</span>
-                            <span>Calculated at checkout</span>
+                            <span>{t.cart.shipping}</span>
+                            <span>{t.cart.calculatedAtCheckout}</span>
                         </div>
 
                         <div className={styles.summaryTotal}>
-                            <span>Total</span>
+                            <span>{t.cart.total}</span>
                             <span>{cartItems[0]?.currency || 'BDT'} {totalPrice.toLocaleString()}</span>
                         </div>
 
                         <Link href="/checkout" className={styles.checkoutBtn} style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
-                            Proceed to Checkout
+                            {t.cart.proceedToCheckout}
                         </Link>
 
                         <div className={styles.secureText}>
-                            🔒 Secure Checkout
+                            🔒 {t.common.secureCheckout}
                         </div>
                     </div>
                 </div>
