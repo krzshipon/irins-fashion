@@ -16,6 +16,7 @@ export default function ProductGallery({ images, title, selectedColor, colorImag
     // Update selected image when color changes
     useEffect(() => {
         if (selectedColor && colorImages && colorImages[selectedColor]) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedImage(colorImages[selectedColor]);
         }
     }, [selectedColor, colorImages]);

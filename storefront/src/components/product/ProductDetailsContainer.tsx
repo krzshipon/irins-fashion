@@ -14,8 +14,8 @@ interface ProductDetailsContainerProps {
 
 export default function ProductDetailsContainer({ product, initialGalleryImages }: ProductDetailsContainerProps) {
     const searchParams = useSearchParams();
-    const colorParam = searchParams.get('color');
-    const sizeParam = searchParams.get('size');
+    const colorParam = searchParams?.get('color');
+    const sizeParam = searchParams?.get('size');
 
     // Lifted state from ProductInfo
     const [selectedColor, setSelectedColor] = useState<string | null>(() => {
@@ -28,6 +28,7 @@ export default function ProductDetailsContainer({ product, initialGalleryImages 
     // Update state if URL changes (e.g. navigation between variants)
     useEffect(() => {
         if (colorParam && product.colors?.includes(colorParam)) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedColor(colorParam);
         }
     }, [colorParam, product.colors]);

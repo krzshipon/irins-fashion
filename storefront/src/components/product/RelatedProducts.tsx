@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Product } from '@/services/api/types';
 import { getProductsByCategory } from '@/services/api/products';
-import styles from './ProductDetails.module.css'; // We might want separate styles later
 import ProductCard from '@/components/common/ProductCard';
 
 interface RelatedProductsProps {

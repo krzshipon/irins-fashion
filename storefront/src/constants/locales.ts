@@ -40,6 +40,33 @@ export interface Dictionary {
             email: string;
         };
     };
+    checkout: {
+        title: string;
+        shipping: string;
+        orderSummary: string;
+        placeOrder: string;
+        form: {
+            firstName: string;
+            lastName: string;
+            email: string;
+            phone: string;
+            address: string;
+            city: string;
+            postalCode: string;
+        };
+        success: {
+            title: string;
+            message: string;
+            orderId: string;
+            backToHome: string;
+            continueShopping: string;
+        };
+        emptyCart: string;
+        subtotal: string;
+        total: string;
+        shippingFee: string;
+        free: string;
+    };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -83,6 +110,33 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 email: "info@irinsfashion.com",
             },
         },
+        checkout: {
+            title: "Checkout",
+            shipping: "Shipping Information",
+            orderSummary: "Order Summary",
+            placeOrder: "Place Order",
+            form: {
+                firstName: "First Name",
+                lastName: "Last Name",
+                email: "Email Address",
+                phone: "Phone Number",
+                address: "Street Address",
+                city: "City",
+                postalCode: "Postal Code"
+            },
+            success: {
+                title: "Order Placed Successfully!",
+                message: "Thank you for your purchase. We will contact you shortly to confirm your order.",
+                orderId: "Order ID",
+                backToHome: "Back to Home",
+                continueShopping: "Continue Shopping"
+            },
+            emptyCart: "Your cart is empty.",
+            subtotal: "Subtotal",
+            total: "Total",
+            shippingFee: "Shipping",
+            free: "Free"
+        },
     },
     bn: {
         nav: {
@@ -123,6 +177,33 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 phone: "+8801648593538",
                 email: "info@irinsfashion.com",
             },
+        },
+        checkout: {
+            title: "চেকআউট",
+            shipping: "শিপিং তথ্য",
+            orderSummary: "অর্ডার সারাংশ",
+            placeOrder: "অর্ডার করুন",
+            form: {
+                firstName: "নামের প্রথম অংশ",
+                lastName: "নামের শেষ অংশ",
+                email: "ইমেইল",
+                phone: "ফোন নম্বর",
+                address: "ঠিকানা",
+                city: "শহর",
+                postalCode: "পোস্টাল কোড"
+            },
+            success: {
+                title: "অর্ডার সফলভাবে সম্পন্ন হয়েছে!",
+                message: "কেনার জন্য ধন্যবাদ। আমরা শীঘ্রই আপনার অর্ডার নিশ্চিত করতে আপনার সাথে যোগাযোগ করব।",
+                orderId: "অর্ডার আইডি",
+                backToHome: "হোমে ফিরে যান",
+                continueShopping: "কেনাকাটা চালিয়ে যান"
+            },
+            emptyCart: "আপনার কার্ট খালি।",
+            subtotal: "সাবটোটাল",
+            total: "মোট",
+            shippingFee: "শিপিং",
+            free: "ফ্রি"
         },
     },
 };

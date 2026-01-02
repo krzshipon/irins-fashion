@@ -1,0 +1,119 @@
+
+> irins-fashion@0.1.0 lint
+> eslint
+
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/app/cart/page.tsx
+  25:44  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  33:47  warning  'index' is defined but never used                                @typescript-eslint/no-unused-vars
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/app/checkout/success/page.tsx
+  3:17  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/app/collection/[slug]/page.tsx
+  40:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/app/contact/page.tsx
+  38:47  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  38:77  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/app/page.tsx
+  5:8  warning  'Image' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/app/product/[sku]/page.tsx
+  4:8  warning  'styles' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/category/CategoryFilters.tsx
+  17:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/category/CategoryFilters.tsx:17:9
+  15 |     useEffect(() => {
+  16 |         // Sync local state when URL params change (e.g. navigation)
+> 17 |         setMinPrice(searchParams.get('minPrice') || '');
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |         setMaxPrice(searchParams.get('maxPrice') || '');
+  19 |         setIsNew(searchParams.get('isNew') === 'true');
+  20 |     }, [searchParams]);  react-hooks/set-state-in-effect
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/layout/Footer.tsx
+   8:13  warning  't' is assigned a value but never used                           @typescript-eslint/no-unused-vars
+  14:29  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  42:55  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/layout/Header.tsx
+  21:25  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/product/ProductDetailsContainer.tsx
+  31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/product/ProductDetailsContainer.tsx:31:13
+  29 |     useEffect(() => {
+  30 |         if (colorParam && product.colors?.includes(colorParam)) {
+> 31 |             setSelectedColor(colorParam);
+     |             ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |         }
+  33 |     }, [colorParam, product.colors]);
+  34 |  react-hooks/set-state-in-effect
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/product/ProductGallery.tsx
+  19:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/product/ProductGallery.tsx:19:13
+  17 |     useEffect(() => {
+  18 |         if (selectedColor && colorImages && colorImages[selectedColor]) {
+> 19 |             setSelectedImage(colorImages[selectedColor]);
+     |             ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  20 |         }
+  21 |     }, [selectedColor, colorImages]);
+  22 |  react-hooks/set-state-in-effect
+  35:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @next/next/no-img-element
+  45:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @next/next/no-img-element
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/product/ProductInfo.tsx
+  25:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/components/product/RelatedProducts.tsx
+  6:8  warning  'styles' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/context/CartContext.tsx
+  30:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/context/CartContext.tsx:30:9
+  28 |     // Initialize from local storage on mount
+  29 |     useEffect(() => {
+> 30 |         setIsMounted(true);
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  31 |         const storedCart = localStorage.getItem('cart');
+  32 |         if (storedCart) {
+  33 |             try {  react-hooks/set-state-in-effect
+
+/Users/shipon/Projects/Personal/irins-fashion/storefront/src/services/api/checkout.ts
+  3:35  warning  '_order' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 21 problems (11 errors, 10 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

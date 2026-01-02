@@ -2,16 +2,16 @@
 
 import Link from 'next/link';
 import styles from './Footer.module.css';
-import { useLocalization } from '@/context/LocalizationContext';
+// import { useLocalization } from '@/context/LocalizationContext';
 
 export default function Footer() {
-    const { t } = useLocalization();
+    // const { t } = useLocalization();
 
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.grid}`}>
                 <div className={styles.column}>
-                    <h3>IRIN'S FASHION</h3>
+                    <h3>IRIN&apos;S FASHION</h3>
                     <p>Modest fashion for the modern woman.</p>
                 </div>
                 <div className={styles.column}>
@@ -39,7 +39,7 @@ export default function Footer() {
                 </div>
             </div>
             <div className={styles.copyright}>
-                &copy; {new Date().getFullYear()} Irin's Fashion. All rights reserved.
+                &copy; {new Date().getFullYear()} Irin&apos;s Fashion. All rights reserved.
             </div>
         </footer>
     );

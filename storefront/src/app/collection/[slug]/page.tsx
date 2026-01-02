@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import ProductCard from '@/components/common/ProductCard';
-import { getProductsBySlug } from '@/services/api/products';
+import { getProductsBySlug, SortOption } from '@/services/api/products';
 import styles from './page.module.css';
 
 import CategoryFilters from '@/components/category/CategoryFilters';
@@ -37,7 +37,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     const minPrice = resolvedSearchParams.minPrice ? Number(resolvedSearchParams.minPrice) : undefined;
     const maxPrice = resolvedSearchParams.maxPrice ? Number(resolvedSearchParams.maxPrice) : undefined;
     const isNew = resolvedSearchParams.isNew === 'true';
-    const sort = resolvedSearchParams.sort as any;
+    const sort = resolvedSearchParams.sort as SortOption;
 
     const { categoryName, products } = await getProductsBySlug(slug, { minPrice, maxPrice, isNew }, sort);
 

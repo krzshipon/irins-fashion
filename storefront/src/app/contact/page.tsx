@@ -35,7 +35,7 @@ export default function ContactPage() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Contact Us</h1>
-                <p className={styles.intro}>We'd love to hear from you. Here's how you can reach us.</p>
+                <p className={styles.intro}>We&apos;d love to hear from you. Here&apos;s how you can reach us.</p>
             </div>
 
             <div className={styles.grid}>

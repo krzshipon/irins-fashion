@@ -1,7 +1,6 @@
 import { getProductBySku } from '@/services/api/products';
 import ProductDetailsContainer from '@/components/product/ProductDetailsContainer';
 import RelatedProducts from '@/components/product/RelatedProducts';
-import styles from '@/components/product/ProductDetails.module.css';
 import { notFound } from 'next/navigation';
 
 interface ProductPageProps {

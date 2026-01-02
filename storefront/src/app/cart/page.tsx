@@ -22,7 +22,7 @@ export default function CartPage() {
             {cartItems.length === 0 ? (
                 <div className={styles.emptyCart}>
                     <h2 className={styles.emptyTitle}>Your cart is currently empty.</h2>
-                    <p>Looks like you haven't made your choice yet.</p>
+                    <p>Looks like you haven&apos;t made your choice yet.</p>
                     <Link href="/" className={styles.continueShoppingBtn}>
                         Continue Shopping
                     </Link>
@@ -30,7 +30,7 @@ export default function CartPage() {
             ) : (
                 <div className={styles.content}>
                     <div className={styles.cartList}>
-                        {cartItems.map((item, index) => (
+                        {cartItems.map((item) => (
                             <div key={item.cartItemId} className={styles.cartItem}>
                                 <div className={styles.itemImageContainer}>
                                     {/* Using a placeholder if image is missing, or the item image */}
@@ -127,9 +127,9 @@ export default function CartPage() {
                             <span>{cartItems[0]?.currency || 'BDT'} {totalPrice.toLocaleString()}</span>
                         </div>
 
-                        <button className={styles.checkoutBtn}>
+                        <Link href="/checkout" className={styles.checkoutBtn} style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
                             Proceed to Checkout
-                        </button>
+                        </Link>
 
                         <div className={styles.secureText}>
                             🔒 Secure Checkout

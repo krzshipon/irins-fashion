@@ -8,19 +8,20 @@ export default function CategoryFilters() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
-    const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
-    const [isNew, setIsNew] = useState(searchParams.get('isNew') === 'true');
+    const [minPrice, setMinPrice] = useState(searchParams?.get('minPrice') || '');
+    const [maxPrice, setMaxPrice] = useState(searchParams?.get('maxPrice') || '');
+    const [isNew, setIsNew] = useState(searchParams?.get('isNew') === 'true');
 
     useEffect(() => {
         // Sync local state when URL params change (e.g. navigation)
-        setMinPrice(searchParams.get('minPrice') || '');
-        setMaxPrice(searchParams.get('maxPrice') || '');
-        setIsNew(searchParams.get('isNew') === 'true');
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMinPrice(searchParams?.get('minPrice') || '');
+        setMaxPrice(searchParams?.get('maxPrice') || '');
+        setIsNew(searchParams?.get('isNew') === 'true');
     }, [searchParams]);
 
     const updateFilters = (key: string, value: string | boolean) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParams?.toString() || '');
         if (value) {
             params.set(key, String(value));
         } else {
@@ -30,7 +31,7 @@ export default function CategoryFilters() {
     };
 
     const handlePriceBlur = () => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParams?.toString() || '');
         if (minPrice) params.set('minPrice', minPrice);
         else params.delete('minPrice');
 

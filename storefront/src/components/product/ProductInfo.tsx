@@ -22,7 +22,6 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
     const { addToCart, cartItems, updateQuantity } = useCart();
 
     // Update size if URL param changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const [prevInitialSize, setPrevInitialSize] = useState(initialSize);
     if (initialSize !== prevInitialSize) {
         setPrevInitialSize(initialSize);

@@ -6,11 +6,11 @@ import styles from './SortSelect.module.css';
 export default function SortSelect() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const currentSort = searchParams.get('sort') || 'newest';
+    const currentSort = searchParams?.get('sort') || 'newest';
 
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newSort = e.target.value;
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParams?.toString() || '');
         params.set('sort', newSort);
         router.push(`?${params.toString()}`);
     };

@@ -33,6 +33,7 @@ export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
     // Helper to access nested keys like "nav.home"
     const t = (path: string): string => {
         const keys = path.split('.');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let current: any = dictionary;
         for (const key of keys) {
             if (current[key] === undefined) return path;

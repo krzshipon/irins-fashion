@@ -15,6 +15,7 @@ interface CartContextType {
     addToCart: (product: Product, options?: { selectedColor?: string; selectedSize?: string }) => void;
     updateQuantity: (cartItemId: string, quantity: number) => void;
     removeFromCart: (cartItemId: string) => void;
+    clearCart: () => void;
     cartCount: number;
 }
 
@@ -26,6 +27,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Initialize from local storage on mount
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
@@ -91,8 +93,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
+    const clearCart = () => {
+        setCartItems([]);
+    };
+
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeFromCart, cartCount }}>
+        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeFromCart, clearCart, cartCount }}>
             {children}
         </CartContext.Provider>
     );
