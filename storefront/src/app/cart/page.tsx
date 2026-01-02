@@ -54,7 +54,7 @@ export default function CartPage() {
 
                                 <div className={styles.itemDetails}>
                                     <div className={styles.itemHeader}>
-                                        <Link href={`/product/${item.id}`} className={styles.itemName}>
+                                        <Link href={`/product/${item.sku}`} className={styles.itemName}>
                                             {item.name}
                                         </Link>
                                         <div className={styles.itemMeta}>
