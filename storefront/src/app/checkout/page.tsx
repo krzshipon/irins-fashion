@@ -15,8 +15,7 @@ const CheckoutPage = () => {
     const { dictionary: t } = useLocalization();
 
     const [shippingDetails, setShippingDetails] = useState<ShippingDetails>({
-        firstName: '',
-        lastName: '',
+        fullName: '',
         email: '',
         phone: '',
         address: '',
@@ -53,7 +52,7 @@ const CheckoutPage = () => {
 
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof ShippingDetails, string>> = {};
-        const requiredFields: (keyof ShippingDetails)[] = ['firstName', 'lastName', 'phone', 'address', 'city', 'postalCode'];
+        const requiredFields: (keyof ShippingDetails)[] = ['fullName', 'phone', 'address', 'city', 'postalCode'];
 
         requiredFields.forEach(field => {
             if (!shippingDetails[field] || shippingDetails[field].trim() === '') {

@@ -3,8 +3,7 @@ import { CartItem } from '@/context/CartContext';
 export type DeliveryZone = 'inside_dhaka' | 'outside_dhaka';
 
 export interface ShippingDetails {
-    firstName: string;
-    lastName: string;
+    fullName: string;
     email: string;
     phone: string;
     address: string;

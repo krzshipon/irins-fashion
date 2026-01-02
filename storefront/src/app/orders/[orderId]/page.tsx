@@ -15,7 +15,7 @@ const getMockOrder = (orderId: string) => ({
         {
             id: '1',
             name: 'Elegant Abaya Collection',
-            image: '/images/products/abaya-1.jpg',
+            image: '/images/product-abaya.png',
             price: 4500,
             quantity: 2,
             size: 'M',
@@ -24,7 +24,7 @@ const getMockOrder = (orderId: string) => ({
         {
             id: '2',
             name: 'Premium Hijab Set',
-            image: '/images/products/hijab-1.jpg',
+            image: '/images/products/hijab-navy.png',
             price: 1850,
             quantity: 1,
             size: 'One Size',
@@ -35,8 +35,7 @@ const getMockOrder = (orderId: string) => ({
     shippingCost: 80,
     total: 10930,
     shippingDetails: {
-        firstName: 'Fatima',
-        lastName: 'Ahmed',
+        fullName: 'Fatima Ahmed',
         phone: '01712345678',
         email: 'fatima@example.com',
         address: '123 Gulshan Avenue',
@@ -268,7 +267,7 @@ const OrderDetailsPage = () => {
                             </div>
                             <div style={{ padding: '24px' }}>
                                 <p style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '8px' }}>
-                                    {order.shippingDetails.firstName} {order.shippingDetails.lastName}
+                                    {order.shippingDetails.fullName}
                                 </p>
                                 <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.6' }}>
                                     {order.shippingDetails.address}<br />

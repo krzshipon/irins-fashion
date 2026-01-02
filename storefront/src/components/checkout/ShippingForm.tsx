@@ -152,10 +152,7 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
             {/* Shipping Section */}
             <div style={{ marginBottom: '40px' }}>
                 <h2 style={sectionTitleStyle}>Shipping Address</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <InputField name="firstName" label="First Name" />
-                    <InputField name="lastName" label="Last Name" />
-                </div>
+                <InputField name="fullName" label="Full Name" />
                 <InputField name="address" label="Street Address" />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <InputField name="city" label="City" />
