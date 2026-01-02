@@ -16,49 +16,138 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
         onChange({ ...value, [name as keyof ShippingDetails]: newValue });
     };
 
-    // Premium input style: minimal border, no rounding (or slight), focus accent
-    const inputClasses = "w-full py-3 px-0 border-b border-gray-200 text-gray-900 placeholder-transparent focus:outline-none focus:border-black transition-colors bg-transparent peer";
-    const labelClasses = "absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-gray-500 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-black";
-    const errorClasses = "text-red-500 text-xs mt-1";
+    // Input styling with VISIBLE borders
+    const inputStyle: React.CSSProperties = {
+        width: '100%',
+        padding: '14px 16px',
+        fontSize: '15px',
+        border: '2px solid #d1d5db',
+        borderRadius: '8px',
+        backgroundColor: '#fff',
+        color: '#111',
+        outline: 'none',
+        transition: 'border-color 0.2s, box-shadow 0.2s',
+    };
 
-    const renderInput = (name: keyof ShippingDetails, label: string, type: string = "text", layoutClass: string = "") => (
-        <div className={`relative z-0 w-full mb-6 group ${layoutClass}`}>
+    const inputErrorStyle: React.CSSProperties = {
+        ...inputStyle,
+        borderColor: '#ef4444',
+    };
+
+    const labelStyle: React.CSSProperties = {
+        display: 'block',
+        fontSize: '13px',
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: '6px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+    };
+
+    const InputField = ({ name, label, type = "text" }: { name: keyof ShippingDetails; label: string; type?: string }) => (
+        <div style={{ marginBottom: '20px' }}>
+            <label htmlFor={name} style={labelStyle}>{label}</label>
             <input
                 type={type}
                 name={name}
                 id={name}
                 value={value[name] || ''}
                 onChange={handleChange}
-                className={`${inputClasses} ${errors[name] ? 'border-red-500' : ''}`}
-                placeholder=" "
+                style={errors[name] ? inputErrorStyle : inputStyle}
+                onFocus={(e) => {
+                    e.target.style.borderColor = '#111';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
+                }}
+                onBlur={(e) => {
+                    e.target.style.borderColor = errors[name] ? '#ef4444' : '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                }}
             />
-            <label htmlFor={name} className={labelClasses}>
-                {label}
-            </label>
-            {errors[name] && <p className={errorClasses}>{errors[name]}</p>}
+            {errors[name] && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors[name]}</p>}
         </div>
     );
 
+    const sectionTitleStyle: React.CSSProperties = {
+        fontSize: '18px',
+        fontWeight: '700',
+        color: '#111',
+        marginBottom: '20px',
+        paddingBottom: '12px',
+        borderBottom: '2px solid #e5e5e5',
+    };
+
     return (
-        <div className="bg-white p-8 md:p-0"> {/* Removed card styling for cleaner look, padding handles spacing */}
-            <h2 className="text-3xl font-serif text-gray-900 mb-8">{t.checkout.shipping}</h2>
+        <div>
+            {/* Contact Section */}
+            <div style={{ marginBottom: '40px' }}>
+                <h2 style={sectionTitleStyle}>Contact Information</h2>
+                <InputField name="email" label="Email Address" type="email" />
+            </div>
 
-            <div className="space-y-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                    {renderInput("firstName", t.checkout.form.firstName)}
-                    {renderInput("lastName", t.checkout.form.lastName)}
+            {/* Shipping Section */}
+            <div style={{ marginBottom: '40px' }}>
+                <h2 style={sectionTitleStyle}>Shipping Address</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <InputField name="firstName" label="First Name" />
+                    <InputField name="lastName" label="Last Name" />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                    {renderInput("email", t.checkout.form.email, "email")}
-                    {renderInput("phone", t.checkout.form.phone, "tel")}
+                <InputField name="address" label="Street Address" />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <InputField name="city" label="City" />
+                    <InputField name="postalCode" label="Postal Code" />
                 </div>
+                <InputField name="phone" label="Phone Number" type="tel" />
+            </div>
 
-                {renderInput("address", t.checkout.form.address)}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                    {renderInput("city", t.checkout.form.city)}
-                    {renderInput("postalCode", t.checkout.form.postalCode)}
+            {/* Payment Section */}
+            <div>
+                <h2 style={sectionTitleStyle}>Payment Method</h2>
+                <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
+                    All transactions are secure and encrypted.
+                </p>
+                <div style={{
+                    border: '2px solid #111',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '16px 20px',
+                        backgroundColor: '#f9fafb',
+                        borderBottom: '1px solid #e5e5e5',
+                    }}>
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            border: '2px solid #111',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <div style={{
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                backgroundColor: '#111',
+                            }}></div>
+                        </div>
+                        <span style={{ fontWeight: '600', color: '#111' }}>Cash on Delivery (COD)</span>
+                    </div>
+                    <div style={{
+                        padding: '32px',
+                        backgroundColor: '#fff',
+                        textAlign: 'center',
+                    }}>
+                        <svg style={{ width: '48px', height: '48px', margin: '0 auto 16px', color: '#9ca3af' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                        </svg>
+                        <p style={{ color: '#6b7280', fontSize: '14px', maxWidth: '280px', margin: '0 auto' }}>
+                            Pay securely with cash when your order is delivered to your doorstep.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -11,65 +11,160 @@ interface OrderSummaryProps {
     isSubmitting: boolean;
 }
 
-
 export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, total, onPlaceOrder, isSubmitting }) => {
     const { dictionary: t } = useLocalization();
 
     return (
-        <div className="bg-gray-50 p-8 rounded-sm"> {/* Cleaner background, no border/shadow */}
-            <h2 className="text-2xl font-serif text-gray-900 mb-8">{t.checkout.orderSummary}</h2>
+        <div>
+            {/* Header */}
+            <h2 style={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: '#111',
+                marginBottom: '24px',
+                paddingBottom: '16px',
+                borderBottom: '2px solid #e5e5e5',
+            }}>
+                Order Summary
+            </h2>
 
-            <div className="space-y-6 mb-8">
+            {/* Product Items */}
+            <div style={{ marginBottom: '24px' }}>
                 {items.map((item) => (
-                    <div key={item.cartItemId} className="flex gap-4">
-                        <div className="relative w-20 h-24 flex-shrink-0 bg-gray-100 overflow-hidden rounded-sm">
+                    <div key={item.cartItemId} style={{
+                        display: 'flex',
+                        gap: '16px',
+                        marginBottom: '20px',
+                        paddingBottom: '20px',
+                        borderBottom: '1px solid #e5e5e5',
+                    }}>
+                        <div style={{
+                            position: 'relative',
+                            width: '80px',
+                            height: '100px',
+                            flexShrink: 0,
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            border: '2px solid #e5e5e5',
+                            backgroundColor: '#f5f5f5',
+                        }}>
                             <Image
                                 src={item.image}
                                 alt={item.name}
                                 fill
-                                className="object-cover"
+                                style={{ objectFit: 'cover' }}
                             />
-                            <div className="absolute top-0 right-0 bg-black/50 text-white text-[10px] px-1.5 py-0.5 backdrop-blur-sm">
-                                x{item.quantity}
+                            <div style={{
+                                position: 'absolute',
+                                top: '-4px',
+                                right: '-4px',
+                                width: '24px',
+                                height: '24px',
+                                backgroundColor: '#111',
+                                color: '#fff',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                border: '2px solid #fff',
+                            }}>
+                                {item.quantity}
                             </div>
                         </div>
-                        <div className="flex-1 flex flex-col justify-between py-1">
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                             <div>
-                                <h3 className="font-medium text-gray-900 leading-tight">{item.name}</h3>
-                                <div className="text-sm text-gray-500 mt-1 space-x-2">
-                                    {item.selectedColor && <span>{item.selectedColor}</span>}
-                                    {item.selectedSize && <span>{item.selectedSize}</span>}
-                                </div>
+                                <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>
+                                    {item.name}
+                                </h3>
+                                <p style={{ fontSize: '13px', color: '#6b7280' }}>
+                                    {item.selectedSize} / {item.selectedColor}
+                                </p>
                             </div>
-                            <p className="text-sm font-medium text-gray-900">৳ {item.price.toLocaleString()}</p>
+                            <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
+                                ৳ {item.price.toLocaleString()}
+                            </p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="border-t border-gray-200 py-6 space-y-3">
-                <div className="flex justify-between text-gray-600">
-                    <span>{t.checkout.subtotal}</span>
-                    <span>৳ {subtotal.toLocaleString()}</span>
+            {/* Pricing */}
+            <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.checkout.subtotal}</span>
+                    <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳ {subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                    <span>{t.checkout.shippingFee}</span>
-                    <span className="text-green-700 text-sm font-medium tracking-wide uppercase">{t.checkout.free}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.checkout.shippingFee}</span>
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FREE</span>
                 </div>
             </div>
 
-            <div className="flex justify-between items-baseline border-t border-gray-900 pt-6 mb-8">
-                <span className="text-lg font-serif italic text-gray-900">{t.checkout.total}</span>
-                <span className="text-3xl font-serif text-gray-900">৳ {total.toLocaleString()}</span>
+            {/* Total */}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingTop: '20px',
+                borderTop: '3px solid #111',
+                marginBottom: '24px',
+            }}>
+                <span style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>{t.checkout.total}</span>
+                <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '24px', fontWeight: '800', color: '#111' }}>৳ {total.toLocaleString()}</span>
+                    <span style={{ display: 'block', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase' }}>BDT</span>
+                </div>
             </div>
 
+            {/* Place Order Button */}
             <button
                 onClick={onPlaceOrder}
                 disabled={isSubmitting}
-                className="w-full bg-black text-white py-4 text-sm uppercase tracking-widest font-medium hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-300"
+                style={{
+                    width: '100%',
+                    padding: '18px',
+                    backgroundColor: isSubmitting ? '#9ca3af' : '#111',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '15px',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s, transform 0.1s',
+                }}
+                onMouseEnter={(e) => {
+                    if (!isSubmitting) {
+                        e.currentTarget.style.backgroundColor = '#333';
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if (!isSubmitting) {
+                        e.currentTarget.style.backgroundColor = '#111';
+                    }
+                }}
             >
                 {isSubmitting ? 'Processing...' : t.checkout.placeOrder}
             </button>
+
+            {/* Trust Links */}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '16px',
+                marginTop: '20px',
+                fontSize: '12px',
+                color: '#9ca3af',
+            }}>
+                <span>Returns</span>
+                <span>•</span>
+                <span>Privacy</span>
+                <span>•</span>
+                <span>Terms</span>
+            </div>
         </div>
     );
 };
