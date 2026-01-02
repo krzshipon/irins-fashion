@@ -21,3 +21,16 @@ export interface Banner {
   image: string;
   link: string;
 }
+
+export interface ContactInfo {
+  phone: string;
+  email: string;
+  address: string;
+}
+
+export interface AboutPageContent {
+  title: string;
+  story: string;
+  mission: string;
+  imageUrl?: string;
+}

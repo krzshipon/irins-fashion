@@ -23,6 +23,13 @@ export default function Footer() {
                     </ul>
                 </div>
                 <div className={styles.column}>
+                    <h3>Company</h3>
+                    <ul>
+                        <li><Link href="/about">About Us</Link></li>
+                        <li><Link href="/contact">Contact Us</Link></li>
+                    </ul>
+                </div>
+                <div className={styles.column}>
                     <h3>Support</h3>
                     <ul>
                         <li><Link href="/faq">FAQ</Link></li>
