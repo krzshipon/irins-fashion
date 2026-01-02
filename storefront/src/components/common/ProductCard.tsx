@@ -32,10 +32,17 @@ export default function ProductCard({ product }: ProductCardProps) {
                     className={styles.addToCartBtn}
                     title={t('products.addToCart')}
                     aria-label={t('products.addToCart')}
+                    style={{
+                        backgroundColor: cartItems.some(item => item.id === product.id) ? '#046A38' : undefined,
+                        color: cartItems.some(item => item.id === product.id) ? '#ffffff' : undefined
+                    }}
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        addToCart(product);
+                        addToCart(product, {
+                            selectedColor: product.colors?.[0],
+                            selectedSize: product.sizes?.[0]
+                        });
                     }}
                 >
                     <ShoppingBag size={20} />

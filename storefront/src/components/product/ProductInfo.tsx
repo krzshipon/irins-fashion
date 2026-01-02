@@ -13,7 +13,7 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product, selectedColor, onColorSelect }: ProductInfoProps) {
     const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes ? product.sizes[0] : null);
-    const { addToCart, cartItems } = useCart();
+    const { addToCart, cartItems, updateQuantity } = useCart();
 
     const handleAddToCart = () => {
         if (!selectedColor && product.colors && product.colors.length > 0) {
@@ -25,8 +25,6 @@ export default function ProductInfo({ product, selectedColor, onColorSelect }: P
             selectedColor: selectedColor || undefined,
             selectedSize: selectedSize || undefined
         });
-
-        alert('Product added to cart!');
     };
 
     // Helper for color values (this would ideally come from a theme or backend)
@@ -101,22 +99,38 @@ export default function ProductInfo({ product, selectedColor, onColorSelect }: P
             )}
 
             <div className={styles.actions}>
-                {cartItems.some(item => item.id === product.id) ? (
-                    <button
-                        className={styles.addToCartBtn}
-                        style={{ backgroundColor: '#333', cursor: 'default' }}
-                        disabled
-                    >
-                        Added to Cart
-                    </button>
-                ) : (
-                    <button
-                        className={styles.addToCartBtn}
-                        onClick={handleAddToCart}
-                    >
-                        Add to Cart
-                    </button>
-                )}
+                {(() => {
+                    const existingCartItem = cartItems.find(item =>
+                        item.id === product.id &&
+                        item.selectedColor === (selectedColor || undefined) &&
+                        item.selectedSize === (selectedSize || undefined)
+                    );
+
+                    if (existingCartItem) {
+                        return (
+                            <div className={styles.quantityControl}>
+                                <button
+                                    className={styles.qtyBtn}
+                                    onClick={() => updateQuantity(existingCartItem.cartItemId, existingCartItem.quantity - 1)}
+                                >-</button>
+                                <span className={styles.qtyValue}>{existingCartItem.quantity}</span>
+                                <button
+                                    className={styles.qtyBtn}
+                                    onClick={() => updateQuantity(existingCartItem.cartItemId, existingCartItem.quantity + 1)}
+                                >+</button>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <button
+                            className={styles.addToCartBtn}
+                            onClick={handleAddToCart}
+                        >
+                            Add to Cart
+                        </button>
+                    );
+                })()}
             </div>
         </div>
     );
