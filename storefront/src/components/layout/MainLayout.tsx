@@ -10,7 +10,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     return (
         <>
             <Header />
-            <main style={{ minHeight: '80vh' }}>
+            <main>
                 {children}
             </main>
             <Footer />
