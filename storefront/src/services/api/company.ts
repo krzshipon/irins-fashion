@@ -1,28 +1,29 @@
 import { AboutPageContent, ContactInfo } from './types';
-import { dictionaries } from '@/constants/locales';
+import { dictionaries, Locale } from '@/constants/locales';
 
-// Use English dictionary as the source of truth for the API simulation
-const fallbackData = dictionaries['en'].company;
-
-export const getContactInfo = async (): Promise<ContactInfo> => {
+export const getContactInfo = async (locale: Locale = 'en'): Promise<ContactInfo> => {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // In a real scenario, this would try to fetch from API, and catch error to return fallback
+    // Get data based on locale, fallback to English if somehow invalid
+    const data = dictionaries[locale]?.company || dictionaries['en'].company;
+
     return {
-        phone: fallbackData.contact.phone,
-        email: fallbackData.contact.email,
-        address: fallbackData.contact.address,
+        phone: data.contact.phone,
+        email: data.contact.email,
+        address: data.contact.address,
     };
 };
 
-export const getAboutPageContent = async (): Promise<AboutPageContent> => {
+export const getAboutPageContent = async (locale: Locale = 'en'): Promise<AboutPageContent> => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
+    const data = dictionaries[locale]?.company || dictionaries['en'].company;
+
     return {
-        title: fallbackData.about.title,
-        story: fallbackData.about.story,
-        mission: fallbackData.about.mission,
+        title: data.about.title,
+        story: data.about.story,
+        mission: data.about.mission,
         imageUrl: '/images/hero-banner.png'
     };
 };

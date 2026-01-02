@@ -1,14 +1,36 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { getAboutPageContent } from '@/services/api/company';
+import { AboutPageContent } from '@/services/api/types';
+import { useLocalization } from '@/context/LocalizationContext'; // Ensure this path is correct
 import Image from 'next/image';
 import styles from './about.module.css';
 
-export const metadata = {
-    title: 'About Us | Irin\'s Fashion',
-    description: 'Learn more about the story and mission behind Irin\'s Fashion.',
-};
+export default function AboutPage() {
+    const { locale } = useLocalization();
+    const [content, setContent] = useState<AboutPageContent | null>(null);
+    const [loading, setLoading] = useState(true);
 
-export default async function AboutPage() {
-    const content = await getAboutPageContent();
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const data = await getAboutPageContent(locale);
+                setContent(data);
+            } catch (error) {
+                console.error("Failed to fetch about content", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [locale]);
+
+    if (loading || !content) {
+        return <div className={styles.container} style={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
+    }
 
     return (
         <div className={styles.container}>

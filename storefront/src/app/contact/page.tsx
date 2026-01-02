@@ -1,13 +1,35 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { getContactInfo } from '@/services/api/company';
+import { ContactInfo } from '@/services/api/types';
+import { useLocalization } from '@/context/LocalizationContext';
 import styles from './contact.module.css';
 
-export const metadata = {
-    title: 'Contact Us | Irin\'s Fashion',
-    description: 'Get in touch with us for any inquiries or support.',
-};
+export default function ContactPage() {
+    const { locale } = useLocalization();
+    const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+    const [loading, setLoading] = useState(true);
 
-export default async function ContactPage() {
-    const contactInfo = await getContactInfo();
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const data = await getContactInfo(locale);
+                setContactInfo(data);
+            } catch (error) {
+                console.error("Failed to fetch contact info", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [locale]);
+
+    if (loading || !contactInfo) {
+        return <div className={styles.container} style={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
+    }
 
     return (
         <div className={styles.container}>

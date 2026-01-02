@@ -13,7 +13,20 @@ interface LocalizationContextType {
 const LocalizationContext = createContext<LocalizationContextType | undefined>(undefined);
 
 export const LocalizationProvider = ({ children }: { children: ReactNode }) => {
-    const [locale, setLocale] = useState<Locale>('en');
+    const [locale, setLocaleState] = useState<Locale>('en');
+
+    // Initialize from localStorage on mount
+    React.useEffect(() => {
+        const storedLocale = localStorage.getItem('locale') as Locale;
+        if (storedLocale && (storedLocale === 'en' || storedLocale === 'bn')) {
+            setLocaleState(storedLocale);
+        }
+    }, []);
+
+    const setLocale = (newLocale: Locale) => {
+        setLocaleState(newLocale);
+        localStorage.setItem('locale', newLocale);
+    };
 
     const dictionary = dictionaries[locale];
 
