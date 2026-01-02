@@ -54,7 +54,16 @@ export default function CartPage() {
 
                                 <div className={styles.itemDetails}>
                                     <div className={styles.itemHeader}>
-                                        <Link href={`/product/${item.sku}`} className={styles.itemName}>
+                                        <Link
+                                            href={{
+                                                pathname: `/product/${item.sku}`,
+                                                query: {
+                                                    color: item.selectedColor,
+                                                    size: item.selectedSize
+                                                }
+                                            }}
+                                            className={styles.itemName}
+                                        >
                                             {item.name}
                                         </Link>
                                         <div className={styles.itemMeta}>

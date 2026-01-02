@@ -9,11 +9,27 @@ interface ProductInfoProps {
     product: Product;
     selectedColor: string | null;
     onColorSelect: (color: string) => void;
+    initialSize?: string | null;
 }
 
-export default function ProductInfo({ product, selectedColor, onColorSelect }: ProductInfoProps) {
-    const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes ? product.sizes[0] : null);
+export default function ProductInfo({ product, selectedColor, onColorSelect, initialSize }: ProductInfoProps) {
+    const [selectedSize, setSelectedSize] = useState<string | null>(() => {
+        if (initialSize && product.sizes?.includes(initialSize)) {
+            return initialSize;
+        }
+        return product.sizes ? product.sizes[0] : null;
+    });
     const { addToCart, cartItems, updateQuantity } = useCart();
+
+    // Update size if URL param changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const [prevInitialSize, setPrevInitialSize] = useState(initialSize);
+    if (initialSize !== prevInitialSize) {
+        setPrevInitialSize(initialSize);
+        if (initialSize && product.sizes?.includes(initialSize)) {
+            setSelectedSize(initialSize);
+        }
+    }
 
     const handleAddToCart = () => {
         if (!selectedColor && product.colors && product.colors.length > 0) {
