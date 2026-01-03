@@ -17,9 +17,9 @@ export default function Footer() {
                 <div className={styles.column}>
                     <h3>{t.footer.shop}</h3>
                     <ul>
-                        <li><Link href="/new">{t.footer.newArrivals}</Link></li>
-                        <li><Link href="/abayas">{t.footer.abayas}</Link></li>
-                        <li><Link href="/hijabs">{t.footer.hijabs}</Link></li>
+                        <li><Link href="/shop">{t.footer.newArrivals}</Link></li>
+                        <li><Link href="/collection/abayas">{t.footer.abayas}</Link></li>
+                        <li><Link href="/collection/hijabs">{t.footer.hijabs}</Link></li>
                     </ul>
                 </div>
                 <div className={styles.column}>

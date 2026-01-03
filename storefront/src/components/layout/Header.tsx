@@ -23,7 +23,7 @@ export default function Header() {
 
                 <nav className={styles.nav}>
                     <Link href="/" className={styles.navLink}>{t('nav.home')}</Link>
-                    <Link href="/collection/all" className={styles.navLink}>{t('nav.shop')}</Link>
+                    <Link href="/shop" className={styles.navLink}>{t('nav.shop')}</Link>
                     <Link href="/about" className={styles.navLink}>{t('nav.about')}</Link>
                     <Link href="/contact" className={styles.navLink}>{t('nav.contact')}</Link>
                 </nav>
