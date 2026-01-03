@@ -12,7 +12,7 @@ import CategoryProductRow from '@/components/home/CategoryProductRow';
 import ProductCard from '@/components/common/ProductCard';
 
 export default function Home() {
-  const { t } = useLocalization();
+  const { t, locale } = useLocalization();
   const [products, setProducts] = useState<Product[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -53,22 +53,28 @@ export default function Home() {
     <div className={styles.home}>
       {banners.length > 0 && (
         <section className={styles.heroWrapper}>
-          {banners.map((banner, index) => (
-            <div
-              key={banner.id}
-              className={`${styles.heroSlide} ${index === currentSlide ? styles.active : ''}`}
-              style={{ backgroundImage: `url(${banner.image})` }}
-            >
-              <div className={styles.heroOverlay} />
-              <div className={styles.heroContent}>
-                <h1 className={styles.heroTitle}>{banner.title}</h1>
-                <p className={styles.heroSubtitle}>{banner.subtitle}</p>
-                <Link href={banner.link} className={`btn btn-primary`}>
-                  {t('hero.cta')}
-                </Link>
+          {banners.map((banner, index) => {
+            // Use localized text based on current locale
+            const title = locale === 'bn' && banner.titleBn ? banner.titleBn : banner.title;
+            const subtitle = locale === 'bn' && banner.subtitleBn ? banner.subtitleBn : banner.subtitle;
+
+            return (
+              <div
+                key={banner.id}
+                className={`${styles.heroSlide} ${index === currentSlide ? styles.active : ''}`}
+                style={{ backgroundImage: `url(${banner.image})` }}
+              >
+                <div className={styles.heroOverlay} />
+                <div className={styles.heroContent}>
+                  <h1 className={styles.heroTitle}>{title}</h1>
+                  <p className={styles.heroSubtitle}>{subtitle}</p>
+                  <Link href={banner.link} className={`btn btn-primary`}>
+                    {t('hero.cta')}
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           <div className={styles.dots}>
             {banners.map((_, index) => (

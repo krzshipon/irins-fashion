@@ -17,9 +17,12 @@ export interface Product {
 export interface Banner {
   id: string;
   title: string;
+  titleBn?: string;
   subtitle: string;
+  subtitleBn?: string;
   image: string;
   link: string;
+  category?: string; // For associating with product categories
 }
 
 export interface ContactInfo {
