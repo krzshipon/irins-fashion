@@ -82,6 +82,24 @@ const CheckoutPage = () => {
         ? [directOrderItem]
         : cartItems;
 
+    // Handle shipping details change and clear specific field error
+    const handleShippingChange = (newDetails: ShippingDetails) => {
+        // Find which fields changed and clear their errors
+        const changedFields = (Object.keys(newDetails) as (keyof ShippingDetails)[]).filter(
+            key => newDetails[key] !== shippingDetails[key]
+        );
+
+        if (changedFields.length > 0 && Object.keys(errors).length > 0) {
+            const newErrors = { ...errors };
+            changedFields.forEach(field => {
+                delete newErrors[field];
+            });
+            setErrors(newErrors);
+        }
+
+        setShippingDetails(newDetails);
+    };
+
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof ShippingDetails, string>> = {};
         const requiredFields: (keyof ShippingDetails)[] = ['fullName', 'phone', 'address', 'division'];
@@ -188,7 +206,7 @@ const CheckoutPage = () => {
                     <div>
                         <ShippingForm
                             value={shippingDetails}
-                            onChange={setShippingDetails}
+                            onChange={handleShippingChange}
                             errors={errors}
                             shippingRates={shippingRates}
                             divisions={divisions}
