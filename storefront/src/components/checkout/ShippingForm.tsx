@@ -22,12 +22,22 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
         const { name, value: newValue } = e.target;
 
         // If division changes to non-Dhaka, auto-set delivery zone to outside_dhaka
+        // But only if free shipping is NOT currently selected (don't interrupt free shipping)
         if (name === 'division' && newValue !== 'dhaka') {
-            onChange({
-                ...value,
-                division: newValue,
-                deliveryZone: 'outside_dhaka'
-            });
+            // Keep free_shipping if already selected and eligible
+            if (value.deliveryZone === 'free_shipping' && isFreeShipping) {
+                onChange({
+                    ...value,
+                    division: newValue
+                    // Don't change deliveryZone - keep free_shipping
+                });
+            } else {
+                onChange({
+                    ...value,
+                    division: newValue,
+                    deliveryZone: 'outside_dhaka'
+                });
+            }
         } else {
             onChange({ ...value, [name as keyof ShippingDetails]: newValue });
         }
