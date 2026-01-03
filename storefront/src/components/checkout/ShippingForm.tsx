@@ -14,12 +14,29 @@ interface ShippingFormProps {
 export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, errors, shippingRates, divisions }) => {
     const { dictionary: t, locale } = useLocalization();
 
+    // Check if Dhaka division is selected
+    const isDhakaDivision = value.division === 'dhaka';
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value: newValue } = e.target;
-        onChange({ ...value, [name as keyof ShippingDetails]: newValue });
+
+        // If division changes to non-Dhaka, auto-set delivery zone to outside_dhaka
+        if (name === 'division' && newValue !== 'dhaka') {
+            onChange({
+                ...value,
+                division: newValue,
+                deliveryZone: 'outside_dhaka'
+            });
+        } else {
+            onChange({ ...value, [name as keyof ShippingDetails]: newValue });
+        }
     };
 
     const handleDeliveryZoneChange = (zone: DeliveryZone) => {
+        // Only allow inside_dhaka if Dhaka division is selected
+        if (zone === 'inside_dhaka' && !isDhakaDivision) {
+            return; // Don't change if trying to select inside_dhaka for non-Dhaka division
+        }
         onChange({ ...value, deliveryZone: zone });
     };
 
@@ -229,7 +246,7 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
             <div style={{ marginBottom: '40px' }}>
                 <h2 style={sectionTitleStyle}>{t.checkout.deliveryZone}</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {/* Inside Dhaka */}
+                    {/* Inside Dhaka - Only enabled for Dhaka division */}
                     <label
                         style={{
                             display: 'flex',
@@ -238,9 +255,10 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                             padding: '16px 20px',
                             border: `2px solid ${value.deliveryZone === 'inside_dhaka' ? '#111' : '#e5e5e5'}`,
                             borderRadius: '10px',
-                            cursor: 'pointer',
+                            cursor: isDhakaDivision ? 'pointer' : 'not-allowed',
                             backgroundColor: value.deliveryZone === 'inside_dhaka' ? '#f9fafb' : '#fff',
                             transition: 'all 0.2s',
+                            opacity: isDhakaDivision ? 1 : 0.5,
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -258,17 +276,20 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                                 )}
                             </div>
                             <div>
-                                <span style={{ fontWeight: '600', color: '#111' }}>{t.checkout.delivery.insideDhaka}</span>
-                                <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{t.checkout.delivery.insideDhakaDesc}</p>
+                                <span style={{ fontWeight: '600', color: isDhakaDivision ? '#111' : '#9ca3af' }}>{t.checkout.delivery.insideDhaka}</span>
+                                <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                                    {isDhakaDivision ? t.checkout.delivery.insideDhakaDesc : t.checkout.delivery.onlyDhaka || 'Only available for Dhaka division'}
+                                </p>
                             </div>
                         </div>
-                        <span style={{ fontWeight: '700', color: '#111' }}>৳ {shippingRates.insideDhaka}</span>
+                        <span style={{ fontWeight: '700', color: isDhakaDivision ? '#111' : '#9ca3af' }}>৳ {shippingRates.insideDhaka}</span>
                         <input
                             type="radio"
                             name="deliveryZone"
                             value="inside_dhaka"
                             checked={value.deliveryZone === 'inside_dhaka'}
                             onChange={() => handleDeliveryZoneChange('inside_dhaka')}
+                            disabled={!isDhakaDivision}
                             style={{ display: 'none' }}
                         />
                     </label>

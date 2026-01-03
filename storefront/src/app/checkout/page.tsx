@@ -25,7 +25,7 @@ const CheckoutPage = () => {
         phone: '',
         address: '',
         division: '',
-        deliveryZone: 'inside_dhaka',
+        deliveryZone: 'outside_dhaka',
         notes: '',
     });
 

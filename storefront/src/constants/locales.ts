@@ -131,6 +131,7 @@ export interface Dictionary {
             outsideDhaka: string;
             insideDhakaDesc: string;
             outsideDhakaDesc: string;
+            onlyDhaka: string;
         };
         payment: {
             cod: string;
@@ -401,6 +402,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 outsideDhaka: "Outside Dhaka City",
                 insideDhakaDesc: "Delivery within 1-2 business days",
                 outsideDhakaDesc: "Delivery within 3-5 business days",
+                onlyDhaka: "Only available for Dhaka division",
             },
             payment: {
                 cod: "Cash on Delivery (COD)",
@@ -669,6 +671,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 outsideDhaka: "ঢাকার বাইরে",
                 insideDhakaDesc: "১-২ কর্মদিবসে ডেলিভারি",
                 outsideDhakaDesc: "৩-৫ কর্মদিবসে ডেলিভারি",
+                onlyDhaka: "শুধুমাত্র ঢাকা বিভাগের জন্য প্রযোজ্য",
             },
             payment: {
                 cod: "ক্যাশ অন ডেলিভারি (COD)",
