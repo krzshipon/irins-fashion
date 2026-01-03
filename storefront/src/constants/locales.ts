@@ -182,6 +182,86 @@ export interface Dictionary {
         freeDelivery: string;
         easyReturns: string;
     };
+    faq: {
+        title: string;
+        subtitle: string;
+        allQuestions: string;
+        ordersShipping: string;
+        returnsRefunds: string;
+        products: string;
+        payment: string;
+        stillHaveQuestions: string;
+        cantFindAnswer: string;
+        contactUs: string;
+    };
+    shippingPage: {
+        title: string;
+        subtitle: string;
+        deliveryZones: string;
+        insideDhaka: string;
+        outsideDhaka: string;
+        businessDays: string;
+        freeShippingBanner: string;
+        whyShopWithUs: string;
+        carefulPackaging: string;
+        carefulPackagingDesc: string;
+        realTimeTracking: string;
+        realTimeTrackingDesc: string;
+        freeShipping: string;
+        freeShippingDesc: string;
+        qualityGuaranteed: string;
+        qualityGuaranteedDesc: string;
+        howItWorks: string;
+        step1Title: string;
+        step1Desc: string;
+        step2Title: string;
+        step2Desc: string;
+        step3Title: string;
+        step3Desc: string;
+        step4Title: string;
+        step4Desc: string;
+        readyToShop: string;
+        exploreCollection: string;
+        shopNow: string;
+    };
+    returnsPage: {
+        title: string;
+        subtitle: string;
+        howToReturn: string;
+        step1Title: string;
+        step1Desc: string;
+        step2Title: string;
+        step2Desc: string;
+        step3Title: string;
+        step3Desc: string;
+        step4Title: string;
+        step4Desc: string;
+        returnPolicy: string;
+        returnWindow: string;
+        returnWindowDesc: string;
+        originalCondition: string;
+        originalConditionDesc: string;
+        originalPackaging: string;
+        originalPackagingDesc: string;
+        nonReturnable: string;
+        nonReturnableDesc: string;
+        refundOptions: string;
+        storeCredit: string;
+        storeCreditDesc: string;
+        recommended: string;
+        cashRefund: string;
+        cashRefundDesc: string;
+        importantNotes: string;
+        note1: string;
+        note2: string;
+        note3: string;
+        note4: string;
+        note5: string;
+        needToReturn: string;
+        supportReady: string;
+        contactSupport: string;
+        viewFaq: string;
+    };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -367,6 +447,86 @@ export const dictionaries: Record<Locale, Dictionary> = {
             freeDelivery: "Free Delivery",
             easyReturns: "Easy Returns",
         },
+        faq: {
+            title: "Frequently Asked Questions",
+            subtitle: "Find answers to common questions about orders, shipping, returns, and more.",
+            allQuestions: "All Questions",
+            ordersShipping: "Orders & Shipping",
+            returnsRefunds: "Returns & Refunds",
+            products: "Products",
+            payment: "Payment",
+            stillHaveQuestions: "Still have questions?",
+            cantFindAnswer: "Can't find what you're looking for? Our support team is here to help!",
+            contactUs: "Contact Us",
+        },
+        shippingPage: {
+            title: "Shipping Information",
+            subtitle: "Fast and reliable delivery across Bangladesh",
+            deliveryZones: "Delivery Zones & Rates",
+            insideDhaka: "Inside Dhaka City",
+            outsideDhaka: "Outside Dhaka City",
+            businessDays: "business days",
+            freeShippingBanner: "FREE SHIPPING on orders above ৳5,000",
+            whyShopWithUs: "Why Shop With Us?",
+            carefulPackaging: "Careful Packaging",
+            carefulPackagingDesc: "Every order is carefully packaged to ensure your items arrive in perfect condition.",
+            realTimeTracking: "Real-time Tracking",
+            realTimeTrackingDesc: "Track your order status via SMS updates and our customer support team.",
+            freeShipping: "Free Shipping",
+            freeShippingDesc: "Enjoy free delivery on all orders above ৳5,000 anywhere in Bangladesh.",
+            qualityGuaranteed: "Quality Guaranteed",
+            qualityGuaranteedDesc: "If your order arrives damaged, we'll replace it at no extra cost.",
+            howItWorks: "How It Works",
+            step1Title: "Place Your Order",
+            step1Desc: "Browse our collection and checkout with your details",
+            step2Title: "Order Confirmation",
+            step2Desc: "Receive SMS confirmation with your Order ID",
+            step3Title: "Dispatch & Track",
+            step3Desc: "Get tracking updates as your order ships",
+            step4Title: "Delivery",
+            step4Desc: "Pay cash on delivery and enjoy your purchase!",
+            readyToShop: "Ready to Shop?",
+            exploreCollection: "Explore our latest collection and experience premium delivery",
+            shopNow: "Shop Now",
+        },
+        returnsPage: {
+            title: "Returns & Refunds",
+            subtitle: "Easy returns with hassle-free refund process",
+            howToReturn: "How to Return",
+            step1Title: "Contact Us",
+            step1Desc: "Reach out within 3 days of delivery with your Order ID",
+            step2Title: "Get Approval",
+            step2Desc: "Our team will review and approve your return request",
+            step3Title: "Ship or Pickup",
+            step3Desc: "Send the item back or we'll arrange pickup",
+            step4Title: "Refund",
+            step4Desc: "Get refund within 7-10 business days",
+            returnPolicy: "Return Policy",
+            returnWindow: "3-Day Return Window",
+            returnWindowDesc: "Returns must be initiated within 3 days of receiving your order.",
+            originalCondition: "Original Condition",
+            originalConditionDesc: "Items must be unused, unwashed, and have all original tags attached.",
+            originalPackaging: "Original Packaging",
+            originalPackagingDesc: "Products should be returned in their original packaging.",
+            nonReturnable: "Non-Returnable Items",
+            nonReturnableDesc: "Undergarments, customized items, and sale items cannot be returned.",
+            refundOptions: "Refund Options",
+            storeCredit: "Store Credit",
+            storeCreditDesc: "Get full value as store credit for your next purchase. Instant processing.",
+            recommended: "Recommended",
+            cashRefund: "Cash Refund",
+            cashRefundDesc: "Receive refund via bKash or bank transfer. 7-10 business days.",
+            importantNotes: "Important Notes",
+            note1: "Shipping costs for returns are non-refundable unless the item is defective",
+            note2: "Exchanges are subject to stock availability",
+            note3: "Refund will be processed to original payment method for online payments",
+            note4: "Quality checks are performed on all returned items",
+            note5: "Items showing signs of wear, damage, or alterations will not be accepted",
+            needToReturn: "Need to Return Something?",
+            supportReady: "Our support team is ready to help you with your return request",
+            contactSupport: "Contact Support",
+            viewFaq: "View FAQ",
+        },
     },
     bn: {
         nav: {
@@ -549,6 +709,86 @@ export const dictionaries: Record<Locale, Dictionary> = {
             secure: "নিরাপদ",
             freeDelivery: "ফ্রি ডেলিভারি",
             easyReturns: "সহজ রিটার্ন",
+        },
+        faq: {
+            title: "সাধারণ জিজ্ঞাসা",
+            subtitle: "অর্ডার, শিপিং, রিটার্ন এবং অন্যান্য বিষয়ে সাধারণ প্রশ্নের উত্তর খুঁজুন।",
+            allQuestions: "সব প্রশ্ন",
+            ordersShipping: "অর্ডার ও শিপিং",
+            returnsRefunds: "রিটার্ন ও রিফান্ড",
+            products: "পণ্য",
+            payment: "পেমেন্ট",
+            stillHaveQuestions: "এখনও প্রশ্ন আছে?",
+            cantFindAnswer: "যা খুঁজছেন তা পাচ্ছেন না? আমাদের সাপোর্ট টিম সাহায্য করতে প্রস্তুত!",
+            contactUs: "যোগাযোগ করুন",
+        },
+        shippingPage: {
+            title: "শিপিং তথ্য",
+            subtitle: "সারা বাংলাদেশে দ্রুত এবং নির্ভরযোগ্য ডেলিভারি",
+            deliveryZones: "ডেলিভারি জোন ও চার্জ",
+            insideDhaka: "ঢাকার ভেতরে",
+            outsideDhaka: "ঢাকার বাইরে",
+            businessDays: "কর্মদিবস",
+            freeShippingBanner: "৳৫,০০০ এর উপরে অর্ডারে ফ্রি শিপিং",
+            whyShopWithUs: "কেন আমাদের কাছ থেকে কিনবেন?",
+            carefulPackaging: "যত্নশীল প্যাকেজিং",
+            carefulPackagingDesc: "প্রতিটি অর্ডার সাবধানে প্যাক করা হয় যাতে আপনার পণ্য নিখুঁত অবস্থায় পৌঁছায়।",
+            realTimeTracking: "রিয়েল-টাইম ট্র্যাকিং",
+            realTimeTrackingDesc: "SMS আপডেট এবং কাস্টমার সাপোর্টের মাধ্যমে অর্ডার ট্র্যাক করুন।",
+            freeShipping: "ফ্রি শিপিং",
+            freeShippingDesc: "বাংলাদেশের যেকোনো জায়গায় ৳৫,০০০ এর উপরে অর্ডারে ফ্রি ডেলিভারি উপভোগ করুন।",
+            qualityGuaranteed: "মান নিশ্চিত",
+            qualityGuaranteedDesc: "যদি অর্ডার ক্ষতিগ্রস্ত অবস্থায় আসে, আমরা বিনা খরচে প্রতিস্থাপন করব।",
+            howItWorks: "কিভাবে কাজ করে",
+            step1Title: "অর্ডার করুন",
+            step1Desc: "আমাদের কালেকশন ব্রাউজ করুন এবং চেকআউট করুন",
+            step2Title: "অর্ডার নিশ্চিতকরণ",
+            step2Desc: "অর্ডার আইডি সহ SMS নিশ্চিতকরণ পান",
+            step3Title: "ডিসপ্যাচ ও ট্র্যাক",
+            step3Desc: "অর্ডার শিপ হওয়ার সাথে সাথে ট্র্যাকিং আপডেট পান",
+            step4Title: "ডেলিভারি",
+            step4Desc: "ক্যাশ অন ডেলিভারিতে পেমেন্ট করুন এবং কেনাকাটা উপভোগ করুন!",
+            readyToShop: "কেনাকাটা করতে প্রস্তুত?",
+            exploreCollection: "আমাদের সর্বশেষ কালেকশন দেখুন এবং প্রিমিয়াম ডেলিভারি উপভোগ করুন",
+            shopNow: "এখন কিনুন",
+        },
+        returnsPage: {
+            title: "রিটার্ন ও রিফান্ড",
+            subtitle: "ঝামেলামুক্ত রিফান্ড প্রক্রিয়ার সাথে সহজ রিটার্ন",
+            howToReturn: "কিভাবে রিটার্ন করবেন",
+            step1Title: "যোগাযোগ করুন",
+            step1Desc: "ডেলিভারির ৩ দিনের মধ্যে অর্ডার আইডি সহ যোগাযোগ করুন",
+            step2Title: "অনুমোদন পান",
+            step2Desc: "আমাদের টিম আপনার রিটার্ন অনুরোধ পর্যালোচনা করে অনুমোদন দেবে",
+            step3Title: "শিপ বা পিকআপ",
+            step3Desc: "পণ্য ফেরত পাঠান অথবা আমরা পিকআপের ব্যবস্থা করব",
+            step4Title: "রিফান্ড",
+            step4Desc: "৭-১০ কর্মদিবসের মধ্যে রিফান্ড পান",
+            returnPolicy: "রিটার্ন পলিসি",
+            returnWindow: "৩ দিনের রিটার্ন উইন্ডো",
+            returnWindowDesc: "অর্ডার পাওয়ার ৩ দিনের মধ্যে রিটার্ন শুরু করতে হবে।",
+            originalCondition: "আসল অবস্থা",
+            originalConditionDesc: "পণ্য অব্যবহৃত, অধোয়া এবং সব আসল ট্যাগ সংযুক্ত থাকতে হবে।",
+            originalPackaging: "আসল প্যাকেজিং",
+            originalPackagingDesc: "পণ্য তাদের আসল প্যাকেজিংয়ে ফেরত দিতে হবে।",
+            nonReturnable: "ফেরতযোগ্য নয়",
+            nonReturnableDesc: "অন্তর্বাস, কাস্টমাইজড আইটেম এবং সেল আইটেম ফেরত দেওয়া যাবে না।",
+            refundOptions: "রিফান্ড অপশন",
+            storeCredit: "স্টোর ক্রেডিট",
+            storeCreditDesc: "পরবর্তী কেনাকাটার জন্য পূর্ণ মূল্যে স্টোর ক্রেডিট পান। তাৎক্ষণিক প্রক্রিয়াকরণ।",
+            recommended: "প্রস্তাবিত",
+            cashRefund: "নগদ রিফান্ড",
+            cashRefundDesc: "বিকাশ বা ব্যাংক ট্রান্সফারের মাধ্যমে রিফান্ড পান। ৭-১০ কর্মদিবস।",
+            importantNotes: "গুরুত্বপূর্ণ নোট",
+            note1: "রিটার্নের শিপিং খরচ ফেরতযোগ্য নয় যদি না পণ্য ত্রুটিপূর্ণ হয়",
+            note2: "এক্সচেঞ্জ স্টক প্রাপ্যতার উপর নির্ভরশীল",
+            note3: "অনলাইন পেমেন্টের জন্য রিফান্ড মূল পেমেন্ট মাধ্যমে প্রক্রিয়া করা হবে",
+            note4: "সমস্ত ফেরত পণ্যে গুণমান পরীক্ষা করা হয়",
+            note5: "পরিধান, ক্ষতি বা পরিবর্তনের চিহ্ন আছে এমন পণ্য গ্রহণ করা হবে না",
+            needToReturn: "কিছু ফেরত দিতে চান?",
+            supportReady: "আমাদের সাপোর্ট টিম আপনার রিটার্ন অনুরোধে সাহায্য করতে প্রস্তুত",
+            contactSupport: "সাপোর্টে যোগাযোগ করুন",
+            viewFaq: "FAQ দেখুন",
         },
     },
 };

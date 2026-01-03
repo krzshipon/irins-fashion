@@ -1,0 +1,240 @@
+.page {
+    padding: var(--spacing-lg) 0 var(--spacing-xl);
+    min-height: 80vh;
+    background: linear-gradient(180deg, #f9fafb 0%, #fff 100%);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.breadcrumbs {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.breadcrumbs a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: var(--color-text-main);
+}
+
+.breadcrumbs .active {
+    color: var(--color-text-main);
+    font-weight: 500;
+}
+
+.title {
+    font-family: var(--font-family-display);
+    font-size: 3rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.subtitle {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Category Tabs */
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: var(--spacing-xl);
+}
+
+.categoryBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.categoryBtn:hover {
+    border-color: #111;
+    color: #111;
+}
+
+.categoryBtn.active {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+.categoryIcon {
+    font-size: 16px;
+}
+
+/* FAQ List */
+.faqList {
+    max-width: 800px;
+    margin: 0 auto var(--spacing-xl);
+}
+
+.faqItem {
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.faqItem:hover {
+    border-color: #d1d5db;
+}
+
+.faqItem.open {
+    border-color: #111;
+}
+
+.faqQuestion {
+    width: 100%;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+    text-align: left;
+}
+
+.faqQuestion:hover {
+    background: #f9fafb;
+}
+
+.arrow {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 300;
+    color: #6b7280;
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.faqItem.open .arrow {
+    background: #111;
+    color: #fff;
+}
+
+.faqAnswer {
+    padding: 0 24px 24px;
+    animation: fadeIn 0.2s ease;
+}
+
+.faqAnswer p {
+    color: #6b7280;
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Contact CTA */
+.contactCta {
+    text-align: center;
+    padding: 48px;
+    background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+    border-radius: 24px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.ctaIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.contactCta h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.contactCta p {
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+
+.contactBtn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: #111;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.contactBtn:hover {
+    background: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .categories {
+        gap: 8px;
+    }
+
+    .categoryBtn {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .faqQuestion {
+        padding: 18px;
+        font-size: 15px;
+    }
+
+    .contactCta {
+        padding: 32px 24px;
+    }
+}

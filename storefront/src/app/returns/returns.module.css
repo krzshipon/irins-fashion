@@ -1,0 +1,339 @@
+.page {
+    padding: var(--spacing-lg) 0 var(--spacing-xl);
+    min-height: 80vh;
+    background: linear-gradient(180deg, #f9fafb 0%, #fff 100%);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.breadcrumbs {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.breadcrumbs a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: var(--color-text-main);
+}
+
+.breadcrumbs .active {
+    color: var(--color-text-main);
+    font-weight: 500;
+}
+
+.title {
+    font-family: var(--font-family-display);
+    font-size: 3rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.subtitle {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+}
+
+/* Sections */
+.section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Steps Grid */
+.stepsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.stepCard {
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.stepCard:hover {
+    border-color: #111;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.stepIcon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.stepNumber {
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.stepCard h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.stepCard p {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Policies Grid */
+.policiesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.policyCard {
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.policyIcon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.policyCard h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.policyCard p {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Refund Grid */
+.refundGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.refundCard {
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.refundCard:hover {
+    border-color: #d1d5db;
+}
+
+.refundCard.highlighted {
+    border-color: #10b981;
+    background: linear-gradient(180deg, #ecfdf5 0%, #fff 100%);
+}
+
+.badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+}
+
+.refundIcon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.refundCard h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.refundCard p {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Notes Section */
+.notesSection {
+    background: #fffbeb;
+    border: 2px solid #fcd34d;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: var(--spacing-xl);
+}
+
+.notesTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 16px;
+}
+
+.notesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notesList li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    color: #78350f;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.notesList li::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.notesList li:last-child {
+    margin-bottom: 0;
+}
+
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 48px;
+    background: linear-gradient(135deg, #111 0%, #374151 100%);
+    border-radius: 24px;
+    color: #fff;
+}
+
+.cta h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.cta p {
+    color: #9ca3af;
+    margin-bottom: 24px;
+}
+
+.ctaButtons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.ctaBtn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: #fff;
+    color: #111;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.ctaBtn:hover {
+    background: #f3f4f6;
+}
+
+.ctaBtnOutline {
+    display: inline-block;
+    padding: 14px 32px;
+    background: transparent;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s;
+}
+
+.ctaBtnOutline:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .stepsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .notesSection {
+        padding: 24px;
+    }
+
+    .cta {
+        padding: 32px 24px;
+    }
+
+    .ctaButtons {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .stepsGrid {
+        grid-template-columns: 1fr;
+    }
+}
