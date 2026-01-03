@@ -28,53 +28,72 @@ export default function ProductCard({ product }: ProductCardProps) {
                         style={{ objectFit: 'cover' }}
                     />
                     {/* Render Badges */}
-                    {product.badges && product.badges.length > 0 && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '10px',
-                            left: '10px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '5px',
-                            zIndex: 10
-                        }}>
-                            {product.badges.map((badge, index) => {
-                                let backgroundColor = '#000000';
-                                let color = '#ffffff';
+                    {/* Render Badges */}
+                    {(() => {
+                        const allBadges = [...(product.badges || [])];
 
-                                switch (badge.type) {
-                                    case 'new':
-                                        backgroundColor = '#046A38'; // Emerald Green
-                                        break;
-                                    case 'discount':
-                                        backgroundColor = '#dc2626'; // Red
-                                        break;
-                                    case 'bestseller':
-                                        backgroundColor = '#f59e0b'; // Amber
-                                        break;
-                                    case 'custom':
-                                        backgroundColor = badge.color || '#000000';
-                                        color = badge.textColor || '#ffffff';
-                                        break;
-                                }
+                        // Auto-generate discount badge if discount exists but no discount badge is present
+                        if (product.discount && !allBadges.some(b => b.type === 'discount')) {
+                            const discountText = product.discount.type === 'percentage'
+                                ? `${product.discount.value}% OFF`
+                                : `৳${product.discount.value} OFF`;
 
-                                return (
-                                    <span key={index} style={{
-                                        backgroundColor,
-                                        color,
-                                        padding: '4px 8px',
-                                        fontSize: '10px',
-                                        fontWeight: 'bold',
-                                        borderRadius: '4px',
-                                        textTransform: 'uppercase',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                    }}>
-                                        {badge.text}
-                                    </span>
-                                );
-                            })}
-                        </div>
-                    )}
+                            allBadges.push({
+                                type: 'discount',
+                                text: discountText
+                            });
+                        }
+
+                        if (allBadges.length === 0) return null;
+
+                        return (
+                            <div style={{
+                                position: 'absolute',
+                                top: '10px',
+                                left: '10px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '5px',
+                                zIndex: 10
+                            }}>
+                                {allBadges.map((badge, index) => {
+                                    let backgroundColor = '#000000';
+                                    let color = '#ffffff';
+
+                                    switch (badge.type) {
+                                        case 'new':
+                                            backgroundColor = '#046A38'; // Emerald Green
+                                            break;
+                                        case 'discount':
+                                            backgroundColor = '#dc2626'; // Red
+                                            break;
+                                        case 'bestseller':
+                                            backgroundColor = '#f59e0b'; // Amber
+                                            break;
+                                        case 'custom':
+                                            backgroundColor = badge.color || '#000000';
+                                            color = badge.textColor || '#ffffff';
+                                            break;
+                                    }
+
+                                    return (
+                                        <span key={index} style={{
+                                            backgroundColor,
+                                            color,
+                                            padding: '4px 8px',
+                                            fontSize: '10px',
+                                            fontWeight: 'bold',
+                                            borderRadius: '4px',
+                                            textTransform: 'uppercase',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                        }}>
+                                            {badge.text}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })()}
                 </Link>
                 <button
                     className={styles.addToCartBtn}
