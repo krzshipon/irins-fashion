@@ -23,4 +23,9 @@ export interface Order {
     shippingDetails: ShippingDetails;
     paymentMethod: 'cod';
     total: number;
+    couponDiscount?: number;
+    appliedCoupon?: {
+        code: string;
+        discountAmount: number;
+    };
 }

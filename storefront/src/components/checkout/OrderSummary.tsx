@@ -7,12 +7,14 @@ interface OrderSummaryProps {
     items: CartItem[];
     subtotal: number;
     shippingCost: number;
+    discount?: number;
+    couponCode?: string;
     total: number;
     onPlaceOrder: () => void;
     isSubmitting: boolean;
 }
 
-export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shippingCost, total, onPlaceOrder, isSubmitting }) => {
+export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shippingCost, discount, couponCode, total, onPlaceOrder, isSubmitting }) => {
     const { dictionary: t } = useLocalization();
 
     return (
@@ -115,6 +117,30 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                         <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳ {shippingCost}</span>
                     )}
                 </div>
+
+                {/* Discount */}
+                {discount && discount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', color: '#16a34a' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <span style={{ fontSize: '14px' }}>{t.checkout.coupon?.discount || 'Discount'}</span>
+                            {couponCode && (
+                                <span style={{
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    marginLeft: '8px',
+                                    padding: '2px 6px',
+                                    backgroundColor: '#dcfce7',
+                                    borderRadius: '4px',
+                                    border: '1px solid #86efac',
+                                    color: '#15803d'
+                                }}>
+                                    {couponCode}
+                                </span>
+                            )}
+                        </div>
+                        <span style={{ fontSize: '14px', fontWeight: '600' }}>- ৳ {discount}</span>
+                    </div>
+                )}
             </div>
 
             {/* Total */}

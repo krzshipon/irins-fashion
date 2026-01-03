@@ -9,6 +9,7 @@ import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { ShippingDetails, ShippingRates, Order } from '@/types/checkout';
 import { submitOrder, getShippingRates } from '@/services/api/checkout';
 import { getDivisions, Division } from '@/services/api/divisions';
+import { validateCoupon, calculateDiscount, Coupon } from '@/services/api/coupons';
 
 const CheckoutPage = () => {
     const router = useRouter();
@@ -39,6 +40,13 @@ const CheckoutPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+
+    // Coupon state
+    const [couponInput, setCouponInput] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+    const [couponDiscount, setCouponDiscount] = useState(0);
+    const [couponError, setCouponError] = useState('');
+    const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -146,6 +154,52 @@ const CheckoutPage = () => {
         return checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
+    // Update discount if subtotal changes while coupon is applied
+    useEffect(() => {
+        if (appliedCoupon) {
+            const subtotal = calculateSubtotal();
+            // Validate minimum amount again
+            if (appliedCoupon.minOrderAmount && subtotal < appliedCoupon.minOrderAmount) {
+                setAppliedCoupon(null);
+                setCouponDiscount(0);
+                setCouponError(`Min order ${appliedCoupon.minOrderAmount} required for this coupon`);
+            } else {
+                const discount = calculateDiscount(appliedCoupon, subtotal);
+                setCouponDiscount(discount);
+            }
+        }
+    }, [checkoutItems, appliedCoupon]);
+
+    const handleApplyCoupon = async () => {
+        if (!couponInput.trim()) return;
+
+        setIsValidatingCoupon(true);
+        setCouponError('');
+
+        const subtotal = calculateSubtotal();
+        const result = await validateCoupon(couponInput, subtotal);
+
+        setIsValidatingCoupon(false);
+
+        if (result.valid && result.coupon) {
+            setAppliedCoupon(result.coupon);
+            const discount = calculateDiscount(result.coupon, subtotal);
+            setCouponDiscount(discount);
+            setCouponInput(''); // Clear input on success
+        } else {
+            setCouponError(result.error || t.checkout.coupon?.invalid || 'Invalid coupon');
+            setAppliedCoupon(null);
+            setCouponDiscount(0);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setCouponInput('');
+        setCouponError('');
+    };
+
     const getShippingCost = () => {
         // Free shipping zone always has 0 cost
         if (shippingDetails.deliveryZone === 'free_shipping') {
@@ -157,7 +211,7 @@ const CheckoutPage = () => {
     };
 
     const calculateTotal = () => {
-        return calculateSubtotal() + getShippingCost();
+        return Math.max(0, calculateSubtotal() + getShippingCost() - couponDiscount);
     };
 
     const handlePlaceOrder = async () => {
@@ -166,19 +220,20 @@ const CheckoutPage = () => {
         setIsSubmitting(true);
         const subtotal = calculateSubtotal();
         const shippingCost = getShippingCost();
-        const total = subtotal + shippingCost;
+        const total = Math.max(0, subtotal + shippingCost - couponDiscount);
 
-        const order: Order = {
+        const orderData: Order = {
             items: checkoutItems,
             subtotal,
             shippingCost,
             total,
             shippingDetails,
-            paymentMethod: 'cod'
+            paymentMethod: 'cod',
+            couponDiscount,
+            appliedCoupon: appliedCoupon ? { code: appliedCoupon.code, discountAmount: couponDiscount } : undefined,
         };
-
         try {
-            const response = await submitOrder(order);
+            const response = await submitOrder(orderData);
             if (response.success) {
                 setIsSuccess(true);
                 // Clear cart only if it's not a direct order
@@ -231,6 +286,79 @@ const CheckoutPage = () => {
                             divisions={divisions}
                             subtotal={calculateSubtotal()}
                         />
+
+                        {/* Coupon Section */}
+                        <div style={{ marginTop: '24px', padding: '24px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e5e5' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#111' }}>{t.checkout.coupon?.title || 'Have a coupon?'}</h3>
+
+                            {appliedCoupon ? (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#dcfce7', borderRadius: '8px', border: '1px solid #86efac' }}>
+                                    <div>
+                                        <p style={{ fontWeight: '600', color: '#15803d', fontSize: '14px' }}>
+                                            {appliedCoupon.code}
+                                        </p>
+                                        <p style={{ fontSize: '12px', color: '#166534' }}>
+                                            {t.checkout.coupon?.applied || 'Coupon applied!'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleRemoveCoupon}
+                                        style={{
+                                            padding: '6px 12px',
+                                            fontSize: '13px',
+                                            color: '#ef4444',
+                                            backgroundColor: 'transparent',
+                                            border: 'none',
+                                            fontWeight: '600',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {t.checkout.coupon?.remove || 'Remove'}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <input
+                                            type="text"
+                                            value={couponInput}
+                                            onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                                            placeholder={t.checkout.coupon?.placeholder || 'Enter coupon code'}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px 16px',
+                                                border: '2px solid #e5e5e5',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                outline: 'none'
+                                            }}
+                                        />
+                                        <button
+                                            onClick={handleApplyCoupon}
+                                            disabled={isValidatingCoupon || !couponInput.trim()}
+                                            style={{
+                                                padding: '0 24px',
+                                                backgroundColor: '#111',
+                                                color: '#fff',
+                                                fontWeight: '600',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                cursor: (isValidatingCoupon || !couponInput.trim()) ? 'not-allowed' : 'pointer',
+                                                opacity: (isValidatingCoupon || !couponInput.trim()) ? 0.7 : 1
+                                            }}
+                                        >
+                                            {isValidatingCoupon ? '...' : (t.checkout.coupon?.apply || 'Apply')}
+                                        </button>
+                                    </div>
+                                    {couponError && (
+                                        <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '8px' }}>
+                                            {couponError}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div>
@@ -246,6 +374,8 @@ const CheckoutPage = () => {
                                 items={checkoutItems}
                                 subtotal={calculateSubtotal()}
                                 shippingCost={getShippingCost()}
+                                discount={couponDiscount}
+                                couponCode={appliedCoupon?.code}
                                 total={calculateTotal()}
                                 onPlaceOrder={handlePlaceOrder}
                                 isSubmitting={isSubmitting}

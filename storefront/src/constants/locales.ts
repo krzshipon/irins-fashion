@@ -161,6 +161,16 @@ export interface Dictionary {
         free: string;
         freeShipping: string;
         freeShippingNote: string;
+        coupon: {
+            title: string;
+            placeholder: string;
+            apply: string;
+            remove: string;
+            discount: string;
+            invalid: string;
+            applied: string;
+            minAmount: string;
+        };
     };
     orders: {
         title: string;
@@ -437,6 +447,16 @@ export const dictionaries: Record<Locale, Dictionary> = {
             free: "Free",
             freeShipping: "FREE",
             freeShippingNote: "Free shipping on orders ℳ5,000+",
+            coupon: {
+                title: "Have a coupon?",
+                placeholder: "Enter coupon code",
+                apply: "Apply",
+                remove: "Remove",
+                discount: "Discount",
+                invalid: "Invalid coupon code",
+                applied: "Coupon applied successfully!",
+                minAmount: "Minimum order amount is",
+            },
         },
         orders: {
             title: "Order Details",
@@ -711,6 +731,16 @@ export const dictionaries: Record<Locale, Dictionary> = {
             free: "ফ্রি",
             freeShipping: "ফ্রি",
             freeShippingNote: "৫,০০০+ টাকার অর্ডারে ফ্রি শিপিং",
+            coupon: {
+                title: "কুপন আছে?",
+                placeholder: "কুপন কোড লিখুন",
+                apply: "প্রয়োগ করুন",
+                remove: "সরান",
+                discount: "ছাড়",
+                invalid: "অকার্যকর কুপন কোড",
+                applied: "কুপন সফলভাবে প্রয়োগ করা হয়েছে!",
+                minAmount: "ন্যূনতম অর্ডারের পরিমাণ",
+            },
         },
         orders: {
             title: "অর্ডার বিস্তারিত",
