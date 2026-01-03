@@ -107,7 +107,13 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.checkout.shippingFee}</span>
-                    <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳ {shippingCost}</span>
+                    {shippingCost === 0 ? (
+                        <span style={{ fontSize: '14px', fontWeight: '700', color: '#16a34a' }}>
+                            ✓ {t.checkout.freeShipping || 'FREE'}
+                        </span>
+                    ) : (
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>৳ {shippingCost}</span>
+                    )}
                 </div>
             </div>
 

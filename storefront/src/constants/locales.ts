@@ -132,6 +132,9 @@ export interface Dictionary {
             insideDhakaDesc: string;
             outsideDhakaDesc: string;
             onlyDhaka: string;
+            freeShipping: string;
+            freeShippingDesc: string;
+            freeShippingMin: string;
         };
         payment: {
             cod: string;
@@ -156,6 +159,8 @@ export interface Dictionary {
         total: string;
         shippingFee: string;
         free: string;
+        freeShipping: string;
+        freeShippingNote: string;
     };
     orders: {
         title: string;
@@ -403,6 +408,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 insideDhakaDesc: "Delivery within 1-2 business days",
                 outsideDhakaDesc: "Delivery within 3-5 business days",
                 onlyDhaka: "Only available for Dhaka division",
+                freeShipping: "Free Shipping",
+                freeShippingDesc: "Congratulations! You qualify for free shipping",
+                freeShippingMin: "Available on orders ℳ5,000+",
             },
             payment: {
                 cod: "Cash on Delivery (COD)",
@@ -427,6 +435,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
             total: "Total",
             shippingFee: "Shipping",
             free: "Free",
+            freeShipping: "FREE",
+            freeShippingNote: "Free shipping on orders ℳ5,000+",
         },
         orders: {
             title: "Order Details",
@@ -672,6 +682,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 insideDhakaDesc: "১-২ কর্মদিবসে ডেলিভারি",
                 outsideDhakaDesc: "৩-৫ কর্মদিবসে ডেলিভারি",
                 onlyDhaka: "শুধুমাত্র ঢাকা বিভাগের জন্য প্রযোজ্য",
+                freeShipping: "ফ্রি শিপিং",
+                freeShippingDesc: "অভিনন্দন! আপনি ফ্রি শিপিং পাচ্ছেন",
+                freeShippingMin: "৫,০০০+ টাকার অর্ডারে প্রযোজ্য",
             },
             payment: {
                 cod: "ক্যাশ অন ডেলিভারি (COD)",
@@ -696,6 +709,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
             total: "মোট",
             shippingFee: "শিপিং",
             free: "ফ্রি",
+            freeShipping: "ফ্রি",
+            freeShippingNote: "৫,০০০+ টাকার অর্ডারে ফ্রি শিপিং",
         },
         orders: {
             title: "অর্ডার বিস্তারিত",

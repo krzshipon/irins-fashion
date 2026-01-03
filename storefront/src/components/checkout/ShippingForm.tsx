@@ -9,9 +9,10 @@ interface ShippingFormProps {
     errors: Partial<Record<keyof ShippingDetails, string>>;
     shippingRates: ShippingRates;
     divisions: Division[];
+    subtotal: number;
 }
 
-export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, errors, shippingRates, divisions }) => {
+export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, errors, shippingRates, divisions, subtotal }) => {
     const { dictionary: t, locale } = useLocalization();
 
     // Check if Dhaka division is selected
@@ -32,10 +33,22 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
         }
     };
 
+    // Check if free shipping applies
+    const FREE_SHIPPING_THRESHOLD = 5000;
+    const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+
     const handleDeliveryZoneChange = (zone: DeliveryZone) => {
+        // If free shipping applies, only free_shipping zone is allowed
+        if (isFreeShipping && zone !== 'free_shipping') {
+            return;
+        }
+        // If free shipping doesn't apply, free_shipping zone is not allowed
+        if (!isFreeShipping && zone === 'free_shipping') {
+            return;
+        }
         // Only allow inside_dhaka if Dhaka division is selected
         if (zone === 'inside_dhaka' && !isDhakaDivision) {
-            return; // Don't change if trying to select inside_dhaka for non-Dhaka division
+            return;
         }
         onChange({ ...value, deliveryZone: zone });
     };
@@ -247,8 +260,9 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
             {/* Delivery Zone Section */}
             <div style={{ marginBottom: '40px' }}>
                 <h2 style={sectionTitleStyle}>{t.checkout.deliveryZone}</h2>
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {/* Inside Dhaka - Only enabled for Dhaka division */}
+                    {/* Inside Dhaka - Disabled when free shipping applies or non-Dhaka division */}
                     <label
                         style={{
                             display: 'flex',
@@ -257,10 +271,10 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                             padding: '16px 20px',
                             border: `2px solid ${value.deliveryZone === 'inside_dhaka' ? '#111' : '#e5e5e5'}`,
                             borderRadius: '10px',
-                            cursor: isDhakaDivision ? 'pointer' : 'not-allowed',
+                            cursor: (isDhakaDivision && !isFreeShipping) ? 'pointer' : 'not-allowed',
                             backgroundColor: value.deliveryZone === 'inside_dhaka' ? '#f9fafb' : '#fff',
                             transition: 'all 0.2s',
-                            opacity: isDhakaDivision ? 1 : 0.5,
+                            opacity: (isDhakaDivision && !isFreeShipping) ? 1 : 0.5,
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -278,25 +292,25 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                                 )}
                             </div>
                             <div>
-                                <span style={{ fontWeight: '600', color: isDhakaDivision ? '#111' : '#9ca3af' }}>{t.checkout.delivery.insideDhaka}</span>
+                                <span style={{ fontWeight: '600', color: (isDhakaDivision && !isFreeShipping) ? '#111' : '#9ca3af' }}>{t.checkout.delivery.insideDhaka}</span>
                                 <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                                    {isDhakaDivision ? t.checkout.delivery.insideDhakaDesc : t.checkout.delivery.onlyDhaka || 'Only available for Dhaka division'}
+                                    {!isDhakaDivision ? (t.checkout.delivery.onlyDhaka || 'Only available for Dhaka division') : t.checkout.delivery.insideDhakaDesc}
                                 </p>
                             </div>
                         </div>
-                        <span style={{ fontWeight: '700', color: isDhakaDivision ? '#111' : '#9ca3af' }}>৳ {shippingRates.insideDhaka}</span>
+                        <span style={{ fontWeight: '700', color: (isDhakaDivision && !isFreeShipping) ? '#111' : '#9ca3af' }}>৳ {shippingRates.insideDhaka}</span>
                         <input
                             type="radio"
                             name="deliveryZone"
                             value="inside_dhaka"
                             checked={value.deliveryZone === 'inside_dhaka'}
                             onChange={() => handleDeliveryZoneChange('inside_dhaka')}
-                            disabled={!isDhakaDivision}
+                            disabled={!isDhakaDivision || isFreeShipping}
                             style={{ display: 'none' }}
                         />
                     </label>
 
-                    {/* Outside Dhaka */}
+                    {/* Outside Dhaka - Disabled when free shipping applies */}
                     <label
                         style={{
                             display: 'flex',
@@ -305,9 +319,10 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                             padding: '16px 20px',
                             border: `2px solid ${value.deliveryZone === 'outside_dhaka' ? '#111' : '#e5e5e5'}`,
                             borderRadius: '10px',
-                            cursor: 'pointer',
+                            cursor: !isFreeShipping ? 'pointer' : 'not-allowed',
                             backgroundColor: value.deliveryZone === 'outside_dhaka' ? '#f9fafb' : '#fff',
                             transition: 'all 0.2s',
+                            opacity: !isFreeShipping ? 1 : 0.5,
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -325,17 +340,70 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                                 )}
                             </div>
                             <div>
-                                <span style={{ fontWeight: '600', color: '#111' }}>{t.checkout.delivery.outsideDhaka}</span>
+                                <span style={{ fontWeight: '600', color: !isFreeShipping ? '#111' : '#9ca3af' }}>{t.checkout.delivery.outsideDhaka}</span>
                                 <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{t.checkout.delivery.outsideDhakaDesc}</p>
                             </div>
                         </div>
-                        <span style={{ fontWeight: '700', color: '#111' }}>৳ {shippingRates.outsideDhaka}</span>
+                        <span style={{ fontWeight: '700', color: !isFreeShipping ? '#111' : '#9ca3af' }}>৳ {shippingRates.outsideDhaka}</span>
                         <input
                             type="radio"
                             name="deliveryZone"
                             value="outside_dhaka"
                             checked={value.deliveryZone === 'outside_dhaka'}
                             onChange={() => handleDeliveryZoneChange('outside_dhaka')}
+                            disabled={isFreeShipping}
+                            style={{ display: 'none' }}
+                        />
+                    </label>
+
+                    {/* Free Shipping - Enabled only when order >= 5000 */}
+                    <label
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '16px 20px',
+                            border: `2px solid ${value.deliveryZone === 'free_shipping' ? '#16a34a' : isFreeShipping ? '#86efac' : '#e5e5e5'}`,
+                            borderRadius: '10px',
+                            cursor: isFreeShipping ? 'pointer' : 'not-allowed',
+                            backgroundColor: value.deliveryZone === 'free_shipping' ? '#dcfce7' : isFreeShipping ? '#f0fdf4' : '#fff',
+                            transition: 'all 0.2s',
+                            opacity: isFreeShipping ? 1 : 0.5,
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{
+                                width: '20px',
+                                height: '20px',
+                                borderRadius: '50%',
+                                border: `2px solid ${value.deliveryZone === 'free_shipping' ? '#16a34a' : '#d1d5db'}`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                {value.deliveryZone === 'free_shipping' && (
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#16a34a' }}></div>
+                                )}
+                            </div>
+                            <div>
+                                <span style={{ fontWeight: '600', color: isFreeShipping ? '#16a34a' : '#9ca3af' }}>
+                                    🎉 {t.checkout.delivery.freeShipping || 'Free Shipping'}
+                                </span>
+                                <p style={{ fontSize: '12px', color: isFreeShipping ? '#16a34a' : '#9ca3af', marginTop: '2px' }}>
+                                    {isFreeShipping
+                                        ? (t.checkout.delivery.freeShippingDesc || 'Congratulations! You qualify for free shipping')
+                                        : (t.checkout.delivery.freeShippingMin || 'Available on orders ৳5,000+')}
+                                </p>
+                            </div>
+                        </div>
+                        <span style={{ fontWeight: '700', color: isFreeShipping ? '#16a34a' : '#9ca3af' }}>৳ 0</span>
+                        <input
+                            type="radio"
+                            name="deliveryZone"
+                            value="free_shipping"
+                            checked={value.deliveryZone === 'free_shipping'}
+                            onChange={() => handleDeliveryZoneChange('free_shipping')}
+                            disabled={!isFreeShipping}
                             style={{ display: 'none' }}
                         />
                     </label>

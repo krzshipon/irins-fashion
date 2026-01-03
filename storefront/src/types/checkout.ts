@@ -1,6 +1,6 @@
 import { CartItem } from '@/context/CartContext';
 
-export type DeliveryZone = 'inside_dhaka' | 'outside_dhaka';
+export type DeliveryZone = 'inside_dhaka' | 'outside_dhaka' | 'free_shipping';
 
 export interface ShippingDetails {
     fullName: string;

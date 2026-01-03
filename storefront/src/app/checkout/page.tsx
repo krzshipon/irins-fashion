@@ -82,6 +82,21 @@ const CheckoutPage = () => {
         ? [directOrderItem]
         : cartItems;
 
+    const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const FREE_SHIPPING_THRESHOLD = 5000;
+    const isFreeShippingEligible = subtotal >= FREE_SHIPPING_THRESHOLD;
+
+    // Auto-select/deselect free_shipping zone based on subtotal
+    useEffect(() => {
+        if (isFreeShippingEligible && shippingDetails.deliveryZone !== 'free_shipping') {
+            // Auto-select free shipping when eligible
+            setShippingDetails(prev => ({ ...prev, deliveryZone: 'free_shipping' }));
+        } else if (!isFreeShippingEligible && shippingDetails.deliveryZone === 'free_shipping') {
+            // Revert to outside_dhaka when no longer eligible
+            setShippingDetails(prev => ({ ...prev, deliveryZone: 'outside_dhaka' }));
+        }
+    }, [isFreeShippingEligible, shippingDetails.deliveryZone]);
+
     // Handle shipping details change and clear specific field error
     const handleShippingChange = (newDetails: ShippingDetails) => {
         // Find which fields changed and clear their errors
@@ -132,6 +147,10 @@ const CheckoutPage = () => {
     };
 
     const getShippingCost = () => {
+        // Free shipping zone always has 0 cost
+        if (shippingDetails.deliveryZone === 'free_shipping') {
+            return 0;
+        }
         return shippingDetails.deliveryZone === 'inside_dhaka'
             ? shippingRates.insideDhaka
             : shippingRates.outsideDhaka;
@@ -210,6 +229,7 @@ const CheckoutPage = () => {
                             errors={errors}
                             shippingRates={shippingRates}
                             divisions={divisions}
+                            subtotal={calculateSubtotal()}
                         />
                     </div>
 
