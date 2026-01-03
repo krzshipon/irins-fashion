@@ -1,0 +1,127 @@
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: var(--font-inter, sans-serif);
+    color: #1f2937;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.lastUpdated {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f3f4f6;
+}
+
+.section {
+    margin-bottom: 48px;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+}
+
+.section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.section p {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #4b5563;
+    margin-bottom: 16px;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.list li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.list li::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: #046A38;
+    font-weight: bold;
+}
+
+.contactSection {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 60px;
+    border: 1px solid #e5e7eb;
+}
+
+.contactSection h2 {
+    border-bottom: none;
+    margin-bottom: 16px;
+    padding-bottom: 0;
+}
+
+.contactSection p {
+    margin-bottom: 0;
+    color: #374151;
+    font-weight: 500;
+}
+
+@media (max-width: 640px) {
+    .container {
+        margin: 20px auto;
+    }
+
+    .title {
+        font-size: 2.25rem;
+    }
+
+    .content {
+        padding: 24px;
+    }
+
+    .section h2 {
+        font-size: 1.25rem;
+    }
+}

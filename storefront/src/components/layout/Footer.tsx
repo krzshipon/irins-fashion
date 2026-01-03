@@ -35,6 +35,7 @@ export default function Footer() {
                         <li><Link href="/faq">{t.footer.faq}</Link></li>
                         <li><Link href="/shipping">{t.footer.shipping}</Link></li>
                         <li><Link href="/returns">{t.footer.returns}</Link></li>
+                        <li><Link href="/policy/privacy">{t.footer.privacy}</Link></li>
                     </ul>
                 </div>
             </div>

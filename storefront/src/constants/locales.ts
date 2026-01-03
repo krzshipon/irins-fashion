@@ -53,6 +53,7 @@ export interface Dictionary {
         faq: string;
         shipping: string;
         returns: string;
+        privacy: string;
     };
     cart: {
         title: string;
@@ -285,6 +286,46 @@ export interface Dictionary {
         contactSupport: string;
         viewFaq: string;
     };
+    privacyPage: {
+        title: string;
+        subtitle: string;
+        lastUpdated: string;
+        introduction: {
+            title: string;
+            content: string;
+        };
+        collection: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        usage: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        sharing: {
+            title: string;
+            content: string;
+        };
+        security: {
+            title: string;
+            content: string;
+        };
+        rights: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        cookies: {
+            title: string;
+            content: string;
+        };
+        contact: {
+            title: string;
+            content: string;
+        };
+    };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -341,6 +382,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
             faq: 'FAQ',
             shipping: 'Shipping',
             returns: 'Returns',
+            privacy: 'Privacy Policy',
         },
         cart: {
             title: 'Shopping Cart',
@@ -573,6 +615,59 @@ export const dictionaries: Record<Locale, Dictionary> = {
             contactSupport: "Contact Support",
             viewFaq: "View FAQ",
         },
+        privacyPage: {
+            title: "Privacy Policy",
+            subtitle: "Your privacy is important to us. Learn how we collect, use, and protect your information.",
+            lastUpdated: "Last Updated",
+            introduction: {
+                title: "Introduction",
+                content: "At Irin's Fashion, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you visit our website or make a purchase."
+            },
+            collection: {
+                title: "Information We Collect",
+                content: "We collect information required to process your orders and improve your shopping experience, including:",
+                items: [
+                    "Personal identification (Name, Email, Phone Number, Shipping Address)",
+                    "Order history and shopping preferences",
+                    "Device and browser information for website optimization"
+                ]
+            },
+            usage: {
+                title: "How We Use Your Information",
+                content: "Your data is used solely for the following purposes:",
+                items: [
+                    "Processing and delivering your orders",
+                    "Communicating order updates and delivery status",
+                    "Improving our website functionality and customer service",
+                    "Sending promotional offers (only if you have opted in)"
+                ]
+            },
+            sharing: {
+                title: "Information Sharing",
+                content: "We do not sell, trade, or rent your personal identification information to others. We may share generic aggregated demographic information not linked to any personal identification information regarding visitors and users with our business partners and trusted affiliates."
+            },
+            security: {
+                title: "Data Security",
+                content: "We implement appropriate data collection, storage, and processing practices and security measures to protect against unauthorized access, alteration, disclosure, or destruction of your personal information."
+            },
+            rights: {
+                title: "Your Rights",
+                content: "You have the right to:",
+                items: [
+                    "Access the personal data we hold about you",
+                    "Request correction of inaccurate data",
+                    "Request deletion of your data (subject to legal retention requirements)"
+                ]
+            },
+            cookies: {
+                title: "Cookies",
+                content: "Our website uses 'cookies' to enhance user experience. You may choose to set your web browser to refuse cookies, or to alert you when cookies are being sent."
+            },
+            contact: {
+                title: "Contact Us",
+                content: "If you have any questions about this Privacy Policy, please contact us at info@irinsfashion.com or +8801648593538."
+            }
+        },
     },
     bn: {
         nav: {
@@ -627,6 +722,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
             faq: 'প্রশ্নোত্তর',
             shipping: 'শিপিং',
             returns: 'রিটার্ন',
+            privacy: 'গোপনীয়তা নীতি',
         },
         cart: {
             title: 'শপিং কার্ট',
@@ -798,6 +894,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
             insideDhaka: "ঢাকার ভেতরে",
             outsideDhaka: "ঢাকার বাইরে",
             businessDays: "কর্মদিবস",
+
             freeShippingBanner: "৳৫,০০০ এর উপরে অর্ডারে ফ্রি শিপিং",
             whyShopWithUs: "কেন আমাদের কাছ থেকে কিনবেন?",
             carefulPackaging: "যত্নশীল প্যাকেজিং",
@@ -858,6 +955,59 @@ export const dictionaries: Record<Locale, Dictionary> = {
             supportReady: "আমাদের সাপোর্ট টিম আপনার রিটার্ন অনুরোধে সাহায্য করতে প্রস্তুত",
             contactSupport: "সাপোর্টে যোগাযোগ করুন",
             viewFaq: "FAQ দেখুন",
+        },
+        privacyPage: {
+            title: "গোপনীয়তা নীতি",
+            subtitle: "আপনার গোপনীয়তা আমাদের কাছে গুরুত্বপূর্ণ। আমরা কীভাবে আপনার তথ্য সংগ্রহ, ব্যবহার এবং সুরক্ষা করি তা জানুন।",
+            lastUpdated: "সর্বশেষ আপডেট",
+            introduction: {
+                title: "ভূমিকা",
+                content: "আইরিন'স ফ্যাশনে, আমরা আপনার গোপনীয়তা রক্ষা করতে এবং আপনার ব্যক্তিগত তথ্যের নিরাপত্তা নিশ্চিত করতে প্রতিশ্রুতিবদ্ধ। এই গোপনীয়তা নীতিতে বর্ণিত হয়েছে যে আপনি যখন আমাদের ওয়েবসাইট পরিদর্শন করেন বা কেনাকাটা করেন তখন আমরা কীভাবে আপনার ডেটা সংগ্রহ, ব্যবহার এবং সুরক্ষা করি।"
+            },
+            collection: {
+                title: "আমরা যে তথ্য সংগ্রহ করি",
+                content: "আমরা আপনার অর্ডার প্রসেস করতে এবং আপনার কেনাকাটার অভিজ্ঞতা উন্নত করতে প্রয়োজনীয় তথ্য সংগ্রহ করি, যার মধ্যে রয়েছে:",
+                items: [
+                    "ব্যক্তিগত পরিচয় (নাম, ইমেল, ফোন নম্বর, শিপিং ঠিকানা)",
+                    "অর্ডার ইতিহাস এবং কেনাকাটার পছন্দ",
+                    "ওয়েবসাইট অপ্টিমাইজেশনের জন্য ডিভাইস এবং ব্রাউজার তথ্য"
+                ]
+            },
+            usage: {
+                title: "আমরা কীভাবে আপনার তথ্য ব্যবহার করি",
+                content: "আপনার ডেটা শুধুমাত্র নিম্নলিখিত উদ্দেশ্যে ব্যবহার করা হয়:",
+                items: [
+                    "আপনার অর্ডার প্রসেস এবং ডেলিভারি করা",
+                    "অর্ডার আপডেট এবং ডেলিভারি স্ট্যাটাস জানানো",
+                    "আমাদের ওয়েবসাইটের কার্যকারিতা এবং কাস্টমার সার্ভিস উন্নত করা",
+                    "প্রমোশনাল অফার পাঠানো (শুধুমাত্র যদি আপনি রাজি থাকেন)"
+                ]
+            },
+            sharing: {
+                title: "তথ্য শেয়ারিং",
+                content: "আমরা অন্যদের কাছে আপনার ব্যক্তিগত পরিচয় তথ্য বিক্রি, বাণিজ্য বা ভাড়া দেই না। আমরা আমাদের ব্যবসায়িক অংশীদার এবং বিশ্বস্ত সহযোগীদের সাথে দর্শকদের এবং ব্যবহারকারীদের সম্পর্কে ব্যক্তিগত পরিচয় তথ্যের সাথে লিঙ্ক করা নেই এমন সাধারণ সামগ্রিক ডেমোগ্রাফিক তথ্য শেয়ার করতে পারি।"
+            },
+            security: {
+                title: "ডেটা নিরাপত্তা",
+                content: "আপনার ব্যক্তিগত তথ্যের অননুমোদিত অ্যাক্সেস, পরিবর্তন, প্রকাশ বা ধ্বংসের বিরুদ্ধে সুরক্ষার জন্য আমরা উপযুক্ত ডেটা সংগ্রহ, স্টোরেজ এবং প্রসেসিং অনুশীলন এবং নিরাপত্তা ব্যবস্থা গ্রহণ করি।"
+            },
+            rights: {
+                title: "আপনার অধিকার",
+                content: "আপনার অধিকার আছে:",
+                items: [
+                    "আপনার সম্পর্কে আমাদের কাছে থাকা ব্যক্তিগত ডেটা অ্যাক্সেস করার",
+                    "ভুল ডেটা সংশোধনের অনুরোধ করার",
+                    "আপনার ডেটা মুছে ফেলার অনুরোধ করার (আইনি সংরক্ষণের প্রয়োজনীয়তা সাপেক্ষে)"
+                ]
+            },
+            cookies: {
+                title: "কুকিজ",
+                content: "আমাদের ওয়েবসাইট ব্যবহারকারীর অভিজ্ঞতা উন্নত করতে 'কুকিজ' ব্যবহার করে। আপনি কুকিজ প্রত্যাখ্যান করতে বা কুকিজ পাঠানো হলে আপনাকে সতর্ক করতে আপনার ওয়েব ব্রাউজার সেট করতে পারেন।"
+            },
+            contact: {
+                title: "যোগাযোগ করুন",
+                content: "এই গোপনীয়তা নীতি সম্পর্কে আপনার কোন প্রশ্ন থাকলে, অনুগ্রহ করে আমাদের সাথে info@irinsfashion.com বা +8801648593538 এ যোগাযোগ করুন।"
+            }
         },
     },
 };
