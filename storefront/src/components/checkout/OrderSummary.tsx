@@ -31,64 +31,72 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
 
             {/* Product Items */}
             <div style={{ marginBottom: '24px' }}>
-                {items.map((item) => (
-                    <div key={item.cartItemId} style={{
-                        display: 'flex',
-                        gap: '16px',
-                        marginBottom: '20px',
-                        paddingBottom: '20px',
-                        borderBottom: '1px solid #e5e5e5',
-                    }}>
-                        <div style={{
-                            position: 'relative',
-                            width: '80px',
-                            height: '100px',
-                            flexShrink: 0,
-                            borderRadius: '8px',
-                            overflow: 'hidden',
-                            border: '2px solid #e5e5e5',
-                            backgroundColor: '#f5f5f5',
+                {items.map((item) => {
+                    const itemTotal = item.price * item.quantity;
+                    return (
+                        <div key={item.cartItemId} style={{
+                            display: 'flex',
+                            gap: '16px',
+                            marginBottom: '20px',
+                            paddingBottom: '20px',
+                            borderBottom: '1px solid #e5e5e5',
                         }}>
-                            <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                style={{ objectFit: 'cover' }}
-                            />
                             <div style={{
-                                position: 'absolute',
-                                top: '-4px',
-                                right: '-4px',
-                                width: '24px',
-                                height: '24px',
-                                backgroundColor: '#111',
-                                color: '#fff',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '11px',
-                                fontWeight: '700',
-                                border: '2px solid #fff',
+                                position: 'relative',
+                                width: '80px',
+                                height: '100px',
+                                flexShrink: 0,
+                                borderRadius: '8px',
+                                overflow: 'hidden',
+                                border: '2px solid #e5e5e5',
+                                backgroundColor: '#f5f5f5',
                             }}>
-                                {item.quantity}
+                                <Image
+                                    src={item.image}
+                                    alt={item.name}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                />
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '-4px',
+                                    right: '-4px',
+                                    width: '24px',
+                                    height: '24px',
+                                    backgroundColor: '#111',
+                                    color: '#fff',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    border: '2px solid #fff',
+                                }}>
+                                    {item.quantity}
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                            <div>
-                                <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>
-                                    {item.name}
-                                </h3>
-                                <p style={{ fontSize: '13px', color: '#6b7280' }}>
-                                    {item.selectedSize} / {item.selectedColor}
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>
+                                        {item.name}
+                                    </h3>
+                                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '6px' }}>
+                                        {item.selectedSize} / {item.selectedColor}
+                                    </p>
+                                    {/* Price × Quantity breakdown */}
+                                    <p style={{ fontSize: '12px', color: '#9ca3af' }}>
+                                        ৳ {item.price.toLocaleString()} × {item.quantity}
+                                    </p>
+                                </div>
+                                {/* Item Total */}
+                                <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
+                                    ৳ {itemTotal.toLocaleString()}
                                 </p>
                             </div>
-                            <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
-                                ৳ {item.price.toLocaleString()}
-                            </p>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Pricing */}
