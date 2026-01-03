@@ -10,10 +10,12 @@ import SortSelect from '@/components/category/SortSelect';
 import styles from './shop.module.css';
 
 // Category icon mapping
+// Category icon mapping
 const categoryIcons: Record<string, string> = {
     'Hijab': '🧕',
     'Abaya': '👗',
-    'Dress': '👘',
+    'Borkha': '👗',
+    'Gown': '👗',
     'Accessories': '👜',
 };
 
@@ -59,7 +61,8 @@ export default function ShopPage() {
         switch (category.toLowerCase()) {
             case 'hijab': return t.categories.hijab;
             case 'abaya': return t.categories.abaya;
-            case 'dress': return t.categories.dress;
+            case 'borkha': return t.categories.borkha;
+            case 'gown': return t.categories.gown;
             case 'accessories': return t.categories.accessories;
             default: return category;
         }
