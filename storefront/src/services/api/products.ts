@@ -371,3 +371,55 @@ export const getProductBySku = async (sku: string): Promise<Product | undefined>
     await new Promise((resolve) => setTimeout(resolve, 300));
     return MOCK_PRODUCTS.find(p => p.sku === sku);
 };
+
+export const getAllProducts = async (
+    categories?: string[],
+    filters?: FilterOptions,
+    sort?: SortOption
+): Promise<{ products: Product[], categories: string[] }> => {
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Get unique categories
+    const allCategories = [...new Set(MOCK_PRODUCTS.map(p => p.category))];
+
+    let products = [...MOCK_PRODUCTS];
+
+    // Filter by categories
+    if (categories && categories.length > 0) {
+        products = products.filter(p =>
+            categories.some(cat => cat.toLowerCase() === p.category.toLowerCase())
+        );
+    }
+
+    // Filtering
+    if (filters) {
+        if (filters.minPrice !== undefined) {
+            products = products.filter(p => p.price >= filters.minPrice!);
+        }
+        if (filters.maxPrice !== undefined) {
+            products = products.filter(p => p.price <= filters.maxPrice!);
+        }
+        if (filters.isNew) {
+            products = products.filter(p => p.isNew);
+        }
+    }
+
+    // Sorting
+    if (sort) {
+        products.sort((a, b) => {
+            switch (sort) {
+                case 'price_asc':
+                    return a.price - b.price;
+                case 'price_desc':
+                    return b.price - a.price;
+                case 'newest':
+                    return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+                default:
+                    return 0;
+            }
+        });
+    }
+
+    return { products, categories: allCategories };
+};
