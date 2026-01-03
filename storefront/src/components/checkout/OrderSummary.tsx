@@ -119,7 +119,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                 </div>
 
                 {/* Discount */}
-                {discount && discount > 0 && (
+                {(discount || 0) > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', color: '#16a34a' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <span style={{ fontSize: '14px' }}>{t.checkout.coupon?.discount || 'Discount'}</span>
