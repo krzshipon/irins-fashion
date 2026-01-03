@@ -20,9 +20,15 @@ export const MOCK_CATEGORIES: Category[] = [
     },
     {
         id: 'cat-3',
-        nameIdentifier: 'categories.dress',
-        image: '/images/cat-dress.png', // Will generate soon
-        link: '/collection/dresses',
+        nameIdentifier: 'categories.borkha',
+        image: '/images/cat-dress.png',
+        link: '/collection/borkhas',
+    },
+    {
+        id: 'cat-gown',
+        nameIdentifier: 'categories.gown',
+        image: '/images/cat-gown.png',
+        link: '/collection/gowns',
     },
     {
         id: 'cat-4',

@@ -18,6 +18,8 @@ export interface Dictionary {
         hijab: string;
         abaya: string;
         dress: string;
+        borkha: string;
+        gown: string;
         accessories: string;
     };
     products: {
@@ -304,6 +306,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
             hijab: 'Hijabs',
             abaya: 'Abayas',
             dress: 'Dresses',
+            borkha: 'Borkhas',
+            gown: 'Gowns',
             accessories: 'Accessories',
         },
         products: {
@@ -588,6 +592,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
             hijab: 'হিজাব',
             abaya: 'আবায়া',
             dress: 'জুব্বা',
+            borkha: 'বোরখা',
+            gown: 'গাউন',
             accessories: 'অন্যান্য',
         },
         products: {

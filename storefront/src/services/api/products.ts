@@ -175,14 +175,14 @@ export const MOCK_PRODUCTS: Product[] = [
         colorImages: { 'Beige': '/images/product-abaya.png' }
     },
 
-    // Dresses
+    // Borkhas (formerly Dresses)
     {
         id: 'd1',
         sku: 'IF-DRS-FL-001',
         name: 'Floral Maxi Dress',
         price: 3500.0,
         currency: 'BDT',
-        category: 'Dress',
+        category: 'Borkha',
         image: '/images/product-dress.png',
         isNew: true,
         description: 'Embrace the season with our Floral Maxi Dress. Featuring a vibrant botanical print and a flattering A-line cut, this dress is perfect for brunch or a day out. Long sleeves and a high neckline ensure modest coverage.',
@@ -200,7 +200,7 @@ export const MOCK_PRODUCTS: Product[] = [
         name: 'Elegant Evening Gown',
         price: 8500.0,
         currency: 'BDT',
-        category: 'Dress',
+        category: 'Borkha',
         image: '/images/product-dress.png',
         description: 'Make an entrance in this Elegant Evening Gown. With detailed beading on the bodice and a sweeping skirt, this gown radiates sophistication. Fully lined for comfort and modesty.',
         images: ['/images/product-dress.png'],
@@ -217,7 +217,7 @@ export const MOCK_PRODUCTS: Product[] = [
         name: 'Summer Cotton Dress',
         price: 2200.0,
         currency: 'BDT',
-        category: 'Dress',
+        category: 'Borkha',
         image: '/images/product-dress.png',
         description: 'Stay cool and chic in our Summer Cotton Dress. Made from 100% organic cotton, this breathable dress features functional pockets and a relaxed fit. Your go-to choice for hot days.',
         images: ['/images/product-dress.png'],
@@ -234,7 +234,7 @@ export const MOCK_PRODUCTS: Product[] = [
         name: 'Pleated Midi Dress',
         price: 2800.0,
         currency: 'BDT',
-        category: 'Dress',
+        category: 'Borkha',
         image: '/images/product-dress.png',
         description: 'Style meets texture in this Pleated Midi Dress. The accordion pleats add movement and depth, while the belted waist defines your silhouette. Pairs perfectly with boots or heels.',
         images: ['/images/product-dress.png'],
@@ -244,6 +244,23 @@ export const MOCK_PRODUCTS: Product[] = [
             'Rust': '/images/product-dress.png',
             'Black': '/images/product-dress.png'
         }
+    },
+
+    // Gowns
+    {
+        id: 'g1',
+        sku: 'IF-GWN-RB-001',
+        name: 'Royal Blue Velvet Gown',
+        price: 9500.0,
+        currency: 'BDT',
+        category: 'Gown',
+        image: '/images/product-dress.png',
+        isNew: true,
+        description: 'Stunning Royal Blue Velvet Gown perfect for special occasions. Features luxurious velvet fabric with intricate detailing.',
+        images: ['/images/product-dress.png'],
+        sizes: ['S', 'M', 'L'],
+        colors: ['Royal Blue'],
+        colorImages: { 'Royal Blue': '/images/product-dress.png' }
     },
 
     // Accessories
@@ -293,7 +310,8 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
 const slugToCategoryMap: Record<string, string> = {
     'hijabs': 'Hijab',
     'abayas': 'Abaya',
-    'dresses': 'Dress',
+    'borkhas': 'Borkha',
+    'gowns': 'Gown',
     'accessories': 'Accessories',
 };
 

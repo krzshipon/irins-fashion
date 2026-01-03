@@ -116,9 +116,15 @@ export default function Home() {
       />
 
       <CategoryProductRow
-        titleKey="categories.dress"
-        categorySlug="Dress"
-        link="/collection/dresses"
+        titleKey="categories.borkha"
+        categorySlug="Borkha"
+        link="/collection/borkhas"
+      />
+
+      <CategoryProductRow
+        titleKey="categories.gown"
+        categorySlug="Gown"
+        link="/collection/gowns"
       />
 
       <CategoryProductRow
