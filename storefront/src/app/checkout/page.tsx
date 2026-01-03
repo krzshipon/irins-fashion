@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCart, CartItem } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
 import { ShippingForm } from '@/components/checkout/ShippingForm';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
@@ -11,8 +11,13 @@ import { submitOrder, getShippingRates } from '@/services/api/checkout';
 
 const CheckoutPage = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { cartItems, cartCount, clearCart } = useCart();
     const { dictionary: t } = useLocalization();
+
+    // Check if this is a direct order
+    const isDirectOrder = searchParams?.get('direct') === 'true';
+    const [directOrderItem, setDirectOrderItem] = useState<CartItem | null>(null);
 
     const [shippingDetails, setShippingDetails] = useState<ShippingDetails>({
         fullName: '',
@@ -22,6 +27,7 @@ const CheckoutPage = () => {
         city: '',
         postalCode: '',
         deliveryZone: 'inside_dhaka',
+        notes: '',
     });
 
     const [shippingRates, setShippingRates] = useState<ShippingRates>({
@@ -39,16 +45,37 @@ const CheckoutPage = () => {
         // Fetch shipping rates on mount
         const fetchRates = async () => {
             const rates = await getShippingRates();
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setShippingRates(rates);
         };
         fetchRates();
-    }, []);
+
+        // Check for direct order item in sessionStorage
+        if (isDirectOrder) {
+            const storedItem = sessionStorage.getItem('directOrder');
+            if (storedItem) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
+                setDirectOrderItem(JSON.parse(storedItem));
+            }
+        }
+    }, [isDirectOrder]);
 
     useEffect(() => {
-        if (isMounted && cartCount === 0 && !isSuccess) {
-            router.push('/cart');
+        // Only redirect to cart if no items AND not a direct order
+        if (isMounted && !isSuccess) {
+            if (isDirectOrder && !directOrderItem) {
+                // Direct order but no item found - redirect to home
+                router.push('/');
+            } else if (!isDirectOrder && cartCount === 0) {
+                router.push('/cart');
+            }
         }
-    }, [cartCount, isMounted, router, isSuccess]);
+    }, [cartCount, isMounted, router, isSuccess, isDirectOrder, directOrderItem]);
+
+    // Get the items to display based on order type
+    const checkoutItems: CartItem[] = isDirectOrder && directOrderItem
+        ? [directOrderItem]
+        : cartItems;
 
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof ShippingDetails, string>> = {};
@@ -83,7 +110,7 @@ const CheckoutPage = () => {
     };
 
     const calculateSubtotal = () => {
-        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        return checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
     const getShippingCost = () => {
@@ -105,7 +132,7 @@ const CheckoutPage = () => {
         const total = subtotal + shippingCost;
 
         const order: Order = {
-            items: cartItems,
+            items: checkoutItems,
             subtotal,
             shippingCost,
             total,
@@ -117,7 +144,14 @@ const CheckoutPage = () => {
             const response = await submitOrder(order);
             if (response.success) {
                 setIsSuccess(true);
-                clearCart();
+                // Clear cart only if it's not a direct order
+                if (!isDirectOrder) {
+                    clearCart();
+                }
+                // Clear direct order from session storage
+                if (isDirectOrder) {
+                    sessionStorage.removeItem('directOrder');
+                }
                 router.push(`/checkout/success?orderId=${response.orderId}`);
             } else {
                 alert('Failed to place order. Please try again.');
@@ -131,7 +165,7 @@ const CheckoutPage = () => {
     };
 
     if (!isMounted) return null;
-    if (cartCount === 0) return null;
+    if (checkoutItems.length === 0) return null;
 
     return (
         <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
@@ -170,7 +204,7 @@ const CheckoutPage = () => {
                             top: '20px'
                         }}>
                             <OrderSummary
-                                items={cartItems}
+                                items={checkoutItems}
                                 subtotal={calculateSubtotal()}
                                 shippingCost={getShippingCost()}
                                 total={calculateTotal()}

@@ -10,6 +10,7 @@ export interface ShippingDetails {
     city: string;
     postalCode: string;
     deliveryZone: DeliveryZone;
+    notes: string;
 }
 
 export interface ShippingRates {

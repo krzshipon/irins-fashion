@@ -208,6 +208,34 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                         {errors.postalCode && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.postalCode}</p>}
                     </div>
                 </div>
+
+                {/* Order Notes */}
+                <div style={{ marginTop: '20px' }}>
+                    <label htmlFor="notes" style={labelStyle}>
+                        {t.checkout.form.notes} <span style={{ fontWeight: '400', color: '#9ca3af' }}>({t.common.optional})</span>
+                    </label>
+                    <textarea
+                        name="notes"
+                        id="notes"
+                        value={value.notes}
+                        onChange={(e) => onChange({ ...value, notes: e.target.value })}
+                        placeholder={t.checkout.form.notesPlaceholder}
+                        rows={3}
+                        style={{
+                            ...inputStyle,
+                            resize: 'vertical',
+                            minHeight: '80px',
+                        }}
+                        onFocus={(e) => {
+                            e.target.style.borderColor = '#111';
+                            e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
+                        }}
+                        onBlur={(e) => {
+                            e.target.style.borderColor = '#d1d5db';
+                            e.target.style.boxShadow = 'none';
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Delivery Zone Section */}

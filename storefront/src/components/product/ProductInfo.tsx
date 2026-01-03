@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/services/api/types';
 import styles from './ProductDetails.module.css';
 import { useCart } from '@/context/CartContext';
+import { useLocalization } from '@/context/LocalizationContext';
 
 interface ProductInfoProps {
     product: Product;
@@ -13,6 +15,8 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product, selectedColor, onColorSelect, initialSize }: ProductInfoProps) {
+    const router = useRouter();
+    const { dictionary: t } = useLocalization();
     const [selectedSize, setSelectedSize] = useState<string | null>(() => {
         if (initialSize && product.sizes?.includes(initialSize)) {
             return initialSize;
@@ -40,6 +44,30 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
             selectedColor: selectedColor || undefined,
             selectedSize: selectedSize || undefined
         });
+    };
+
+    const handleOrderNow = () => {
+        if (!selectedColor && product.colors && product.colors.length > 0) {
+            alert('Please select a color');
+            return;
+        }
+
+        // Store direct order item in sessionStorage and navigate to checkout
+        const directOrderItem = {
+            id: product.id,
+            sku: product.sku,
+            name: product.name,
+            price: product.price,
+            currency: product.currency,
+            image: product.image,
+            quantity: 1,
+            selectedColor: selectedColor || undefined,
+            selectedSize: selectedSize || undefined,
+            cartItemId: `direct-${product.id}-${selectedColor || 'nocolor'}-${selectedSize || 'nosize'}`,
+        };
+
+        sessionStorage.setItem('directOrder', JSON.stringify(directOrderItem));
+        router.push('/checkout?direct=true');
     };
 
     // Helper for color values (this would ideally come from a theme or backend)
@@ -123,30 +151,47 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
 
                     if (existingCartItem) {
                         return (
-                            <div className={styles.quantityControl}>
+                            <>
+                                <div className={styles.quantityControl}>
+                                    <button
+                                        className={styles.qtyBtn}
+                                        onClick={() => updateQuantity(existingCartItem.cartItemId, existingCartItem.quantity - 1)}
+                                    >-</button>
+                                    <span className={styles.qtyValue}>{existingCartItem.quantity}</span>
+                                    <button
+                                        className={styles.qtyBtn}
+                                        onClick={() => updateQuantity(existingCartItem.cartItemId, existingCartItem.quantity + 1)}
+                                    >+</button>
+                                </div>
                                 <button
-                                    className={styles.qtyBtn}
-                                    onClick={() => updateQuantity(existingCartItem.cartItemId, existingCartItem.quantity - 1)}
-                                >-</button>
-                                <span className={styles.qtyValue}>{existingCartItem.quantity}</span>
-                                <button
-                                    className={styles.qtyBtn}
-                                    onClick={() => updateQuantity(existingCartItem.cartItemId, existingCartItem.quantity + 1)}
-                                >+</button>
-                            </div>
+                                    className={styles.orderNowBtn}
+                                    onClick={handleOrderNow}
+                                >
+                                    {t.products.orderNow}
+                                </button>
+                            </>
                         );
                     }
 
                     return (
-                        <button
-                            className={styles.addToCartBtn}
-                            onClick={handleAddToCart}
-                        >
-                            Add to Cart
-                        </button>
+                        <>
+                            <button
+                                className={styles.addToCartBtn}
+                                onClick={handleAddToCart}
+                            >
+                                {t.products.addToCart}
+                            </button>
+                            <button
+                                className={styles.orderNowBtn}
+                                onClick={handleOrderNow}
+                            >
+                                {t.products.orderNow}
+                            </button>
+                        </>
                     );
                 })()}
             </div>
         </div>
     );
 }
+

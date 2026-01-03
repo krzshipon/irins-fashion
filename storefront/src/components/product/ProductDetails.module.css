@@ -298,3 +298,25 @@
     min-width: 24px;
     text-align: center;
 }
+
+.orderNowBtn {
+    flex: 1;
+    background: #fff;
+    color: #1a1a1a;
+    height: 56px;
+    border-radius: 50px;
+    border: 2px solid #1a1a1a;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.orderNowBtn:hover {
+    background: #1a1a1a;
+    color: #fff;
+}

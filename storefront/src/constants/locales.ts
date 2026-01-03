@@ -23,6 +23,7 @@ export interface Dictionary {
     products: {
         newArrival: string;
         addToCart: string;
+        orderNow: string;
     };
     common: {
         seeMore: string;
@@ -120,6 +121,8 @@ export interface Dictionary {
             address: string;
             city: string;
             postalCode: string;
+            notes: string;
+            notesPlaceholder: string;
         };
         delivery: {
             insideDhaka: string;
@@ -288,6 +291,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         products: {
             newArrival: 'New Arrival',
             addToCart: 'Add to Cart',
+            orderNow: 'Order Now',
         },
         common: {
             seeMore: 'See More',
@@ -385,6 +389,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 address: "Street Address",
                 city: "City",
                 postalCode: "Postal Code",
+                notes: "Order Notes",
+                notesPlaceholder: "Special instructions, custom requirements, or delivery preferences...",
             },
             delivery: {
                 insideDhaka: "Inside Dhaka City",
@@ -551,6 +557,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         products: {
             newArrival: 'নতুন আগমন',
             addToCart: 'কার্টে যোগ করুন',
+            orderNow: 'এখনই অর্ডার করুন',
         },
         common: {
             seeMore: 'আরও দেখুন',
@@ -648,6 +655,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 address: "ঠিকানা",
                 city: "শহর",
                 postalCode: "পোস্টাল কোড",
+                notes: "অর্ডার নোট",
+                notesPlaceholder: "বিশেষ নির্দেশনা, কাস্টম প্রয়োজনীয়তা, বা ডেলিভারি পছন্দ...",
             },
             delivery: {
                 insideDhaka: "ঢাকার ভেতরে",
