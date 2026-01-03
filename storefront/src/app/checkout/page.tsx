@@ -8,6 +8,7 @@ import { ShippingForm } from '@/components/checkout/ShippingForm';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { ShippingDetails, ShippingRates, Order } from '@/types/checkout';
 import { submitOrder, getShippingRates } from '@/services/api/checkout';
+import { getDivisions, Division } from '@/services/api/divisions';
 
 const CheckoutPage = () => {
     const router = useRouter();
@@ -21,11 +22,9 @@ const CheckoutPage = () => {
 
     const [shippingDetails, setShippingDetails] = useState<ShippingDetails>({
         fullName: '',
-        email: '',
         phone: '',
         address: '',
-        city: '',
-        postalCode: '',
+        division: '',
         deliveryZone: 'inside_dhaka',
         notes: '',
     });
@@ -35,6 +34,7 @@ const CheckoutPage = () => {
         outsideDhaka: 120,
     });
 
+    const [divisions, setDivisions] = useState<Division[]>([]);
     const [errors, setErrors] = useState<Partial<Record<keyof ShippingDetails, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -42,13 +42,18 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         setIsMounted(true);
-        // Fetch shipping rates on mount
-        const fetchRates = async () => {
-            const rates = await getShippingRates();
+        // Fetch shipping rates and divisions on mount
+        const fetchData = async () => {
+            const [rates, divisionsList] = await Promise.all([
+                getShippingRates(),
+                getDivisions(),
+            ]);
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setShippingRates(rates);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setDivisions(divisionsList);
         };
-        fetchRates();
+        fetchData();
 
         // Check for direct order item in sessionStorage
         if (isDirectOrder) {
@@ -79,7 +84,7 @@ const CheckoutPage = () => {
 
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof ShippingDetails, string>> = {};
-        const requiredFields: (keyof ShippingDetails)[] = ['fullName', 'phone', 'address', 'city', 'postalCode'];
+        const requiredFields: (keyof ShippingDetails)[] = ['fullName', 'phone', 'address', 'division'];
 
         requiredFields.forEach(field => {
             if (!shippingDetails[field] || shippingDetails[field].trim() === '') {
@@ -93,11 +98,6 @@ const CheckoutPage = () => {
             if (!phoneRegex.test(shippingDetails.phone)) {
                 newErrors.phone = 'Invalid BD mobile number (01XXXXXXXXX)';
             }
-        }
-
-        // Email validation
-        if (shippingDetails.email && !/\S+@\S+\.\S+/.test(shippingDetails.email)) {
-            newErrors.email = 'Invalid email';
         }
 
         // Delivery zone validation
@@ -191,6 +191,7 @@ const CheckoutPage = () => {
                             onChange={setShippingDetails}
                             errors={errors}
                             shippingRates={shippingRates}
+                            divisions={divisions}
                         />
                     </div>
 

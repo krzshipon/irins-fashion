@@ -4,11 +4,9 @@ export type DeliveryZone = 'inside_dhaka' | 'outside_dhaka';
 
 export interface ShippingDetails {
     fullName: string;
-    email: string;
     phone: string;
     address: string;
-    city: string;
-    postalCode: string;
+    division: string;
     deliveryZone: DeliveryZone;
     notes: string;
 }

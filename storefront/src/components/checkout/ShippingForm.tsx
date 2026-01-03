@@ -1,18 +1,20 @@
 import React from 'react';
 import { ShippingDetails, DeliveryZone, ShippingRates } from '@/types/checkout';
 import { useLocalization } from '@/context/LocalizationContext';
+import { Division } from '@/services/api/divisions';
 
 interface ShippingFormProps {
     value: ShippingDetails;
     onChange: (details: ShippingDetails) => void;
     errors: Partial<Record<keyof ShippingDetails, string>>;
     shippingRates: ShippingRates;
+    divisions: Division[];
 }
 
-export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, errors, shippingRates }) => {
-    const { dictionary: t } = useLocalization();
+export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, errors, shippingRates, divisions }) => {
+    const { dictionary: t, locale } = useLocalization();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value: newValue } = e.target;
         onChange({ ...value, [name as keyof ShippingDetails]: newValue });
     };
@@ -36,6 +38,17 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
     const inputErrorStyle: React.CSSProperties = {
         ...inputStyle,
         borderColor: '#ef4444',
+    };
+
+    const selectStyle: React.CSSProperties = {
+        ...inputStyle,
+        cursor: 'pointer',
+        appearance: 'none',
+        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+        backgroundPosition: 'right 12px center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '20px',
+        paddingRight: '40px',
     };
 
     const labelStyle: React.CSSProperties = {
@@ -84,7 +97,7 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                             maxLength={11}
                             style={{
                                 ...(errors.phone ? inputErrorStyle : inputStyle),
-                                paddingLeft: '50px',
+                                paddingLeft: '52px',
                             }}
                             onFocus={(e) => {
                                 e.target.style.borderColor = '#111';
@@ -98,63 +111,79 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                     </div>
                     {errors.phone && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.phone}</p>}
                 </div>
-                <div style={{ marginBottom: '20px' }}>
-                    <label htmlFor="email" style={labelStyle}>
-                        {t.checkout.form.email} <span style={{ color: '#9ca3af', fontWeight: '400' }}>({t.common.optional})</span>
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={value.email || ''}
-                        onChange={handleChange}
-                        placeholder="your@email.com"
-                        style={errors.email ? inputErrorStyle : inputStyle}
-                        onFocus={(e) => {
-                            e.target.style.borderColor = '#111';
-                            e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
-                        }}
-                        onBlur={(e) => {
-                            e.target.style.borderColor = errors.email ? '#ef4444' : '#d1d5db';
-                            e.target.style.boxShadow = 'none';
-                        }}
-                    />
-                    {errors.email && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.email}</p>}
-                </div>
             </div>
 
             {/* Shipping Section */}
             <div style={{ marginBottom: '40px' }}>
                 <h2 style={sectionTitleStyle}>{t.checkout.shippingAddress}</h2>
-                <div style={{ marginBottom: '20px' }}>
-                    <label htmlFor="fullName" style={labelStyle}>{t.checkout.form.fullName}</label>
-                    <input
-                        type="text"
-                        name="fullName"
-                        id="fullName"
-                        value={value.fullName || ''}
-                        onChange={handleChange}
-                        style={errors.fullName ? inputErrorStyle : inputStyle}
-                        onFocus={(e) => {
-                            e.target.style.borderColor = '#111';
-                            e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
-                        }}
-                        onBlur={(e) => {
-                            e.target.style.borderColor = errors.fullName ? '#ef4444' : '#d1d5db';
-                            e.target.style.boxShadow = 'none';
-                        }}
-                    />
-                    {errors.fullName && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.fullName}</p>}
+
+                {/* Full Name and Division - side by side on larger screens */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', marginBottom: '20px' }} className="md:!grid-cols-2">
+                    <div>
+                        <label htmlFor="fullName" style={labelStyle}>{t.checkout.form.fullName}</label>
+                        <input
+                            type="text"
+                            name="fullName"
+                            id="fullName"
+                            value={value.fullName || ''}
+                            onChange={handleChange}
+                            style={errors.fullName ? inputErrorStyle : inputStyle}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#111';
+                                e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = errors.fullName ? '#ef4444' : '#d1d5db';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        />
+                        {errors.fullName && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.fullName}</p>}
+                    </div>
+
+                    {/* Division Dropdown */}
+                    <div>
+                        <label htmlFor="division" style={labelStyle}>{t.checkout.form.division}</label>
+                        <select
+                            name="division"
+                            id="division"
+                            value={value.division || ''}
+                            onChange={handleChange}
+                            style={errors.division ? { ...selectStyle, borderColor: '#ef4444' } : selectStyle}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#111';
+                                e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = errors.division ? '#ef4444' : '#d1d5db';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        >
+                            <option value="">{t.checkout.form.selectDivision}</option>
+                            {divisions.map((div) => (
+                                <option key={div.id} value={div.id}>
+                                    {locale === 'bn' ? div.nameBn : div.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.division && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.division}</p>}
+                    </div>
                 </div>
+
+                {/* Full Address */}
                 <div style={{ marginBottom: '20px' }}>
-                    <label htmlFor="address" style={labelStyle}>{t.checkout.form.address}</label>
-                    <input
-                        type="text"
+                    <label htmlFor="address" style={labelStyle}>{t.checkout.form.fullAddress}</label>
+                    <textarea
                         name="address"
                         id="address"
                         value={value.address || ''}
                         onChange={handleChange}
-                        style={errors.address ? inputErrorStyle : inputStyle}
+                        placeholder={t.checkout.form.fullAddressPlaceholder}
+                        rows={2}
+                        style={{
+                            ...(errors.address ? inputErrorStyle : inputStyle),
+                            resize: 'vertical',
+                            minHeight: '70px',
+                        }}
                         onFocus={(e) => {
                             e.target.style.borderColor = '#111';
                             e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
@@ -166,48 +195,6 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                     />
                     {errors.address && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.address}</p>}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div style={{ marginBottom: '20px' }}>
-                        <label htmlFor="city" style={labelStyle}>{t.checkout.form.city}</label>
-                        <input
-                            type="text"
-                            name="city"
-                            id="city"
-                            value={value.city || ''}
-                            onChange={handleChange}
-                            style={errors.city ? inputErrorStyle : inputStyle}
-                            onFocus={(e) => {
-                                e.target.style.borderColor = '#111';
-                                e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.borderColor = errors.city ? '#ef4444' : '#d1d5db';
-                                e.target.style.boxShadow = 'none';
-                            }}
-                        />
-                        {errors.city && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.city}</p>}
-                    </div>
-                    <div style={{ marginBottom: '20px' }}>
-                        <label htmlFor="postalCode" style={labelStyle}>{t.checkout.form.postalCode}</label>
-                        <input
-                            type="text"
-                            name="postalCode"
-                            id="postalCode"
-                            value={value.postalCode || ''}
-                            onChange={handleChange}
-                            style={errors.postalCode ? inputErrorStyle : inputStyle}
-                            onFocus={(e) => {
-                                e.target.style.borderColor = '#111';
-                                e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.1)';
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.borderColor = errors.postalCode ? '#ef4444' : '#d1d5db';
-                                e.target.style.boxShadow = 'none';
-                            }}
-                        />
-                        {errors.postalCode && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{errors.postalCode}</p>}
-                    </div>
-                </div>
 
                 {/* Order Notes */}
                 <div style={{ marginTop: '20px' }}>
@@ -218,7 +205,7 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                         name="notes"
                         id="notes"
                         value={value.notes}
-                        onChange={(e) => onChange({ ...value, notes: e.target.value })}
+                        onChange={handleChange}
                         placeholder={t.checkout.form.notesPlaceholder}
                         rows={3}
                         style={{
@@ -371,6 +358,6 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ value, onChange, err
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

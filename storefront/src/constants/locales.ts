@@ -115,12 +115,12 @@ export interface Dictionary {
         placeOrder: string;
         form: {
             fullName: string;
-            email: string;
             phone: string;
             mobileNumber: string;
-            address: string;
-            city: string;
-            postalCode: string;
+            division: string;
+            selectDivision: string;
+            fullAddress: string;
+            fullAddressPlaceholder: string;
             notes: string;
             notesPlaceholder: string;
         };
@@ -383,12 +383,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
             placeOrder: "Place Order",
             form: {
                 fullName: "Full Name",
-                email: "Email Address",
                 phone: "Phone Number",
                 mobileNumber: "Mobile Number",
-                address: "Street Address",
-                city: "City",
-                postalCode: "Postal Code",
+                division: "Division",
+                selectDivision: "Select Division",
+                fullAddress: "Full Address",
+                fullAddressPlaceholder: "House no, road no, area, landmarks...",
                 notes: "Order Notes",
                 notesPlaceholder: "Special instructions, custom requirements, or delivery preferences...",
             },
@@ -649,12 +649,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
             placeOrder: "অর্ডার করুন",
             form: {
                 fullName: "পুরো নাম",
-                email: "ইমেইল",
                 phone: "ফোন নম্বর",
                 mobileNumber: "মোবাইল নম্বর",
-                address: "ঠিকানা",
-                city: "শহর",
-                postalCode: "পোস্টাল কোড",
+                division: "বিভাগ",
+                selectDivision: "বিভাগ নির্বাচন করুন",
+                fullAddress: "পূর্ণ ঠিকানা",
+                fullAddressPlaceholder: "বাসা নং, রোড নং, এলাকা, ল্যান্ডমার্ক...",
                 notes: "অর্ডার নোট",
                 notesPlaceholder: "বিশেষ নির্দেশনা, কাস্টম প্রয়োজনীয়তা, বা ডেলিভারি পছন্দ...",
             },
