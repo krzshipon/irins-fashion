@@ -87,14 +87,47 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                                         {item.selectedSize} / {item.selectedColor}
                                     </p>
                                     {/* Price × Quantity breakdown */}
-                                    <p style={{ fontSize: '12px', color: '#9ca3af' }}>
-                                        ৳ {item.price.toLocaleString()} × {item.quantity}
-                                    </p>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
+                                        <p style={{ fontSize: '12px', color: '#9ca3af' }}>
+                                            {item.originalPrice && item.originalPrice > item.price && (
+                                                <span style={{
+                                                    textDecoration: 'line-through',
+                                                    marginRight: '6px',
+                                                    color: '#9ca3af'
+                                                }}>
+                                                    ৳ {item.originalPrice.toLocaleString()}
+                                                </span>
+                                            )}
+                                            ৳ {item.price.toLocaleString()} × {item.quantity}
+                                        </p>
+                                        {item.discount && (
+                                            <span style={{
+                                                backgroundColor: '#fee2e2',
+                                                color: '#991b1b',
+                                                padding: '2px 6px',
+                                                borderRadius: '4px',
+                                                fontSize: '10px',
+                                                fontWeight: '600'
+                                            }}>
+                                                {item.discount.type === 'percentage'
+                                                    ? `${item.discount.value}% OFF`
+                                                    : `-৳ ${item.discount.value}`
+                                                }
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 {/* Item Total */}
-                                <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
-                                    ৳ {itemTotal.toLocaleString()}
-                                </p>
+                                <div style={{ textAlign: 'right' }}>
+                                    <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
+                                        ৳ {itemTotal.toLocaleString()}
+                                    </p>
+                                    {item.originalPrice && item.originalPrice > item.price && (
+                                        <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>
+                                            Save ৳ {((item.originalPrice - item.price) * item.quantity).toLocaleString()}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );

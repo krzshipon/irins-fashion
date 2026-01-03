@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import { useLocalization } from '@/context/LocalizationContext';
 
 // Mock order data - in production this would come from API
+// Mock order data - in production this would come from API
 const getMockOrder = (orderId: string) => ({
     id: orderId,
     status: 'processing',
@@ -14,21 +15,33 @@ const getMockOrder = (orderId: string) => ({
     items: [
         {
             id: '1',
+            cartItemId: '1', // Added required field
+            sku: 'abaya-1', // Added required field
+            currency: 'BDT', // Added required field
             name: 'Elegant Abaya Collection',
             image: '/images/product-abaya.png',
             price: 4500,
+            originalPrice: 5000,
+            discount: { type: 'flat' as const, value: 500 },
             quantity: 2,
-            size: 'M',
-            color: 'Black',
+            selectedSize: 'M',
+            selectedColor: 'Black',
+            size: 'M', // Keep for backward compatibility if needed by other components, though mapped to selectedSize usually
+            color: 'Black'
         },
         {
             id: '2',
+            cartItemId: '2',
+            sku: 'hijab-1',
+            currency: 'BDT',
             name: 'Premium Hijab Set',
             image: '/images/products/hijab-navy.png',
             price: 1850,
             quantity: 1,
+            selectedSize: 'One Size',
+            selectedColor: 'Navy',
             size: 'One Size',
-            color: 'Navy',
+            color: 'Navy'
         },
     ],
     subtotal: 10850,
@@ -41,9 +54,10 @@ const getMockOrder = (orderId: string) => ({
         address: '123 Gulshan Avenue',
         city: 'Dhaka',
         postalCode: '1212',
-        deliveryZone: 'inside_dhaka',
+        deliveryZone: 'inside_dhaka' as const,
+        notes: ''
     },
-    paymentMethod: 'cod',
+    paymentMethod: 'cod' as const,
 });
 
 type OrderStatus = 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
@@ -242,12 +256,48 @@ const OrderDetailsPage = () => {
                                                 {item.size} / {item.color}
                                             </p>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ fontSize: '14px', color: '#9ca3af' }}>
-                                                    ৳{item.price.toLocaleString()} × {item.quantity}
-                                                </span>
-                                                <span style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>
-                                                    ৳{(item.price * item.quantity).toLocaleString()}
-                                                </span>
+                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <span style={{ fontSize: '14px', color: '#9ca3af' }}>
+                                                        {item.originalPrice && item.originalPrice > item.price && (
+                                                            <span style={{
+                                                                textDecoration: 'line-through',
+                                                                marginRight: '6px',
+                                                                color: '#9ca3af',
+                                                                fontSize: '0.9em'
+                                                            }}>
+                                                                ৳{item.originalPrice.toLocaleString()}
+                                                            </span>
+                                                        )}
+                                                        ৳{item.price.toLocaleString()} × {item.quantity}
+                                                    </span>
+                                                    {item.discount && (
+                                                        <span style={{
+                                                            marginTop: '4px',
+                                                            backgroundColor: '#fee2e2',
+                                                            color: '#991b1b',
+                                                            padding: '2px 6px',
+                                                            borderRadius: '4px',
+                                                            fontSize: '11px',
+                                                            fontWeight: '600',
+                                                            width: 'fit-content'
+                                                        }}>
+                                                            {item.discount.type === 'percentage'
+                                                                ? `${item.discount.value}% OFF`
+                                                                : `-৳ ${item.discount.value}`
+                                                            }
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <span style={{ fontSize: '16px', fontWeight: '700', color: '#111', display: 'block' }}>
+                                                        ৳{(item.price * item.quantity).toLocaleString()}
+                                                    </span>
+                                                    {item.originalPrice && item.originalPrice > item.price && (
+                                                        <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>
+                                                            Save ৳ {((item.originalPrice - item.price) * item.quantity).toLocaleString()}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
