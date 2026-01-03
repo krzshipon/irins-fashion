@@ -24,6 +24,8 @@ export interface Dictionary {
         newArrival: string;
         addToCart: string;
         orderNow: string;
+        quantity: string;
+        alreadyInCart: string;
     };
     common: {
         seeMore: string;
@@ -292,6 +294,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
             newArrival: 'New Arrival',
             addToCart: 'Add to Cart',
             orderNow: 'Order Now',
+            quantity: 'Quantity',
+            alreadyInCart: 'already in cart',
         },
         common: {
             seeMore: 'See More',
@@ -558,6 +562,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
             newArrival: 'নতুন আগমন',
             addToCart: 'কার্টে যোগ করুন',
             orderNow: 'এখনই অর্ডার করুন',
+            quantity: 'পরিমাণ',
+            alreadyInCart: 'ইতিমধ্যে কার্টে আছে',
         },
         common: {
             seeMore: 'আরও দেখুন',

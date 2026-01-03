@@ -320,3 +320,44 @@
     background: #1a1a1a;
     color: #fff;
 }
+
+/* Standalone Quantity Section */
+.quantitySection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.quantitySelector {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: fit-content;
+    border: 1px solid #e0e0e0;
+    border-radius: 50px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+}
+
+.quantitySelector .qtyBtn {
+    width: 48px;
+    height: 48px;
+}
+
+.quantitySelector .qtyBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.quantitySelector .qtyValue {
+    min-width: 48px;
+    font-size: 1.15rem;
+}
+
+/* Cart Indicator */
+.cartIndicator {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #16a34a;
+    font-weight: 500;
+}
