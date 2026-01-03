@@ -112,7 +112,40 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                 <div className={styles.category}>{product.category}</div>
                 <h1 className={styles.title}>{product.name}</h1>
                 <div className={styles.price}>
-                    {product.currency} {product.price.toLocaleString()}
+                    {product.originalPrice && product.originalPrice > product.price && (
+                        <span style={{
+                            textDecoration: 'line-through',
+                            color: '#6b7280',
+                            fontSize: '0.8em',
+                            marginRight: '12px',
+                            fontWeight: 'normal'
+                        }}>
+                            {product.currency} {product.originalPrice.toLocaleString()}
+                        </span>
+                    )}
+                    <span style={{
+                        color: product.originalPrice ? '#dc2626' : 'inherit',
+                        fontWeight: product.originalPrice ? 'bold' : '500'
+                    }}>
+                        {product.currency} {product.price.toLocaleString()}
+                    </span>
+                    {product.discount && (
+                        <span style={{
+                            marginLeft: '12px',
+                            backgroundColor: '#fee2e2',
+                            color: '#991b1b',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '0.5em',
+                            verticalAlign: 'middle',
+                            fontWeight: '600'
+                        }}>
+                            {product.discount.type === 'percentage'
+                                ? `${product.discount.value}% OFF`
+                                : `${product.currency} ${product.discount.value} OFF`
+                            }
+                        </span>
+                    )}
                 </div>
             </div>
 

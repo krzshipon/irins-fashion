@@ -24,7 +24,9 @@ export const MOCK_PRODUCTS: Product[] = [
             'Dusty Rose': '/images/products/hijab-rose.png',
             'Black': '/images/products/hijab-black.png'
         },
-        badges: [{ type: 'new', text: 'New Arrival' }]
+        badges: [{ type: 'new', text: 'New Arrival' }],
+        originalPrice: 1500,
+        discount: { type: 'flat', value: 250 }
     },
     {
         id: 'h2',
@@ -196,7 +198,9 @@ export const MOCK_PRODUCTS: Product[] = [
         colorImages: {
             'Floral Blue': '/images/product-dress.png'
         },
-        badges: [{ type: 'discount', text: '10% OFF' }]
+        badges: [{ type: 'discount', text: '10% OFF' }],
+        originalPrice: 3900,
+        discount: { type: 'percentage', value: 10 }
     },
     {
         id: 'd2',
@@ -265,7 +269,9 @@ export const MOCK_PRODUCTS: Product[] = [
         sizes: ['S', 'M', 'L'],
         colors: ['Royal Blue'],
         colorImages: { 'Royal Blue': '/images/product-dress.png' },
-        badges: [{ type: 'custom', text: 'Exquisite', color: '#7e22ce', textColor: '#ffffff' }]
+        badges: [{ type: 'custom', text: 'Exquisite', color: '#7e22ce', textColor: '#ffffff' }],
+        originalPrice: 12000,
+        discount: { type: 'flat', value: 2500 }
     },
 
     // Accessories

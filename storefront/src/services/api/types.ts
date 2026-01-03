@@ -5,11 +5,18 @@ export interface ProductBadge {
   textColor?: string;
 }
 
+export interface ProductDiscount {
+  type: 'flat' | 'percentage';
+  value: number;
+}
+
 export interface Product {
   id: string;
   sku: string;
   name: string;
   price: number;
+  originalPrice?: number; // MSRP or previous price
+  discount?: ProductDiscount;
   currency: string;
   category: string;
   image: string;

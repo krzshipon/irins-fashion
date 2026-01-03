@@ -101,7 +101,22 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className={styles.cardCategory}>{product.category}</div>
                     <h3 className={styles.cardTitle}>{product.name}</h3>
                     <div className={styles.cardPrice}>
-                        {product.currency} {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        {product.originalPrice && product.originalPrice > product.price && (
+                            <span style={{
+                                textDecoration: 'line-through',
+                                color: '#9ca3af',
+                                fontSize: '0.9em',
+                                marginRight: '8px'
+                            }}>
+                                {product.currency} {product.originalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </span>
+                        )}
+                        <span style={{
+                            color: product.originalPrice ? '#dc2626' : 'inherit',
+                            fontWeight: product.originalPrice ? 'bold' : 'normal'
+                        }}>
+                            {product.currency} {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </span>
                     </div>
                 </div>
             </Link>

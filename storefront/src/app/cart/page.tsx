@@ -92,7 +92,22 @@ export default function CartPage() {
                                         </div>
                                     </div>
                                     <div className={styles.itemPrice}>
-                                        {item.currency} {item.price.toLocaleString()}
+                                        {item.originalPrice && item.originalPrice > item.price && (
+                                            <span style={{
+                                                textDecoration: 'line-through',
+                                                color: '#6b7280',
+                                                fontSize: '0.9em',
+                                                marginRight: '6px'
+                                            }}>
+                                                {item.currency} {item.originalPrice.toLocaleString()}
+                                            </span>
+                                        )}
+                                        <span style={{
+                                            color: item.originalPrice ? '#dc2626' : 'inherit',
+                                            fontWeight: item.originalPrice ? '500' : 'normal'
+                                        }}>
+                                            {item.currency} {item.price.toLocaleString()}
+                                        </span>
                                     </div>
                                     <button
                                         className={styles.removeBtn}
