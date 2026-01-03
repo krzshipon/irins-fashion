@@ -27,6 +27,54 @@ export default function ProductCard({ product }: ProductCardProps) {
                         fill
                         style={{ objectFit: 'cover' }}
                     />
+                    {/* Render Badges */}
+                    {product.badges && product.badges.length > 0 && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '10px',
+                            left: '10px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '5px',
+                            zIndex: 10
+                        }}>
+                            {product.badges.map((badge, index) => {
+                                let backgroundColor = '#000000';
+                                let color = '#ffffff';
+
+                                switch (badge.type) {
+                                    case 'new':
+                                        backgroundColor = '#046A38'; // Emerald Green
+                                        break;
+                                    case 'discount':
+                                        backgroundColor = '#dc2626'; // Red
+                                        break;
+                                    case 'bestseller':
+                                        backgroundColor = '#f59e0b'; // Amber
+                                        break;
+                                    case 'custom':
+                                        backgroundColor = badge.color || '#000000';
+                                        color = badge.textColor || '#ffffff';
+                                        break;
+                                }
+
+                                return (
+                                    <span key={index} style={{
+                                        backgroundColor,
+                                        color,
+                                        padding: '4px 8px',
+                                        fontSize: '10px',
+                                        fontWeight: 'bold',
+                                        borderRadius: '4px',
+                                        textTransform: 'uppercase',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                    }}>
+                                        {badge.text}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    )}
                 </Link>
                 <button
                     className={styles.addToCartBtn}

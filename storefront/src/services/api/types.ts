@@ -1,3 +1,10 @@
+export interface ProductBadge {
+  type: 'new' | 'discount' | 'bestseller' | 'custom';
+  text: string;
+  color?: string;
+  textColor?: string;
+}
+
 export interface Product {
   id: string;
   sku: string;
@@ -6,9 +13,10 @@ export interface Product {
   currency: string;
   category: string;
   image: string;
-  isNew?: boolean;
+  images: string[];
+  isNew?: boolean; // Kept for backward compatibility/logic
+  badges?: ProductBadge[]; // New flexible badge system
   description?: string;
-  images?: string[];
   sizes?: string[];
   colors?: string[];
   colorImages?: Record<string, string>;

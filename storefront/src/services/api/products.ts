@@ -23,7 +23,8 @@ export const MOCK_PRODUCTS: Product[] = [
             'Emerald': '/images/products/hijab-emerald.png',
             'Dusty Rose': '/images/products/hijab-rose.png',
             'Black': '/images/products/hijab-black.png'
-        }
+        },
+        badges: [{ type: 'new', text: 'New Arrival' }]
     },
     {
         id: 'h2',
@@ -137,9 +138,12 @@ export const MOCK_PRODUCTS: Product[] = [
         sizes: ['52', '54', '56', '58'],
         colors: ['Black/Gold', 'Black/Silver'],
         colorImages: {
-            'Black/Gold': '/images/product-abaya.png',
             'Black/Silver': '/images/product-abaya.png'
-        }
+        },
+        badges: [
+            { type: 'new', text: 'New' },
+            { type: 'bestseller', text: 'Best Seller', color: '#f59e0b', textColor: '#ffffff' }
+        ]
     },
     {
         id: 'a3',
@@ -190,9 +194,9 @@ export const MOCK_PRODUCTS: Product[] = [
         sizes: ['S', 'M', 'L', 'XL'],
         colors: ['Floral Pink', 'Floral Blue'],
         colorImages: {
-            'Floral Pink': '/images/product-dress.png',
             'Floral Blue': '/images/product-dress.png'
-        }
+        },
+        badges: [{ type: 'discount', text: '10% OFF' }]
     },
     {
         id: 'd2',
@@ -260,7 +264,8 @@ export const MOCK_PRODUCTS: Product[] = [
         images: ['/images/product-dress.png'],
         sizes: ['S', 'M', 'L'],
         colors: ['Royal Blue'],
-        colorImages: { 'Royal Blue': '/images/product-dress.png' }
+        colorImages: { 'Royal Blue': '/images/product-dress.png' },
+        badges: [{ type: 'custom', text: 'Exquisite', color: '#7e22ce', textColor: '#ffffff' }]
     },
 
     // Accessories
