@@ -85,4 +85,29 @@ export const authService = {
         await new Promise((resolve) => setTimeout(resolve, 600));
         return MOCK_ADDRESSES;
     },
+
+    async register(data: { name: string; mobile: string; password: string }): Promise<{ user: User; token: string }> {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+
+        // Simulate registration - create new user
+        const newUser: User = {
+            id: `usr_${Date.now()}`,
+            mobile: data.mobile,
+            name: data.name,
+            role: 'CUSTOMER',
+            avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=1B4D3E&color=fff`,
+        };
+
+        const response = {
+            user: newUser,
+            token: `mock_jwt_token_${Date.now()}`,
+        };
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('mock_auth_token', response.token);
+        }
+
+        return response;
+    },
 };
