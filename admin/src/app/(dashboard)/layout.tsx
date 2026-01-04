@@ -11,7 +11,9 @@ import {
     LogOut,
     Menu,
     Bell,
-    Search
+    Search,
+    FolderTree,
+    Image,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -28,8 +30,10 @@ export default function DashboardLayout({
     const navItems = [
         { name: "Overview", href: "/", icon: LayoutDashboard },
         { name: "Products", href: "/products", icon: Package },
+        { name: "Categories", href: "/categories", icon: FolderTree },
         { name: "Orders", href: "/orders", icon: ShoppingCart },
-        { name: "Customers", href: "/customers", icon: Users },
+        { name: "Banners", href: "/banners", icon: Image },
+        { name: "Users", href: "/users", icon: Users },
         { name: "Settings", href: "/settings", icon: Settings },
     ];
 
@@ -60,8 +64,8 @@ export default function DashboardLayout({
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${isActive
-                                        ? 'bg-emerald-50 text-emerald-700 font-medium'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ? 'bg-emerald-50 text-emerald-700 font-medium'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                                 title={!isSidebarOpen ? item.name : undefined}
                             >

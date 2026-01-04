@@ -47,7 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (identifier: string, password: string) => {
         const response = await authService.login(identifier, password);
-        if (response.user.role !== 'ADMIN') {
+        // Allow both ADMIN and SUPERADMIN roles
+        if (response.user.role !== 'ADMIN' && response.user.role !== 'SUPERADMIN') {
             throw new Error('Access denied: You are not an admin');
         }
         setUser(response.user);

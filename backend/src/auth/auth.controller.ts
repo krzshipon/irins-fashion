@@ -15,8 +15,8 @@ function getCookieName(appType?: string): string {
     return 'storefront_token';
 }
 
-// Roles allowed to access admin panel
-const ADMIN_ROLES = ['admin', 'superadmin'];
+// Roles allowed to access admin panel (must match Prisma enum values)
+const ADMIN_ROLES = ['ADMIN', 'SUPERADMIN'];
 
 @ApiTags('Authentication')
 @Controller('auth')

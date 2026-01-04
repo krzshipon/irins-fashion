@@ -405,30 +405,23 @@ async function main() {
 
     console.log('Seeding finished.');
     // Seed Super Admin
-    const adminMobile = '00000000000'; // Placeholder mobile for admin
-    const adminEmail = 'admin@irinsfashion.com';
+    const superAdminPassword = await bcrypt.hash('Admin123!', await bcrypt.genSalt());
 
-    let admin = await prisma.user.findFirst({
-        where: { role: 'ADMIN' }
+    await prisma.user.upsert({
+        where: { mobile: '01711111111' },
+        update: {
+            password: superAdminPassword,
+            role: 'SUPERADMIN',
+        },
+        create: {
+            mobile: '01711111111',
+            email: 'superadmin@irinsfashion.com',
+            name: 'Super Admin',
+            password: superAdminPassword,
+            role: 'SUPERADMIN',
+        },
     });
-
-    if (!admin) {
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash('admin123', salt);
-
-        admin = await prisma.user.create({
-            data: {
-                name: 'Super Admin',
-                mobile: adminMobile,
-                email: adminEmail,
-                password: hashedPassword,
-                role: 'ADMIN'
-            }
-        });
-        console.log({ admin });
-    } else {
-        console.log('Admin already exists');
-    }
+    console.log('Seeded super admin: 01711111111 / Admin123!');
 }
 
 main()

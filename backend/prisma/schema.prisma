@@ -15,6 +15,7 @@ datasource db {
 enum UserRole {
   CUSTOMER
   ADMIN
+  SUPERADMIN
 }
 
 model User {
