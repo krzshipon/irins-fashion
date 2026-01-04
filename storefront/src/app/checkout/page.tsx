@@ -116,12 +116,33 @@ const CheckoutPage = () => {
     const selectAddress = (address: Address) => {
         setSelectedAddressId(address.id);
         setShowNewAddressForm(false);
+
+        // Normalize division to match dropdown values (IDs)
+        let normalizedDivision = address.division.toLowerCase();
+
+        // Try to find a match in the divisions list
+        const matchedDivision = divisions.find(d =>
+            d.id.toLowerCase() === address.division.toLowerCase() ||
+            d.name.toLowerCase() === address.division.toLowerCase()
+        );
+
+        if (matchedDivision) {
+            normalizedDivision = matchedDivision.id;
+        } else {
+            // Handle spelling variations between stored addresses and system divisions
+            // System uses old spellings (chittagong, barisal) vs new (Chattogram, Barishal)
+            if (address.division === 'Chattogram') normalizedDivision = 'chittagong';
+            else if (address.division === 'Barishal') normalizedDivision = 'barisal';
+            else if (address.division === 'Jashore') normalizedDivision = 'khulna'; // Example fallback if needed
+            else if (address.division === 'Cumilla') normalizedDivision = 'chittagong';
+        }
+
         setShippingDetails(prev => ({
             ...prev,
             fullName: address.recipientName,
             phone: address.phone,
             address: address.street,
-            division: address.division,
+            division: normalizedDivision,
             // Simple heuristic for zone based on city/division
             // In a real app, this would be more robust
             deliveryZone: (address.city.toLowerCase().includes('dhaka') || address.division.toLowerCase().includes('dhaka'))
@@ -409,24 +430,17 @@ const CheckoutPage = () => {
                             </div>
                         )}
 
-                        {/* Show shipping form if Guest OR "New Address" is selected */}
-                        {(showNewAddressForm || !user) && (
-                            <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
-                                {user && (
-                                    <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#111' }}>
-                                        New Shipping Details
-                                    </h3>
-                                )}
-                                <ShippingForm
-                                    value={shippingDetails}
-                                    onChange={handleShippingChange}
-                                    errors={errors}
-                                    shippingRates={shippingRates}
-                                    divisions={divisions}
-                                    subtotal={calculateSubtotal()}
-                                />
-                            </div>
-                        )}
+                        {/* Shipping Form - Always visible to show Payment Method, Zone, and Allow Editing */}
+                        <div style={{ animation: 'fadeIn 0.3s ease-out', marginTop: '32px' }}>
+                            <ShippingForm
+                                value={shippingDetails}
+                                onChange={handleShippingChange}
+                                errors={errors}
+                                shippingRates={shippingRates}
+                                divisions={divisions}
+                                subtotal={calculateSubtotal()}
+                            />
+                        </div>
 
                         {/* If address is selected, verify phone/zone are still correct (can be edited in form if needed, but here we just show preview is mostly done by the selection) */}
                         {/* Actually, even if selected, we might want to let them edit the notes or tweak details. 
