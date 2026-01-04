@@ -1,23 +1,24 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useLocalization } from '@/context/LocalizationContext';
+import { useAuth } from '@/context/AuthContext';
 
-// Mock order data - in production this would come from API
 // Mock order data - in production this would come from API
 const getMockOrder = (orderId: string) => ({
     id: orderId,
+    userId: 'usr_guest', // For guest orders, this would be null or a guest user ID
     status: 'processing',
     createdAt: new Date().toISOString(),
     items: [
         {
             id: '1',
-            cartItemId: '1', // Added required field
-            sku: 'abaya-1', // Added required field
-            currency: 'BDT', // Added required field
+            cartItemId: '1',
+            sku: 'abaya-1',
+            currency: 'BDT',
             name: 'Elegant Abaya Collection',
             image: '/images/product-abaya.png',
             price: 4500,
@@ -26,7 +27,7 @@ const getMockOrder = (orderId: string) => ({
             quantity: 2,
             selectedSize: 'M',
             selectedColor: 'Black',
-            size: 'M', // Keep for backward compatibility if needed by other components, though mapped to selectedSize usually
+            size: 'M',
             color: 'Black'
         },
         {
@@ -66,7 +67,34 @@ const OrderDetailsPage = () => {
     const params = useParams();
     const orderId = params?.orderId as string;
     const { dictionary: t } = useLocalization();
+    const { user, loading: authLoading } = useAuth();
     const [copied, setCopied] = useState(false);
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+    // Check access on mount
+    useEffect(() => {
+        if (authLoading) return;
+
+        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+
+        // Get guest orders from localStorage and filter expired ones
+        const guestOrders: { orderId: string; createdAt: number }[] = typeof window !== 'undefined'
+            ? JSON.parse(localStorage.getItem('guestOrders') || '[]')
+            : [];
+
+        const validOrderIds = guestOrders
+            .filter(order => now - order.createdAt < SEVEN_DAYS_MS)
+            .map(order => order.orderId);
+
+        // In production, you would fetch the order and check ownership
+        // For now, we check:
+        // 1. If user is logged in (they can see their orders)
+        // 2. If orderId is in validOrderIds (guest who placed the order within 7 days)
+        const canAccess = user !== null || validOrderIds.includes(orderId);
+
+        setHasAccess(canAccess);
+    }, [orderId, user, authLoading]);
 
     // In production, fetch order from API
     const order = getMockOrder(orderId);
@@ -103,6 +131,104 @@ const OrderDetailsPage = () => {
             minute: '2-digit',
         });
     };
+
+    // Show loading while checking auth
+    if (authLoading || hasAccess === null) {
+        return (
+            <div style={{
+                backgroundColor: '#f9fafb',
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        border: '3px solid #e5e5e5',
+                        borderTopColor: '#1b4d3e',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 16px',
+                    }} />
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    <p style={{ color: '#6b7280', fontSize: '14px' }}>{t.common.loading}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Show access denied if no access
+    if (!hasAccess) {
+        return (
+            <div style={{
+                backgroundColor: '#f9fafb',
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
+            }}>
+                <div style={{
+                    backgroundColor: '#fff',
+                    borderRadius: '20px',
+                    border: '2px solid #e5e5e5',
+                    padding: '48px',
+                    textAlign: 'center',
+                    maxWidth: '400px',
+                }}>
+                    <div style={{
+                        width: '64px',
+                        height: '64px',
+                        backgroundColor: '#fef2f2',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 20px',
+                    }}>
+                        <svg style={{ width: '32px', height: '32px', color: '#dc2626' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#111', marginBottom: '8px' }}>
+                        {t.orders.accessDenied || 'Order Not Found'}
+                    </h2>
+                    <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px', lineHeight: '1.5' }}>
+                        {t.orders.accessDeniedDesc || 'You don\'t have permission to view this order. Please log in or check your order ID.'}
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <Link href="/login" style={{
+                            display: 'block',
+                            padding: '14px 24px',
+                            backgroundColor: '#111',
+                            color: '#fff',
+                            textDecoration: 'none',
+                            borderRadius: '10px',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                        }}>
+                            {t.common.login || 'Log In'}
+                        </Link>
+                        <Link href="/" style={{
+                            display: 'block',
+                            padding: '14px 24px',
+                            backgroundColor: '#fff',
+                            color: '#111',
+                            textDecoration: 'none',
+                            borderRadius: '10px',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            border: '2px solid #e5e5e5',
+                        }}>
+                            {t.common.backToHome}
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={{ backgroundColor: '#f9fafb', minHeight: '100vh' }}>

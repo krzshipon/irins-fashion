@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useLocalization } from '@/context/LocalizationContext';
@@ -10,6 +10,29 @@ const SuccessContent = () => {
     const orderId = searchParams?.get('orderId');
     const { dictionary: t } = useLocalization();
     const [copied, setCopied] = useState(false);
+
+    // Save orderId to localStorage for guest order access (7 day expiration)
+    useEffect(() => {
+        if (orderId && typeof window !== 'undefined') {
+            const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            // Get existing orders and filter out expired ones
+            const guestOrders: { orderId: string; createdAt: number }[] =
+                JSON.parse(localStorage.getItem('guestOrders') || '[]');
+
+            const validOrders = guestOrders.filter(
+                order => now - order.createdAt < SEVEN_DAYS_MS
+            );
+
+            // Add new order if not already present
+            if (!validOrders.some(order => order.orderId === orderId)) {
+                validOrders.push({ orderId, createdAt: now });
+            }
+
+            localStorage.setItem('guestOrders', JSON.stringify(validOrders));
+        }
+    }, [orderId]);
 
     const handleCopyOrderId = async () => {
         if (orderId) {
