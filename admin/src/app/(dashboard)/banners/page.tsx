@@ -118,14 +118,14 @@ export default function BannersPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 font-playfair">Banners</h1>
-                    <p className="text-gray-500 text-sm mt-1">
+                    <h1 className="text-2xl font-bold text-white font-playfair">Banners</h1>
+                    <p className="text-gray-400 text-sm mt-1">
                         Manage hero carousel and promotional banners
                     </p>
                 </div>
                 <button
                     onClick={handleAdd}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium text-sm"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-500 hover:to-teal-500 transition-all font-medium text-sm shadow-lg shadow-emerald-900/20"
                 >
                     <Plus size={18} />
                     Add Banner
@@ -133,9 +133,9 @@ export default function BannersPage() {
             </div>
 
             {/* Preview Note */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-3">
-                <Eye className="text-blue-600 shrink-0" size={20} />
-                <p className="text-sm text-blue-700">
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex items-center gap-3">
+                <Eye className="text-blue-400 shrink-0" size={20} />
+                <p className="text-sm text-blue-300">
                     Active banners will appear in the hero carousel on the storefront homepage.
                     Drag to reorder the display sequence.
                 </p>
@@ -146,17 +146,17 @@ export default function BannersPage() {
                 {banners.map((banner, index) => (
                     <div
                         key={banner.id}
-                        className={`bg-white rounded-xl border ${banner.isActive ? 'border-gray-200' : 'border-dashed border-gray-300 opacity-60'} overflow-hidden hover:shadow-lg transition-all group`}
+                        className={`bg-gray-800/50 backdrop-blur-xl rounded-xl border ${banner.isActive ? 'border-white/10' : 'border-dashed border-white/5 opacity-60'} overflow-hidden hover:border-white/20 transition-all group`}
                     >
                         <div className="flex items-stretch">
                             {/* Drag Handle */}
-                            <div className="flex items-center justify-center px-4 bg-gray-50 border-r border-gray-100 cursor-grab">
-                                <GripVertical className="text-gray-300" size={20} />
+                            <div className="flex items-center justify-center px-4 bg-black/20 border-r border-white/5 cursor-grab">
+                                <GripVertical className="text-gray-600" size={20} />
                             </div>
 
                             {/* Image Preview */}
-                            <div className="w-48 h-32 bg-gray-100 shrink-0 flex items-center justify-center">
-                                <ImageIcon className="text-gray-300" size={40} />
+                            <div className="w-48 h-32 bg-gray-700/50 shrink-0 flex items-center justify-center">
+                                <ImageIcon className="text-gray-600" size={40} />
                             </div>
 
                             {/* Content */}
@@ -164,22 +164,22 @@ export default function BannersPage() {
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-bold text-gray-900 truncate">{banner.title}</h3>
+                                            <h3 className="font-bold text-white truncate">{banner.title}</h3>
                                             <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${banner.isActive
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'bg-gray-100 text-gray-500'
+                                                ? 'bg-green-500/10 text-green-400'
+                                                : 'bg-gray-700 text-gray-500'
                                                 }`}>
                                                 {banner.isActive ? 'Active' : 'Draft'}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-gray-500 truncate mb-2">{banner.subtitle}</p>
-                                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                                        <p className="text-sm text-gray-400 truncate mb-2">{banner.subtitle}</p>
+                                        <div className="flex items-center gap-4 text-xs text-gray-500">
                                             <span className="flex items-center gap-1">
                                                 <ExternalLink size={12} />
                                                 {banner.link}
                                             </span>
                                             {banner.category && (
-                                                <span className="bg-gray-100 px-2 py-0.5 rounded">{banner.category}</span>
+                                                <span className="bg-white/5 px-2 py-0.5 rounded">{banner.category}</span>
                                             )}
                                         </div>
                                     </div>
@@ -189,21 +189,21 @@ export default function BannersPage() {
                                         <button
                                             onClick={() => toggleActive(banner.id)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${banner.isActive
-                                                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                                ? 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                                : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
                                                 }`}
                                         >
                                             {banner.isActive ? 'Deactivate' : 'Activate'}
                                         </button>
                                         <button
                                             onClick={() => handleEdit(banner)}
-                                            className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                            className="p-2 text-gray-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
                                         >
                                             <Edit size={16} />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(banner.id)}
-                                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -217,32 +217,32 @@ export default function BannersPage() {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-gray-800 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-xl font-bold text-white mb-6">
                             {editingBanner ? "Edit Banner" : "Add Banner"}
                         </h2>
 
                         <div className="grid grid-cols-2 gap-6">
                             {/* English Content */}
                             <div className="space-y-4">
-                                <h3 className="font-semibold text-gray-700 text-sm">English Content</h3>
+                                <h3 className="font-semibold text-gray-300 text-sm">English Content</h3>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Title</label>
                                     <input
                                         type="text"
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none"
+                                        className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
                                         placeholder="Banner title"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Subtitle</label>
                                     <textarea
                                         value={formData.subtitle}
                                         onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none resize-none"
+                                        className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none resize-none"
                                         rows={2}
                                         placeholder="Banner subtitle"
                                     />
@@ -251,23 +251,23 @@ export default function BannersPage() {
 
                             {/* Bengali Content */}
                             <div className="space-y-4">
-                                <h3 className="font-semibold text-gray-700 text-sm">Bengali Content (বাংলা)</h3>
+                                <h3 className="font-semibold text-gray-300 text-sm">Bengali Content (বাংলা)</h3>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Title</label>
                                     <input
                                         type="text"
                                         value={formData.titleBn}
                                         onChange={(e) => setFormData({ ...formData, titleBn: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none"
+                                        className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
                                         placeholder="ব্যানার শিরোনাম"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Subtitle</label>
                                     <textarea
                                         value={formData.subtitleBn}
                                         onChange={(e) => setFormData({ ...formData, subtitleBn: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none resize-none"
+                                        className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none resize-none"
                                         rows={2}
                                         placeholder="ব্যানার সাবটাইটেল"
                                     />
@@ -277,32 +277,32 @@ export default function BannersPage() {
                             {/* Full width fields */}
                             <div className="col-span-2 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Image URL</label>
                                     <input
                                         type="text"
                                         value={formData.image}
                                         onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none"
+                                        className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
                                         placeholder="/images/banner.png"
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Link</label>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">Link</label>
                                         <input
                                             type="text"
                                             value={formData.link}
                                             onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none"
+                                            className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
                                             placeholder="/collection/hijabs"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">Category</label>
                                         <select
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none"
+                                            className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-300 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
                                         >
                                             <option value="">None</option>
                                             <option value="Hijab">Hijab</option>
@@ -316,16 +316,16 @@ export default function BannersPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+                        <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-white/10">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-4 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium text-sm"
+                                className="px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors font-medium text-sm"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSave}
-                                className="px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium text-sm"
+                                className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-500 hover:to-teal-500 transition-all font-medium text-sm"
                             >
                                 {editingBanner ? "Save Changes" : "Add Banner"}
                             </button>
