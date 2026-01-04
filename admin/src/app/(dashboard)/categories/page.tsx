@@ -1,51 +1,91 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Edit, Trash2, GripVertical } from "lucide-react";
+import { Plus, Edit, Trash2, CheckCircle, XCircle } from "lucide-react";
+import { useDialog } from "@/components/Dialog";
+import CategoryModal from "@/components/categories/CategoryModal";
 
 // Mock data - will be replaced with API calls
 const MOCK_CATEGORIES = [
-    { id: "1", name: "Hijab", slug: "hijab", productCount: 24, icon: "🧕", description: "Premium hijabs in silk, chiffon, and jersey" },
-    { id: "2", name: "Abaya", slug: "abaya", productCount: 18, icon: "👗", description: "Classic and modern abaya designs" },
-    { id: "3", name: "Borkha", slug: "borkha", productCount: 15, icon: "👗", description: "Traditional and contemporary borkha styles" },
-    { id: "4", name: "Gown", slug: "gown", productCount: 12, icon: "👗", description: "Elegant gowns for special occasions" },
-    { id: "5", name: "Accessories", slug: "accessories", productCount: 35, icon: "👜", description: "Handbags, jewelry, and more" },
+    {
+        id: "1",
+        name: "Hijab",
+        slug: "hijab",
+        productCount: 24,
+        icon: "🧕",
+        image: "/images/category-hijab.png",
+        isActive: true,
+        description: "Premium hijabs in silk, chiffon, and jersey"
+    },
+    {
+        id: "2",
+        name: "Abaya",
+        slug: "abaya",
+        productCount: 18,
+        icon: "👗",
+        image: "/images/category-abaya.png",
+        isActive: true,
+        description: "Classic and modern abaya designs"
+    },
+    {
+        id: "3",
+        name: "Borkha",
+        slug: "borkha",
+        productCount: 15,
+        icon: "👗",
+        image: "/images/category-borkha.png",
+        isActive: true,
+        description: "Traditional and contemporary borkha styles"
+    },
+    {
+        id: "4",
+        name: "Gown",
+        slug: "gown",
+        productCount: 12,
+        icon: "👗",
+        image: "/images/category-gown.png",
+        isActive: false,
+        description: "Elegant gowns for special occasions"
+    },
+    {
+        id: "5",
+        name: "Accessories",
+        slug: "accessories",
+        productCount: 35,
+        icon: "👜",
+        image: "/images/category-accessories.png",
+        isActive: true,
+        description: "Handbags, jewelry, and more"
+    },
 ];
 
 export default function CategoriesPage() {
+    const { showConfirm, showSuccess } = useDialog();
     const [categories, setCategories] = useState(MOCK_CATEGORIES);
     const [showModal, setShowModal] = useState(false);
     const [editingCategory, setEditingCategory] = useState<typeof MOCK_CATEGORIES[0] | null>(null);
-    const [formData, setFormData] = useState({ name: "", slug: "", icon: "", description: "" });
 
     const handleEdit = (category: typeof MOCK_CATEGORIES[0]) => {
         setEditingCategory(category);
-        setFormData({
-            name: category.name,
-            slug: category.slug,
-            icon: category.icon,
-            description: category.description,
-        });
         setShowModal(true);
     };
 
     const handleAdd = () => {
         setEditingCategory(null);
-        setFormData({ name: "", slug: "", icon: "📦", description: "" });
         setShowModal(true);
     };
 
-    const handleSave = () => {
+    const handleSave = (categoryData: any) => {
         if (editingCategory) {
             setCategories(categories.map(c =>
                 c.id === editingCategory.id
-                    ? { ...c, ...formData }
+                    ? { ...c, ...categoryData }
                     : c
             ));
         } else {
             setCategories([...categories, {
                 id: String(Date.now()),
-                ...formData,
+                ...categoryData,
                 productCount: 0,
             }]);
         }
@@ -53,9 +93,30 @@ export default function CategoriesPage() {
     };
 
     const handleDelete = (id: string) => {
-        if (confirm("Are you sure you want to delete this category?")) {
-            setCategories(categories.filter(c => c.id !== id));
-        }
+        showConfirm(
+            "Delete Category",
+            "Are you sure you want to delete this category? This action cannot be undone.",
+            () => {
+                setCategories(categories.filter(c => c.id !== id));
+                showSuccess("Category Deleted", "The category has been deleted successfully.");
+            }
+        );
+    };
+
+    const toggleStatus = (category: typeof MOCK_CATEGORIES[0]) => {
+        const newStatus = !category.isActive;
+        const action = newStatus ? "activate" : "deactivate";
+
+        showConfirm(
+            `${newStatus ? "Activate" : "Deactivate"} Category`,
+            `Are you sure you want to ${action} this category? It will ${newStatus ? "appear" : "be hidden"} on the storefront.`,
+            () => {
+                setCategories(categories.map(c =>
+                    c.id === category.id ? { ...c, isActive: newStatus } : c
+                ));
+                showSuccess("Status Updated", `Category has been ${newStatus ? "activated" : "deactivated"} successfully.`);
+            }
+        );
     };
 
     return (
@@ -82,26 +143,53 @@ export default function CategoriesPage() {
                 {categories.map((category) => (
                     <div
                         key={category.id}
-                        className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6 hover:border-white/20 transition-all group"
+                        className={`bg-gray-800/50 backdrop-blur-xl rounded-xl border ${category.isActive ? 'border-white/10' : 'border-dashed border-white/5 opacity-75'} p-6 hover:border-white/20 transition-all group overflow-hidden relative`}
                     >
-                        <div className="flex items-start justify-between mb-4">
+                        {/* Status Badge */}
+                        <div className="absolute top-4 right-4">
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${category.isActive ? 'bg-green-500/10 text-green-400' : 'bg-gray-700 text-gray-500'
+                                }`}>
+                                {category.isActive ? 'Active' : 'Disabled'}
+                            </span>
+                        </div>
+
+                        <div className="flex items-start justify-between mb-6">
                             <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 bg-gray-700/50 rounded-xl flex items-center justify-center text-3xl">
-                                    {category.icon}
+                                <div className="w-16 h-16 bg-gray-700/50 rounded-xl flex items-center justify-center text-3xl shrink-0 overflow-hidden relative">
+                                    {category.image ? (
+                                        // In a real app, use Next.js Image component
+                                        <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${category.image})` }} />
+                                    ) : (
+                                        <span>{category.icon}</span>
+                                    )}
+                                    {/* Icon overlay for when image is present */}
+                                    {category.image && (
+                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-xl backdrop-blur-[1px]">
+                                            {category.icon}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-white text-lg">{category.name}</h3>
                                     <p className="text-sm text-gray-500">{category.productCount} products</p>
                                 </div>
                             </div>
-                            <button className="p-2 text-gray-600 hover:text-gray-400 cursor-grab">
-                                <GripVertical size={18} />
-                            </button>
                         </div>
-                        <p className="text-sm text-gray-400 mb-4 line-clamp-2">{category.description}</p>
+
+                        <p className="text-sm text-gray-400 mb-6 line-clamp-2 h-10">{category.description}</p>
+
                         <div className="flex items-center justify-between pt-4 border-t border-white/10">
                             <span className="text-xs text-gray-500 font-mono">/{category.slug}</span>
-                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-2">
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={category.isActive}
+                                        onChange={() => toggleStatus(category)}
+                                    />
+                                    <div className="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                                </label>
                                 <button
                                     onClick={() => handleEdit(category)}
                                     className="p-2 text-gray-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
@@ -121,75 +209,13 @@ export default function CategoriesPage() {
             </div>
 
             {/* Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-gray-800 border border-white/10 rounded-2xl shadow-2xl w-full max-w-md p-6">
-                        <h2 className="text-xl font-bold text-white mb-6">
-                            {editingCategory ? "Edit Category" : "Add Category"}
-                        </h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Icon</label>
-                                <input
-                                    type="text"
-                                    value={formData.icon}
-                                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-2xl text-center text-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="📦"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        name: e.target.value,
-                                        slug: e.target.value.toLowerCase().replace(/\s+/g, '-'),
-                                    })}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="Category name"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Slug</label>
-                                <input
-                                    type="text"
-                                    value={formData.slug}
-                                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white font-mono placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="category-slug"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none resize-none"
-                                    rows={3}
-                                    placeholder="Brief description of the category"
-                                />
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-end gap-3 mt-6">
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors font-medium text-sm"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-500 hover:to-teal-500 transition-all font-medium text-sm"
-                            >
-                                {editingCategory ? "Save Changes" : "Add Category"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <CategoryModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onSave={handleSave}
+                initialData={editingCategory}
+                isEdit={!!editingCategory}
+            />
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Edit, Trash2, ExternalLink, GripVertical, Eye, Image as ImageIcon } from "lucide-react";
+import { useDialog } from "@/components/Dialog";
 
 // Mock data - will be replaced with API calls
 const MOCK_BANNERS = [
@@ -101,10 +102,17 @@ export default function BannersPage() {
         setShowModal(false);
     };
 
+    const { showConfirm, showSuccess } = useDialog();
+
     const handleDelete = (id: string) => {
-        if (confirm("Are you sure you want to delete this banner?")) {
-            setBanners(banners.filter(b => b.id !== id));
-        }
+        showConfirm(
+            "Delete Banner",
+            "Are you sure you want to delete this banner? This action cannot be undone.",
+            () => {
+                setBanners(banners.filter(b => b.id !== id));
+                showSuccess("Banner Deleted", "The banner has been deleted successfully.");
+            }
+        );
     };
 
     const toggleActive = (id: string) => {

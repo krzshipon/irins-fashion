@@ -106,9 +106,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        const firstVariant = product.variants?.[0];
                         addToCart(product, {
-                            selectedColor: product.colors?.[0],
-                            selectedSize: product.sizes?.[0]
+                            selectedColor: firstVariant?.colorName,
+                            selectedSize: firstVariant?.sizes?.[0]?.size
                         });
                     }}
                 >

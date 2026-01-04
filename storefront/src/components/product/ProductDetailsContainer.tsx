@@ -19,27 +19,39 @@ export default function ProductDetailsContainer({ product, initialGalleryImages 
 
     // Lifted state from ProductInfo
     const [selectedColor, setSelectedColor] = useState<string | null>(() => {
-        if (colorParam && product.colors?.includes(colorParam)) {
-            return colorParam;
+        // Robust Variant Check for URL param
+        if (product.variants && product.variants.length > 0) {
+            const paramMatch = product.variants.find(v => v.colorName === colorParam);
+            if (paramMatch) return paramMatch.colorName;
+            return product.variants[0].colorName; // Default to first variant
         }
-        return product.colors ? product.colors[0] : null;
+        return null;
     });
 
-    // Update state if URL changes (e.g. navigation between variants)
+    // Update state if URL changes
     useEffect(() => {
-        if (colorParam && product.colors?.includes(colorParam)) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (colorParam && product.variants?.some(v => v.colorName === colorParam)) {
             setSelectedColor(colorParam);
         }
-    }, [colorParam, product.colors]);
+    }, [colorParam, product.variants]);
+
+    // Determine active gallery images
+    const currentGalleryImages = (() => {
+        if (selectedColor && product.variants) {
+            const variant = product.variants.find(v => v.colorName === selectedColor);
+            if (variant && variant.images && variant.images.length > 0) {
+                return variant.images;
+            }
+        }
+        return initialGalleryImages;
+    })();
 
     return (
         <section className={styles.productContainer}>
             <ProductGallery
-                images={initialGalleryImages}
+                images={currentGalleryImages}
                 title={product.name}
                 selectedColor={selectedColor}
-                colorImages={product.colorImages}
             />
 
             <div className={styles.detailsContent}>

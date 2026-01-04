@@ -17,24 +17,62 @@ interface ProductInfoProps {
 export default function ProductInfo({ product, selectedColor, onColorSelect, initialSize }: ProductInfoProps) {
     const router = useRouter();
     const { dictionary: t } = useLocalization();
+
+    // --- Helper Logic for Variants ---
+
+    // Get the currently selected color variant object
+    const currentVariant = product.variants?.find(v => v.colorName === selectedColor);
+
+    // Get available sizes based on current variant
+    const availableSizes = currentVariant ? currentVariant.sizes : [];
+
     const [selectedSize, setSelectedSize] = useState<string | null>(() => {
-        if (initialSize && product.sizes?.includes(initialSize)) {
-            return initialSize;
+        // Try to respect initialSize strictly first
+        if (initialSize) {
+            // Validate against current variant if exists
+            if (currentVariant) {
+                if (currentVariant.sizes.some(s => s.size === initialSize)) return initialSize;
+            }
         }
-        return product.sizes ? product.sizes[0] : null;
+
+        // Default to first available size
+        if (currentVariant && currentVariant.sizes.length > 0) {
+            return currentVariant.sizes[0].size;
+        }
+        return null; // No fallback to legacy product.sizes
     });
 
-    // Standalone quantity state - works for both Add to Cart and Order Now
-    const [quantity, setQuantity] = useState(1);
+    // Determine effectively selected size details (if using variants)
+    const currentSizeVariant = currentVariant?.sizes.find(s => s.size === selectedSize);
 
+    // Calculate Price (Base or Override)
+    const currentPrice = (() => {
+        if (currentSizeVariant && currentSizeVariant.price) {
+            return parseFloat(currentSizeVariant.price);
+        }
+        return product.price;
+    })();
+
+    // Calculate SKU
+    const currentSku = currentSizeVariant?.sku || product.sku;
+
+    // Standalone quantity state
+    const [quantity, setQuantity] = useState(1);
     const { addToCart, cartItems } = useCart();
 
-    // Update size if URL param changes
-    const [prevInitialSize, setPrevInitialSize] = useState(initialSize);
-    if (initialSize !== prevInitialSize) {
-        setPrevInitialSize(initialSize);
-        if (initialSize && product.sizes?.includes(initialSize)) {
-            setSelectedSize(initialSize);
+    // Effect: When Color changes, ensure Size is valid
+    // We don't use useEffect for this to avoid double-render, but we need to handle it in the parent or derived state.
+    // However, since selectedColor comes from props, we should react to it.
+    // A better pattern here is to reset size in the onColorSelect handler in the parent,
+    // but since we control size state locally here, we use an effect or simple memoization.
+
+    // Simple effect to validate size on color change
+    if (currentVariant && selectedSize && !currentVariant.sizes.some(s => s.size === selectedSize)) {
+        // If current size is invalid for new color, switch to first available
+        if (currentVariant.sizes.length > 0) {
+            setSelectedSize(currentVariant.sizes[0].size);
+        } else {
+            setSelectedSize(null);
         }
     }
 
@@ -51,38 +89,40 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
     };
 
     const handleAddToCart = () => {
-        if (!selectedColor && product.colors && product.colors.length > 0) {
+        if (product.variants?.length && !selectedColor) {
             alert('Please select a color');
             return;
         }
 
         // Add the selected quantity to cart
         for (let i = 0; i < quantity; i++) {
-            addToCart(product, {
+            addToCart({
+                ...product,
+                price: currentPrice, // Add with correct price
+                sku: currentSku
+            }, {
                 selectedColor: selectedColor || undefined,
                 selectedSize: selectedSize || undefined
             });
         }
 
-        // Reset quantity after adding
         setQuantity(1);
     };
 
     const handleOrderNow = () => {
-        if (!selectedColor && product.colors && product.colors.length > 0) {
+        if (product.variants?.length && !selectedColor) {
             alert('Please select a color');
             return;
         }
 
-        // Store direct order item with selected quantity in sessionStorage
         const directOrderItem = {
             id: product.id,
-            sku: product.sku,
+            sku: currentSku,
             name: product.name,
-            price: product.price,
+            price: currentPrice, // Use dynamic price
             currency: product.currency,
             image: product.image,
-            quantity: quantity, // Use selected quantity
+            quantity: quantity,
             selectedColor: selectedColor || undefined,
             selectedSize: selectedSize || undefined,
             cartItemId: `direct-${product.id}-${selectedColor || 'nocolor'}-${selectedSize || 'nosize'}`,
@@ -92,19 +132,16 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
         router.push('/checkout?direct=true');
     };
 
-    // Helper for color values
-    const getColorValue = (colorName: string) => {
-        const map: Record<string, string> = {
-            'Emerald': '#046A38',
-            'Dusty Rose': '#CBA7AA',
-            'Black': '#000000',
-            'Navy': '#000080',
-            'Beige': '#F5F5DC',
-            'Gold': '#FFD700',
-            'White': '#FFFFFF'
-        };
-        return map[colorName] || '#CCCCCC';
+    // Helper for color values - uses Variant Hex only
+    const getColorHex = (colorName: string) => {
+        // Check new variants only
+        const variant = product.variants?.find(v => v.colorName === colorName);
+        if (variant && variant.colorCode) return variant.colorCode;
+        return '#CCCCCC'; // Default fallback
     };
+
+    // Derived lists for rendering
+    const colorsToRender = product.variants?.map(v => v.colorName) || [];
 
     return (
         <div className={styles.infoContainer}>
@@ -112,7 +149,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                 <div className={styles.category}>{product.category}</div>
                 <h1 className={styles.title}>{product.name}</h1>
                 <div className={styles.price}>
-                    {product.originalPrice && product.originalPrice > product.price && (
+                    {product.originalPrice && product.originalPrice > currentPrice && (
                         <span style={{
                             textDecoration: 'line-through',
                             color: '#6b7280',
@@ -127,7 +164,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                         color: product.originalPrice ? '#dc2626' : 'inherit',
                         fontWeight: product.originalPrice ? 'bold' : '500'
                     }}>
-                        {product.currency} {product.price.toLocaleString()}
+                        {product.currency} {currentPrice.toLocaleString()}
                     </span>
                     {product.discount && (
                         <span style={{
@@ -157,17 +194,17 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                 </div>
             )}
 
-            {product.colors && product.colors.length > 0 && (
+            {colorsToRender && colorsToRender.length > 0 && (
                 <div className={styles.optionsSection}>
                     <label className={styles.optionLabel}>
-                        Color: <span>{selectedColor}</span>
+                        Color: <span className="font-semibold text-gray-900">{selectedColor}</span>
                     </label>
                     <div className={styles.swatchGrid}>
-                        {product.colors.map(color => (
+                        {colorsToRender.map(color => (
                             <button
                                 key={color}
                                 className={`${styles.colorButton} ${selectedColor === color ? styles.activeColor : ''}`}
-                                style={{ backgroundColor: getColorValue(color) }}
+                                style={{ backgroundColor: getColorHex(color) }}
                                 onClick={() => onColorSelect(color)}
                                 title={color}
                                 aria-label={`Select color ${color}`}
@@ -177,21 +214,31 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                 </div>
             )}
 
-            {product.sizes && product.sizes.length > 0 && (
+            {/* Sizes Section - Handles SizeVariant[] only */}
+            {availableSizes && availableSizes.length > 0 && (
                 <div className={styles.optionsSection}>
                     <label className={styles.optionLabel}>
-                        Size: <span>{selectedSize}</span>
+                        Size: <span className="font-semibold text-gray-900">{selectedSize}</span>
                     </label>
                     <div className={styles.swatchGrid}>
-                        {product.sizes.map(size => (
-                            <button
-                                key={size}
-                                className={`${styles.sizeButton} ${selectedSize === size ? styles.activeSize : ''}`}
-                                onClick={() => setSelectedSize(size)}
-                            >
-                                {size}
-                            </button>
-                        ))}
+                        {availableSizes.map((sizeItem: any) => {
+                            // Extract size name depending on type - now only expecting object but keeping safe access
+                            const sizeName = sizeItem.size;
+                            // Check stock if variant
+                            const isOutOfStock = sizeItem.stock && parseInt(sizeItem.stock) <= 0;
+
+                            return (
+                                <button
+                                    key={sizeName}
+                                    className={`${styles.sizeButton} ${selectedSize === sizeName ? styles.activeSize : ''} ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={() => !isOutOfStock && setSelectedSize(sizeName)}
+                                    disabled={isOutOfStock}
+                                    title={isOutOfStock ? 'Out of Stock' : ''}
+                                >
+                                    {sizeName}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             )}
@@ -237,9 +284,9 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
 
             {/* Cart indicator */}
             {inCartQuantity > 0 && (
-                <p className={styles.cartIndicator}>
+                <div className={styles.cartIndicator}>
                     ✓ {inCartQuantity} {t.products.alreadyInCart || 'already in cart'}
-                </p>
+                </div>
             )}
         </div>
     );

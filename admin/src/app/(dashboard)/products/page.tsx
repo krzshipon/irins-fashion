@@ -13,6 +13,7 @@ import {
     ChevronRight,
     Package,
 } from "lucide-react";
+import { useDialog } from "@/components/Dialog";
 
 // Mock data - will be replaced with API calls
 const MOCK_PRODUCTS = [
@@ -73,7 +74,23 @@ const MOCK_PRODUCTS = [
 export default function ProductsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [products] = useState(MOCK_PRODUCTS);
+    const { showConfirm, showSuccess, showLoading } = useDialog();
+    const [products, setProducts] = useState(MOCK_PRODUCTS); // Changed to allow state update
+
+    const handleDelete = (id: string) => {
+        showConfirm(
+            "Delete Product",
+            "Are you sure you want to delete this product? This action cannot be undone.",
+            async () => {
+                showLoading("Deleting Product", "Please wait while we delete the product...");
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                setProducts(prev => prev.filter(p => p.id !== id));
+                showSuccess("Product Deleted", "The product has been successfully deleted.");
+            }
+        );
+    };
 
     const filteredProducts = products.filter((product) => {
         const matchesSearch =
@@ -211,13 +228,22 @@ export default function ProductsPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                                            <Link
+                                                href={`/products/${product.id}`}
+                                                className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                            >
                                                 <Eye size={16} />
-                                            </button>
-                                            <button className="p-2 text-gray-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors">
+                                            </Link>
+                                            <Link
+                                                href={`/products/${product.id}/edit`}
+                                                className="p-2 text-gray-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                            >
                                                 <Edit size={16} />
-                                            </button>
-                                            <button className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(product.id)}
+                                                className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                            >
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>

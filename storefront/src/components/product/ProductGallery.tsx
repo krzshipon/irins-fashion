@@ -7,19 +7,17 @@ interface ProductGalleryProps {
     images: string[];
     title: string;
     selectedColor: string | null;
-    colorImages?: Record<string, string>;
 }
 
-export default function ProductGallery({ images, title, selectedColor, colorImages }: ProductGalleryProps) {
+export default function ProductGallery({ images, title, selectedColor }: ProductGalleryProps) {
     const [selectedImage, setSelectedImage] = useState(images[0]);
 
-    // Update selected image when color changes
+    // Sync state when images prop changes (crucial for variant switching)
     useEffect(() => {
-        if (selectedColor && colorImages && colorImages[selectedColor]) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setSelectedImage(colorImages[selectedColor]);
+        if (images && images.length > 0) {
+            setSelectedImage(images[0]);
         }
-    }, [selectedColor, colorImages]);
+    }, [images]);
 
     if (!images || images.length === 0) return null;
 

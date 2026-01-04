@@ -10,6 +10,22 @@ export interface ProductDiscount {
   value: number;
 }
 
+export interface SizeVariant {
+  id: string;
+  size: string;
+  price: string;
+  stock: string;
+  sku: string;
+}
+
+export interface ColorVariant {
+  id: string;
+  colorName: string;
+  colorCode: string;
+  images: string[];
+  sizes: SizeVariant[];
+}
+
 export interface Product {
   id: string;
   sku: string;
@@ -21,12 +37,9 @@ export interface Product {
   category: string;
   image: string;
   images: string[];
-  isNew?: boolean; // Kept for backward compatibility/logic
-  badges?: ProductBadge[]; // New flexible badge system
   description?: string;
-  sizes?: string[];
-  colors?: string[];
-  colorImages?: Record<string, string>;
+  badges?: ProductBadge[];
+  variants?: ColorVariant[];
 }
 
 export interface Banner {
