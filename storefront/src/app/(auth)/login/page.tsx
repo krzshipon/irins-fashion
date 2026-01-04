@@ -76,9 +76,9 @@ export default function LoginPage() {
                             />
                         </div>
                         <div className={styles.forgotLink}>
-                            <button type="button" className={styles.forgotBtn}>
+                            <Link href="/forgot-password" className={styles.forgotBtn}>
                                 Forgot password?
-                            </button>
+                            </Link>
                         </div>
                     </div>
 

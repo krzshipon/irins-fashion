@@ -110,4 +110,52 @@ export const authService = {
 
         return response;
     },
+
+    // Forgot Password Flow
+    async requestPasswordReset(mobile: string): Promise<{ success: boolean; message: string }> {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Simulate checking if account exists
+        // For demo: accept any valid BD mobile number
+        const phoneRegex = /^01[3-9]\d{8}$/;
+        if (!phoneRegex.test(mobile)) {
+            throw new Error('Invalid mobile number format');
+        }
+
+        // Simulate sending OTP (in production, this would send an SMS)
+        console.log(`[MOCK] OTP sent to ${mobile}: 123456`);
+
+        return {
+            success: true,
+            message: 'OTP sent successfully',
+        };
+    },
+
+    async verifyOTP(mobile: string, otp: string): Promise<{ success: boolean; resetToken: string }> {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
+        // Mock OTP verification - accept "123456" as valid OTP
+        if (otp === '123456') {
+            return {
+                success: true,
+                resetToken: `reset_token_${Date.now()}`,
+            };
+        }
+
+        throw new Error('Invalid OTP. Please try again.');
+    },
+
+    async resetPassword(resetToken: string, newPassword: string): Promise<{ success: boolean }> {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Mock password reset
+        if (!resetToken || newPassword.length < 6) {
+            throw new Error('Invalid request');
+        }
+
+        return {
+            success: true,
+        };
+    },
 };
+
