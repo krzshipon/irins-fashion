@@ -33,11 +33,9 @@ export default function ShopPage() {
     const [sortOption, setSortOption] = useState<SortOption | ''>('');
     const [loading, setLoading] = useState(true);
 
-    // Update isNew when collection param changes
+    // Sync isNew with collection param
     useEffect(() => {
-        if (collectionParam === 'new') {
-            setIsNew(true);
-        }
+        setIsNew(collectionParam === 'new');
     }, [collectionParam]);
 
     useEffect(() => {
