@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
             password: body.password
         };
 
-        const response = await fetch(`${API_URL}/auth/login`, {
+        // Pass app=admin to get the admin-specific cookie
+        const response = await fetch(`${API_URL}/auth/login?app=admin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),

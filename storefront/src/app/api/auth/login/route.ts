@@ -6,7 +6,8 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        const response = await fetch(`${API_URL}/auth/login`, {
+        // Pass app=storefront to get the storefront-specific cookie
+        const response = await fetch(`${API_URL}/auth/login?app=storefront`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -6,7 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 export async function GET(request: NextRequest) {
     try {
         const cookieStore = await cookies();
-        const token = cookieStore.get('token'); // Matches backend cookie name
+        const token = cookieStore.get('storefront_token'); // Storefront-specific cookie
 
         if (!token) {
             return NextResponse.json(
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
         const response = await fetch(`${API_URL}/auth/me`, {
             headers: {
-                Cookie: `token=${token.value}`,
+                Cookie: `storefront_token=${token.value}`,
             },
         });
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
     try {
         const cookieStore = await cookies();
-        const token = cookieStore.get('token');
+        const token = cookieStore.get('storefront_token'); // Storefront-specific cookie
 
         if (!token) {
             return NextResponse.json(
@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest) {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                Cookie: `token=${token.value}`,
+                Cookie: `storefront_token=${token.value}`,
             },
             body: JSON.stringify(body),
         });

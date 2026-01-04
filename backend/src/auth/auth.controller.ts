@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException, Patch } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException, Patch, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -7,7 +7,13 @@ import { Response } from 'express';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoginDto } from './dto/login.dto';
-import { ApiBody, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+
+// Helper to determine cookie name based on app type
+function getCookieName(appType?: string): string {
+    if (appType === 'admin') return 'admin_token';
+    return 'storefront_token';
+}
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -21,13 +27,19 @@ export class AuthController {
     @Post('login')
     @ApiOperation({ summary: 'Log in user' })
     @ApiBody({ type: LoginDto })
+    @ApiQuery({ name: 'app', required: false, description: 'App type: admin or storefront' })
     @ApiResponse({ status: 200, description: 'User successfully logged in and cookie set.' })
     @ApiResponse({ status: 401, description: 'Unauthorized.' })
-    async login(@Request() req: any, @Res({ passthrough: true }) response: any) {
+    async login(
+        @Request() req: any,
+        @Res({ passthrough: true }) response: any,
+        @Query('app') appType?: string
+    ) {
         const { access_token, user } = await this.authService.login(req.user);
+        const cookieName = getCookieName(appType);
 
-        // Set HttpOnly Cookie
-        response.cookie('token', access_token, {
+        // Set HttpOnly Cookie with app-specific name
+        response.cookie(cookieName, access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
@@ -48,10 +60,16 @@ export class AuthController {
 
     @Post('logout')
     @ApiOperation({ summary: 'Log out user' })
-    async logout(@Res({ passthrough: true }) response: any) {
-        response.clearCookie('token');
+    @ApiQuery({ name: 'app', required: false, description: 'App type: admin or storefront' })
+    async logout(
+        @Res({ passthrough: true }) response: any,
+        @Query('app') appType?: string
+    ) {
+        const cookieName = getCookieName(appType);
+        response.clearCookie(cookieName);
         return { success: true };
     }
+
 
     @UseGuards(JwtAuthGuard)
     @Get('me')
