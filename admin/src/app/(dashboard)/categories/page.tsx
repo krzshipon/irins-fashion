@@ -1,71 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, CheckCircle, XCircle } from "lucide-react";
 import { useDialog } from "@/components/Dialog";
 import CategoryModal from "@/components/categories/CategoryModal";
 
-// Mock data - will be replaced with API calls
-const MOCK_CATEGORIES = [
-    {
-        id: "1",
-        name: "Hijab",
-        slug: "hijab",
-        productCount: 24,
-        icon: "🧕",
-        image: "/images/category-hijab.png",
-        isActive: true,
-        description: "Premium hijabs in silk, chiffon, and jersey"
-    },
-    {
-        id: "2",
-        name: "Abaya",
-        slug: "abaya",
-        productCount: 18,
-        icon: "👗",
-        image: "/images/category-abaya.png",
-        isActive: true,
-        description: "Classic and modern abaya designs"
-    },
-    {
-        id: "3",
-        name: "Borkha",
-        slug: "borkha",
-        productCount: 15,
-        icon: "👗",
-        image: "/images/category-borkha.png",
-        isActive: true,
-        description: "Traditional and contemporary borkha styles"
-    },
-    {
-        id: "4",
-        name: "Gown",
-        slug: "gown",
-        productCount: 12,
-        icon: "👗",
-        image: "/images/category-gown.png",
-        isActive: false,
-        description: "Elegant gowns for special occasions"
-    },
-    {
-        id: "5",
-        name: "Accessories",
-        slug: "accessories",
-        productCount: 35,
-        icon: "👜",
-        image: "/images/category-accessories.png",
-        isActive: true,
-        description: "Handbags, jewelry, and more"
-    },
-];
+import { categoriesService } from "@/services/categories.service";
+import { Category } from "@/types/category";
 
 export default function CategoriesPage() {
-    const { showConfirm, showSuccess } = useDialog();
-    const [categories, setCategories] = useState(MOCK_CATEGORIES);
+    const { showConfirm, showSuccess, showLoading, showError } = useDialog();
+    const [categories, setCategories] = useState<Category[]>([]);
     const [showModal, setShowModal] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<typeof MOCK_CATEGORIES[0] | null>(null);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
-    const handleEdit = (category: typeof MOCK_CATEGORIES[0]) => {
+    const fetchCategories = async () => {
+        try {
+            const data = await categoriesService.getAll();
+            setCategories(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Failed to fetch categories", error);
+            setCategories([]);
+            showError("Connection Error", "Failed to load categories. Please check your internet connection or try again later.");
+        }
+    };
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const handleEdit = (category: Category) => {
         setEditingCategory(category);
         setShowModal(true);
     };
@@ -75,46 +39,57 @@ export default function CategoriesPage() {
         setShowModal(true);
     };
 
-    const handleSave = (categoryData: any) => {
-        if (editingCategory) {
-            setCategories(categories.map(c =>
-                c.id === editingCategory.id
-                    ? { ...c, ...categoryData }
-                    : c
-            ));
-        } else {
-            setCategories([...categories, {
-                id: String(Date.now()),
-                ...categoryData,
-                productCount: 0,
-            }]);
+    const handleSave = async (categoryData: any) => {
+        try {
+            if (editingCategory) {
+                await categoriesService.update(editingCategory.id, categoryData);
+            } else {
+                await categoriesService.create(categoryData);
+            }
+            // Refetch to get updated list
+            await fetchCategories();
+            setShowModal(false);
+        } catch (error) {
+            console.error("Failed to save category", error);
+            throw error; // Re-throw for Modal to catch
         }
-        setShowModal(false);
     };
 
     const handleDelete = (id: string) => {
         showConfirm(
             "Delete Category",
             "Are you sure you want to delete this category? This action cannot be undone.",
-            () => {
-                setCategories(categories.filter(c => c.id !== id));
-                showSuccess("Category Deleted", "The category has been deleted successfully.");
+            async () => {
+                showLoading("Deleting Category", "Please wait...");
+                try {
+                    await categoriesService.delete(id);
+                    await fetchCategories();
+                    showSuccess("Category Deleted", "The category has been deleted successfully.");
+                } catch (error) {
+                    console.error("Failed to delete category", error);
+                    showError("Delete Failed", "Could not delete the category. Please try again.");
+                }
             }
         );
     };
 
-    const toggleStatus = (category: typeof MOCK_CATEGORIES[0]) => {
+    const toggleStatus = (category: Category) => {
         const newStatus = !category.isActive;
         const action = newStatus ? "activate" : "deactivate";
 
         showConfirm(
             `${newStatus ? "Activate" : "Deactivate"} Category`,
             `Are you sure you want to ${action} this category? It will ${newStatus ? "appear" : "be hidden"} on the storefront.`,
-            () => {
-                setCategories(categories.map(c =>
-                    c.id === category.id ? { ...c, isActive: newStatus } : c
-                ));
-                showSuccess("Status Updated", `Category has been ${newStatus ? "activated" : "deactivated"} successfully.`);
+            async () => {
+                showLoading("Updating Status", "Please wait...");
+                try {
+                    await categoriesService.toggleStatus(category.id);
+                    await fetchCategories();
+                    showSuccess("Status Updated", `Category has been ${newStatus ? "activated" : "deactivated"} successfully.`);
+                } catch (error) {
+                    console.error("Failed to update status", error);
+                    showError("Update Failed", "Could not update category status. Please try again.");
+                }
             }
         );
     };
@@ -157,13 +132,12 @@ export default function CategoriesPage() {
                             <div className="flex items-center gap-4">
                                 <div className="w-16 h-16 bg-gray-700/50 rounded-xl flex items-center justify-center text-3xl shrink-0 overflow-hidden relative">
                                     {category.image ? (
-                                        // In a real app, use Next.js Image component
                                         <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${category.image})` }} />
                                     ) : (
-                                        <span>{category.icon}</span>
+                                        <span>{category.icon || '📦'}</span>
                                     )}
                                     {/* Icon overlay for when image is present */}
-                                    {category.image && (
+                                    {category.image && category.icon && (
                                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-xl backdrop-blur-[1px]">
                                             {category.icon}
                                         </div>
@@ -171,7 +145,7 @@ export default function CategoriesPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-white text-lg">{category.name}</h3>
-                                    <p className="text-sm text-gray-500">{category.productCount} products</p>
+                                    <p className="text-sm text-gray-500">{category.productCount || 0} products</p>
                                 </div>
                             </div>
                         </div>

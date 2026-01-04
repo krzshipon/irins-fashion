@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './CategorySection.module.css';
-import { Category, getCategories } from '@/services/api/categories';
+import { getCategories } from '@/services/api/categories';
+import { Category } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
 
 export default function CategorySection() {
@@ -31,16 +32,16 @@ export default function CategorySection() {
 
             <div className={styles.grid}>
                 {categories.map((category) => (
-                    <Link href={category.link} key={category.id} className={styles.item}>
+                    <Link href={`/collection/${category.slug}`} key={category.id} className={styles.item}>
                         <div className={styles.imageContainer}>
                             <Image
-                                src={category.image}
-                                alt={t(category.nameIdentifier)}
+                                src={category.image || '/images/placeholder-category.png'}
+                                alt={category.name}
                                 fill
                                 style={{ objectFit: 'cover' }}
                             />
                         </div>
-                        <span className={styles.label}>{t(category.nameIdentifier)}</span>
+                        <span className={styles.label}>{t(`categories.${category.slug}`) || category.name}</span>
                     </Link>
                 ))}
             </div>

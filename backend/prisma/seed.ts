@@ -23,29 +23,34 @@ async function main() {
     // 2. Seed Categories
     const categories = [
         {
-            nameIdentifier: 'categories.hijab',
+            name: 'Hijab',
+            slug: 'hijab',
+            icon: '🧕',
             image: '/images/cat-hijab.png',
-            link: '/collection/hijabs',
         },
         {
-            nameIdentifier: 'categories.abaya',
+            name: 'Abaya',
+            slug: 'abaya',
+            icon: '👗',
             image: '/images/cat-abaya.png',
-            link: '/collection/abayas',
         },
         {
-            nameIdentifier: 'categories.borkha',
+            name: 'Borkha',
+            slug: 'borkha',
+            icon: '👗',
             image: '/images/cat-borkha-v3.png',
-            link: '/collection/borkhas',
         },
         {
-            nameIdentifier: 'categories.gown',
+            name: 'Gown',
+            slug: 'gown',
+            icon: '👗',
             image: '/images/cat-gown-v3.png',
-            link: '/collection/gowns',
         },
         {
-            nameIdentifier: 'categories.accessories',
+            name: 'Accessories',
+            slug: 'accessories',
+            icon: '👜',
             image: '/images/cat-accessories.png',
-            link: '/collection/accessories',
         },
     ];
 
@@ -57,17 +62,17 @@ async function main() {
 
     console.log(`Seeded ${categories.length} categories.`);
 
-    // Helper to find category ID by name
-    const getCatId = async (nameIdentifier: string) => {
-        const cat = await prisma.category.findUnique({ where: { nameIdentifier } });
+    // Helper to find category ID by slug
+    const getCatId = async (slug: string) => {
+        const cat = await prisma.category.findUnique({ where: { slug } });
         return cat?.id;
     };
 
-    const hijabId = await getCatId('categories.hijab');
-    const abayaId = await getCatId('categories.abaya');
-    const borkhaId = await getCatId('categories.borkha');
-    const gownId = await getCatId('categories.gown');
-    const accId = await getCatId('categories.accessories');
+    const hijabId = await getCatId('hijab');
+    const abayaId = await getCatId('abaya');
+    const borkhaId = await getCatId('borkha');
+    const gownId = await getCatId('gown');
+    const accId = await getCatId('accessories');
 
     if (!hijabId || !abayaId || !borkhaId || !gownId || !accId) {
         throw new Error('Failed to retrieve seeded category IDs');

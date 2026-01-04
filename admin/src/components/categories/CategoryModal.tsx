@@ -17,7 +17,7 @@ import { useDialog } from "@/components/Dialog";
 interface CategoryModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: any) => void;
+    onSave: (data: any) => Promise<void> | void;
     initialData?: any;
     isEdit?: boolean;
 }
@@ -29,7 +29,7 @@ export default function CategoryModal({
     initialData,
     isEdit = false
 }: CategoryModalProps) {
-    const { showLoading, showSuccess } = useDialog();
+    const { showLoading, showSuccess, showError } = useDialog();
     const [formData, setFormData] = useState({
         name: "",
         slug: "",
@@ -91,15 +91,33 @@ export default function CategoryModal({
             "Please wait while we save your changes..."
         );
 
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        try {
+            await onSave(formData);
+            showSuccess(
+                isEdit ? "Category Updated" : "Category Created",
+                `Category has been successfully ${isEdit ? 'updated' : 'created'}.`
+            );
+            onClose();
+        } catch (error: any) {
+            console.error(error);
 
-        onSave(formData);
-        showSuccess(
-            isEdit ? "Category Updated" : "Category Created",
-            `Category has been successfully ${isEdit ? 'updated' : 'created'}.`
-        );
-        onClose();
+            // Extract error message
+            let errorMessage = "Failed to save category. Please check your connection and try again.";
+
+            if (error.response?.data?.message) {
+                const message = error.response.data.message;
+                if (Array.isArray(message)) {
+                    errorMessage = message.join(". ");
+                } else {
+                    errorMessage = message;
+                }
+            }
+
+            showError(
+                "Operation Failed",
+                errorMessage
+            );
+        }
     };
 
     if (!isOpen) return null;

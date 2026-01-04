@@ -51,11 +51,19 @@ model Address {
 // --------------------------------------
 
 model Category {
-  id             String    @id @default(uuid())
-  nameIdentifier String    @unique // e.g., "categories.hijab"
-  image          String
-  link           String
-  products       Product[]
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?  // Emoji or Icon name
+  image       String?  // URL
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  products    Product[]
 }
 
 model Product {

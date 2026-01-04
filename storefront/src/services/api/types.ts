@@ -26,6 +26,18 @@ export interface ColorVariant {
   sizes: SizeVariant[];
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  image?: string;
+  isActive: boolean;
+  sortOrder: number;
+  productCount?: number; // Optional as backend aggregation might be needed
+}
+
 export interface Product {
   id: string;
   sku: string;
