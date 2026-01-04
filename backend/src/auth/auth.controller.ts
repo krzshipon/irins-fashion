@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException, Patch, Query } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException, Patch, Query, ForbiddenException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -15,6 +15,9 @@ function getCookieName(appType?: string): string {
     return 'storefront_token';
 }
 
+// Roles allowed to access admin panel
+const ADMIN_ROLES = ['admin', 'superadmin'];
+
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -30,11 +33,19 @@ export class AuthController {
     @ApiQuery({ name: 'app', required: false, description: 'App type: admin or storefront' })
     @ApiResponse({ status: 200, description: 'User successfully logged in and cookie set.' })
     @ApiResponse({ status: 401, description: 'Unauthorized.' })
+    @ApiResponse({ status: 403, description: 'Forbidden - insufficient role for admin access.' })
     async login(
         @Request() req: any,
         @Res({ passthrough: true }) response: any,
         @Query('app') appType?: string
     ) {
+        // Role-based access control for admin app
+        if (appType === 'admin') {
+            if (!req.user.role || !ADMIN_ROLES.includes(req.user.role)) {
+                throw new ForbiddenException('Access denied. Admin privileges required.');
+            }
+        }
+
         const { access_token, user } = await this.authService.login(req.user);
         const cookieName = getCookieName(appType);
 
