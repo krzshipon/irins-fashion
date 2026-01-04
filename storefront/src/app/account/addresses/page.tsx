@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Loader2, X, Check, Trash2, Pencil } from "lucide-react";
+import { Plus, Loader2, X, Check, Trash2, Pencil, ChevronDown, User, MapPin, Phone } from "lucide-react";
 import { authService } from "@/services/api/auth.service";
 import type { Address } from "@/services/api/types";
 import styles from "../pages.module.css";
@@ -132,38 +132,53 @@ export default function AddressesPage() {
                         {address.isDefault && (
                             <span className={addressStyles.defaultBadge}>Default</span>
                         )}
-                        <h3 className={addressStyles.addressLabel}>{address.label}</h3>
-                        <p className={addressStyles.addressName}>{address.recipientName}</p>
-                        <p className={addressStyles.addressText}>{address.street}</p>
-                        <p className={addressStyles.addressText}>
-                            {address.city}, {address.division} - {address.postalCode}
-                        </p>
-                        <p className={addressStyles.addressPhone}>{address.phone}</p>
-
-                        <div className={addressStyles.addressActions}>
-                            <button
-                                className={addressStyles.editBtn}
-                                onClick={() => handleOpenModal(address)}
-                            >
-                                <Pencil size={14} style={{ marginRight: 4 }} />
-                                Edit
-                            </button>
-                            {!address.isDefault && (
+                        <div className={addressStyles.cardHeader}>
+                            <h3 className={addressStyles.addressLabel}>{address.label}</h3>
+                            <div className={addressStyles.cardActions}>
                                 <button
-                                    className={addressStyles.removeBtn}
-                                    onClick={() => handleDelete(address.id)}
+                                    className={addressStyles.iconBtn}
+                                    onClick={() => handleOpenModal(address)}
+                                    title="Edit Address"
                                 >
-                                    <Trash2 size={14} style={{ marginRight: 4 }} />
-                                    Remove
+                                    <Pencil size={16} />
                                 </button>
-                            )}
+                                {!address.isDefault && (
+                                    <button
+                                        className={addressStyles.iconBtn}
+                                        onClick={() => handleDelete(address.id)}
+                                        title="Delete Address"
+                                    >
+                                        <Trash2 size={16} color="#ef4444" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={addressStyles.cardContent}>
+                            <div className={addressStyles.infoRow}>
+                                <div className={addressStyles.iconWrapper}><User size={16} /></div>
+                                <p className={addressStyles.infoText}>{address.recipientName}</p>
+                            </div>
+                            <div className={addressStyles.infoRow}>
+                                <div className={addressStyles.iconWrapper}><MapPin size={16} /></div>
+                                <div>
+                                    <p className={addressStyles.infoText}>{address.street}</p>
+                                    <p className={addressStyles.subText}>{address.division}</p>
+                                </div>
+                            </div>
+                            <div className={addressStyles.infoRow}>
+                                <div className={addressStyles.iconWrapper}><Phone size={16} /></div>
+                                <p className={addressStyles.infoText}>{address.phone}</p>
+                            </div>
                         </div>
                     </div>
                 ))}
 
                 {/* Add New Address Card */}
                 <button className={addressStyles.addCard} onClick={() => handleOpenModal()}>
-                    <Plus size={24} />
+                    <div className={addressStyles.addIconCircle}>
+                        <Plus size={32} />
+                    </div>
                     <span>Add New Address</span>
                 </button>
             </div>
@@ -185,107 +200,136 @@ export default function AddressesPage() {
 
                         <form onSubmit={handleSave}>
                             <div className={addressStyles.modalContent}>
-                                <div className={addressStyles.row}>
-                                    <div className={addressStyles.formGroup}>
-                                        <label className={addressStyles.label}>Label (e.g., Home, Work)</label>
+                                {/* Label - Specific to Address Book */}
+                                <div className={addressStyles.formGroup}>
+                                    <label className={addressStyles.label}>Address Label (e.g. Home, Office)</label>
+                                    <div style={{ position: 'relative' }}>
                                         <input
                                             type="text"
                                             className={addressStyles.input}
                                             value={formData.label}
                                             onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div className={addressStyles.formGroup}>
-                                        <label className={addressStyles.label}>Recipient Name</label>
-                                        <input
-                                            type="text"
-                                            className={addressStyles.input}
-                                            value={formData.recipientName}
-                                            onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
+                                            placeholder="Home"
                                             required
                                         />
                                     </div>
                                 </div>
 
+                                {/* Phone - Matched with Checkout */}
                                 <div className={addressStyles.formGroup}>
                                     <label className={addressStyles.label}>Mobile Number</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <span style={{
+                                            position: 'absolute',
+                                            left: '16px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            color: '#6b7280',
+                                            fontSize: '15px',
+                                            fontWeight: '500',
+                                        }}>+88</span>
+                                        <input
+                                            type="tel"
+                                            className={addressStyles.input}
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            placeholder="01XXXXXXXXX"
+                                            style={{ paddingLeft: '52px' }}
+                                            required
+                                            maxLength={11}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Full Name - Matched with Checkout */}
+                                <div className={addressStyles.formGroup}>
+                                    <label className={addressStyles.label}>Full Name</label>
                                     <input
-                                        type="tel"
+                                        type="text"
                                         className={addressStyles.input}
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        value={formData.recipientName}
+                                        onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
                                         required
                                     />
                                 </div>
 
+                                {/* Address - MOVED BEFORE DIVISION */}
                                 <div className={addressStyles.formGroup}>
-                                    <label className={addressStyles.label}>Street Address</label>
-                                    <input
-                                        type="text"
-                                        className={addressStyles.input}
+                                    <label className={addressStyles.label}>Full Address</label>
+                                    <textarea
+                                        className={addressStyles.textarea}
                                         value={formData.street}
                                         onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                                        placeholder="House, Road, Area, etc."
+                                        rows={2}
                                         required
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px 16px',
+                                            fontSize: '15px',
+                                            border: '1px solid #e5e5e5',
+                                            borderRadius: '8px',
+                                            outline: 'none',
+                                            minHeight: '80px',
+                                            resize: 'vertical',
+                                            fontFamily: 'inherit'
+                                        }}
                                     />
                                 </div>
 
-                                <div className={addressStyles.formGroup}>
-                                    <label className={addressStyles.label}>City</label>
-                                    <input
-                                        type="text"
-                                        className={addressStyles.input}
-                                        value={formData.city}
-                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
+                                {/* Division - MOVED AFTER ADDRESS */}
                                 <div className={addressStyles.formGroup}>
                                     <label className={addressStyles.label}>Division</label>
-                                    <input
-                                        type="text"
-                                        className={addressStyles.input}
-                                        value={formData.division}
-                                        onChange={(e) => setFormData({ ...formData, division: e.target.value })}
-                                        required
-                                    />
+                                    <div style={{ position: 'relative' }}>
+                                        <select
+                                            className={addressStyles.select}
+                                            value={formData.division}
+                                            onChange={(e) => setFormData({ ...formData, division: e.target.value })}
+                                            required
+                                        >
+                                            <option value="">Select Division</option>
+                                            <option value="Dhaka">Dhaka</option>
+                                            <option value="Chattogram">Chattogram</option>
+                                            <option value="Rajshahi">Rajshahi</option>
+                                            <option value="Khulna">Khulna</option>
+                                            <option value="Barishal">Barishal</option>
+                                            <option value="Sylhet">Sylhet</option>
+                                            <option value="Rangpur">Rangpur</option>
+                                            <option value="Mymensingh">Mymensingh</option>
+                                        </select>
+                                        <ChevronDown size={16} className={addressStyles.selectIcon} />
+                                    </div>
                                 </div>
 
-                                <div className={addressStyles.formGroup}>
-                                    <label className={addressStyles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            className={addressStyles.checkbox}
-                                            checked={formData.isDefault}
-                                            onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                                        />
-                                        Set as default address
-                                    </label>
+                                <div className={addressStyles.checkboxGroup}>
+                                    <input
+                                        type="checkbox"
+                                        id="isDefault"
+                                        checked={formData.isDefault}
+                                        onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                                    />
+                                    <label htmlFor="isDefault">Set as default delivery address</label>
                                 </div>
                             </div>
 
                             <div className={addressStyles.modalFooter}>
-                                <button
-                                    type="button"
-                                    className={addressStyles.cancelBtn}
-                                    onClick={handleCloseModal}
-                                >
-                                    Cancel
-                                </button>
-                                <button type="submit" className={addressStyles.saveBtn} disabled={saving}>
-                                    {saving ? (
-                                        <>
-                                            <Loader2 size={16} className="animate-spin" />
-                                            Saving...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Check size={16} />
-                                            Save Address
-                                        </>
-                                    )}
-                                </button>
+                                <div className={addressStyles.modalActions}>
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className={addressStyles.cancelBtn}
+                                        disabled={saving}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className={addressStyles.saveBtn}
+                                        disabled={saving}
+                                    >
+                                        {saving ? 'Saving...' : (editingAddress ? 'Update Address' : 'Save Address')}
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>

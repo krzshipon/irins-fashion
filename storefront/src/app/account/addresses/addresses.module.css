@@ -5,90 +5,113 @@
 }
 
 .addressCard {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 24px;
     position: relative;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 220px;
 }
 
 .addressCard:hover {
-    border-color: var(--color-primary);
+    border-color: #111;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.cardActions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.addressCard:hover .cardActions {
+    opacity: 1;
+}
+
+.iconBtn {
+    background: #f3f4f6;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.iconBtn:hover {
+    background: #111;
+    color: #fff;
 }
 
 .defaultBadge {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background-color: var(--color-primary);
+    bottom: 24px;
+    right: 24px;
+    background-color: #111;
     color: #fff;
-    font-size: 0.7rem;
+    font-size: 11px;
     font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 9999px;
+    padding: 4px 8px;
+    border-radius: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .addressLabel {
-    font-weight: 600;
-    color: var(--color-text-main);
-    margin: 0 0 0.5rem 0;
-    font-size: 1rem;
-}
-
-.addressName {
-    font-weight: 500;
-    color: var(--color-text-main);
-    margin: 0 0 0.25rem 0;
-    font-size: 0.95rem;
-}
-
-.addressText {
-    color: var(--color-text-muted);
-    margin: 0.125rem 0;
-    font-size: 0.9rem;
-}
-
-.addressPhone {
-    color: var(--color-text-muted);
-    margin: 0.5rem 0 0 0;
-    font-size: 0.9rem;
-}
-
-.addressActions {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
     display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--color-border);
+    align-items: center;
+    gap: 8px;
 }
 
-.editBtn {
-    font-size: 0.875rem;
-    color: var(--color-primary);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.editBtn:hover {
-    text-decoration: underline;
+.infoRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 }
 
-.removeBtn {
-    font-size: 0.875rem;
-    color: var(--color-error);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
+.iconWrapper {
+    color: #9ca3af;
+    margin-top: 2px;
 }
 
-.removeBtn:hover {
-    text-decoration: underline;
+.infoText {
+    font-size: 14px;
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.subText {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 2px 0 0 0;
 }
 
 .addCard {
@@ -96,19 +119,44 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    min-height: 180px;
-    background-color: var(--color-background);
-    border: 2px dashed var(--color-border);
-    border-radius: var(--radius-lg);
-    color: var(--color-text-muted);
+    gap: 16px;
+    min-height: 220px;
+    background-color: #f9fafb;
+    border: 2px dashed #e5e5e5;
+    border-radius: 12px;
+    color: #6b7280;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
+    transition: all 0.2s;
 }
 
 .addCard:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+    border-color: #111;
+    background-color: #fff;
+    color: #111;
+}
+
+.addIconCircle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.addCard:hover .addIconCircle {
+    border-color: #111;
+    background-color: #111;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.addCard span {
+    font-size: 15px;
+    font-weight: 600;
 }
 
 /* Modal Styles */
@@ -131,11 +179,17 @@
 .modal {
     background: #fff;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
+    /* Widened for better layout */
     border-radius: 16px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* Deeper shadow */
     overflow: hidden;
     animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    /* Ensure it fits on screen */
 }
 
 .modalHeader {
@@ -171,8 +225,10 @@
 
 .modalContent {
     padding: 24px;
-    max-height: 70vh;
+    flex: 1;
+    /* Allow content to fill available space */
     overflow-y: auto;
+    /* Scrollable content */
 }
 
 .formGroup {
@@ -187,20 +243,52 @@
     margin-bottom: 6px;
 }
 
-.input {
+.input,
+.select,
+.textarea {
     width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #d1d5db;
+    padding: 12px 16px;
+    border: 1px solid #e5e5e5;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 15px;
     color: #111;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     outline: none;
+    background-color: #fff;
+    font-family: inherit;
 }
 
-.input:focus {
-    border-color: #1b4d3e;
-    box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.1);
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: #9ca3af;
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.select {
+    appearance: none;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.selectIcon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
 }
 
 .row {
@@ -209,13 +297,32 @@
     gap: 16px;
 }
 
-.checkboxLabel {
+.checkboxGroup {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 24px;
+    /* Spacing before buttons */
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #e5e5e5;
+    transition: all 0.2s;
+}
+
+.checkboxGroup:hover {
+    border-color: #d1d5db;
+    background-color: #f3f4f6;
+}
+
+.checkboxGroup label {
     font-size: 14px;
     color: #374151;
+    font-weight: 500;
     cursor: pointer;
+    user-select: none;
+    flex: 1;
 }
 
 .checkbox {
@@ -224,13 +331,17 @@
     accent-color: #1b4d3e;
 }
 
-.modalFooter {
+.modalActions {
     padding: 20px 24px;
-    background-color: #f9fafb;
+    background-color: #fff;
+    /* Changed to white for cleaner look */
     border-top: 1px solid #e5e5e5;
     display: flex;
     justify-content: flex-end;
     gap: 12px;
+    position: sticky;
+    /* Keep actions visible if needed, or just normal flow */
+    bottom: 0;
 }
 
 .cancelBtn {
