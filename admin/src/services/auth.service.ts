@@ -3,7 +3,7 @@ export interface User {
     name: string;
     email: string;
     mobile: string;
-    role: 'ADMIN' | 'CUSTOMER';
+    role: 'ADMIN' | 'SUPERADMIN' | 'CUSTOMER';
     avatarUrl?: string;
 }
 
@@ -44,7 +44,8 @@ export const authService = {
         const data = await response.json();
         const user = data.data?.user || data.user || data;
 
-        if (user.role !== 'ADMIN') {
+        // Allow both ADMIN and SUPERADMIN roles
+        if (user.role !== 'ADMIN' && user.role !== 'SUPERADMIN') {
             throw new Error('Access denied');
         }
         return user;

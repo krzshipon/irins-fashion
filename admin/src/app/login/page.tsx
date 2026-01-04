@@ -1,15 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+
+const REMEMBER_KEY = "admin_remembered_credentials";
 
 export default function LoginPage() {
     const { login } = useAuth();
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // Load remembered credentials on mount
+    useEffect(() => {
+        const remembered = localStorage.getItem(REMEMBER_KEY);
+        if (remembered) {
+            try {
+                const { identifier: savedId, password: savedPass } = JSON.parse(remembered);
+                setIdentifier(savedId || "");
+                setPassword(savedPass || "");
+                setRememberMe(true);
+            } catch {
+                localStorage.removeItem(REMEMBER_KEY);
+            }
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,6 +36,13 @@ export default function LoginPage() {
 
         try {
             await login(identifier, password);
+
+            // Save or clear credentials based on checkbox
+            if (rememberMe) {
+                localStorage.setItem(REMEMBER_KEY, JSON.stringify({ identifier, password }));
+            } else {
+                localStorage.removeItem(REMEMBER_KEY);
+            }
         } catch (err: any) {
             setError(err.message || "Login failed");
         } finally {
@@ -76,6 +101,20 @@ export default function LoginPage() {
                                     required
                                 />
                             </div>
+                        </div>
+
+                        {/* Remember Me Checkbox */}
+                        <div className="flex items-center">
+                            <input
+                                id="remember-me"
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                className="h-4 w-4 rounded border-white/20 bg-black/20 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 cursor-pointer"
+                            />
+                            <label htmlFor="remember-me" className="ml-2 text-sm text-gray-400 cursor-pointer select-none">
+                                Remember my credentials
+                            </label>
                         </div>
 
                         <button

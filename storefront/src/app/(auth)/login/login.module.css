@@ -162,3 +162,27 @@
 .signupLink:hover {
     text-decoration: underline;
 }
+
+/* Remember Me */
+.rememberRow {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.rememberCheckbox {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.rememberLabel {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    user-select: none;
+}

@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         // Transform 'identifier' to 'mobile' if necessary for backend compatibility
+        // Backend accepts both mobile and email (checks for @ symbol)
         const payload = {
             mobile: body.identifier || body.mobile,
             password: body.password
@@ -19,17 +20,20 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify(payload),
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
+            const error = await response.json();
             return NextResponse.json(
-                { error: data.message || 'Login failed' },
+                { error: error.message || 'Login failed' },
                 { status: response.status }
             );
         }
 
+        const data = await response.json();
+
+        // Get the set-cookie header from backend
         const setCookieHeader = response.headers.get('set-cookie');
 
+        // Proxy the response and forward cookies (same as storefront)
         const nextResponse = NextResponse.json(data);
 
         if (setCookieHeader) {
@@ -38,8 +42,9 @@ export async function POST(request: NextRequest) {
 
         return nextResponse;
     } catch (error) {
+        console.error('Login error:', error);
         return NextResponse.json(
-            { error: 'Internal Server Error' },
+            { error: 'Login failed' },
             { status: 500 }
         );
     }
