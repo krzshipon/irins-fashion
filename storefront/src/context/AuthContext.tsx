@@ -19,7 +19,7 @@ interface UpdateProfileData {
 interface AuthContextType {
     user: User | null;
     loading: boolean;
-    login: (mobile: string) => Promise<void>;
+    login: (mobile: string, password: string) => Promise<void>;
     register: (data: RegisterData) => Promise<void>;
     updateProfile: (data: UpdateProfileData) => Promise<void>;
     logout: () => Promise<void>;
@@ -46,8 +46,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         initAuth();
     }, []);
 
-    const login = async (mobile: string) => {
-        const response = await authService.login(mobile);
+    const login = async (mobile: string, password: string) => {
+        const response = await authService.login(mobile, password);
         setUser(response.user);
     };
 

@@ -1,40 +1,35 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-// Mock user data - in production, this would come from your backend
-const MOCK_USER = {
-    id: 'usr_123456',
-    mobile: '01700000000',
-    email: 'irina@example.com',
-    name: 'Irina Shayk',
-    role: 'CUSTOMER',
-    avatarUrl: 'https://ui-avatars.com/api/?name=Irina+Shayk&background=1B4D3E&color=fff',
-};
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const cookieStore = await cookies();
-        const token = cookieStore.get('auth_token');
-        const userId = cookieStore.get('user_id');
+        const token = cookieStore.get('token'); // Matches backend cookie name
 
-        // Check if token exists
-        if (!token?.value) {
+        if (!token) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
             );
         }
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        const response = await fetch(`${API_URL}/auth/me`, {
+            headers: {
+                Cookie: `token=${token.value}`,
+            },
+        });
 
-        // In production, validate token with your backend and fetch user data
-        // For now, return mock user based on stored user_id
-        const user = userId?.value === 'usr_123456'
-            ? MOCK_USER
-            : { ...MOCK_USER, id: userId?.value || 'usr_unknown' };
+        if (!response.ok) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
 
-        return NextResponse.json({ user });
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error) {
         console.error('Get profile error:', error);
         return NextResponse.json(

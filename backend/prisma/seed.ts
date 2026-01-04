@@ -1,5 +1,6 @@
 
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -374,6 +375,34 @@ async function main() {
     }
 
     console.log(`Seeded ${products.length} products.`);
+
+    // 4. Seed Test User
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash('password123', salt);
+
+    await prisma.user.upsert({
+        where: { mobile: '01700000000' },
+        update: {},
+        create: {
+            mobile: '01700000000',
+            password: hashedPassword,
+            name: 'Test Customer',
+            role: 'CUSTOMER',
+            addresses: {
+                create: {
+                    label: 'Home',
+                    recipientName: 'Test Customer',
+                    street: '123 Fake St',
+                    city: 'Dhaka',
+                    division: 'dhaka',
+                    phone: '01700000000',
+                    isDefault: true
+                }
+            }
+        }
+    });
+    console.log('Seeded test user: 01700000000 / password123');
+
     console.log('Seeding finished.');
 }
 

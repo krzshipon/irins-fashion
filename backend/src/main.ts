@@ -1,19 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config'; // Keep ConfigService as it's used in the original for CORS and PORT
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Enable Cookie Parser
+  app.use(cookieParser());
+
+  // Get ConfigService for dynamic configurations
   const configService = app.get(ConfigService);
 
+  // Enable CORS for Storefront and Admin
   app.enableCors({
     origin: [
-      configService.get('FRONTEND_URL'),
-      configService.get('ADMIN_URL'),
+      configService.get('FRONTEND_URL'), // Original FRONTEND_URL
+      configService.get('ADMIN_URL'),    // Original ADMIN_URL
+      'http://localhost:3000',           // Added from the provided snippet
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

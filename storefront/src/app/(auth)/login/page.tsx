@@ -21,7 +21,7 @@ export default function LoginPage() {
 
         try {
             // Use AuthContext login to update global state
-            await login(formData.mobile);
+            await login(formData.mobile, formData.password);
             router.push("/account/overview");
         } catch (err) {
             setError("Invalid mobile number or password.");

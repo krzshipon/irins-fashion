@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function POST() {
     try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        const response = await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST',
+        });
 
-        // Clear auth cookies
-        const cookieStore = await cookies();
-        cookieStore.delete('auth_token');
-        cookieStore.delete('user_id');
+        const nextResponse = NextResponse.json({ success: true });
 
-        return NextResponse.json({ success: true });
+        const setCookieHeader = response.headers.get('set-cookie');
+        if (setCookieHeader) {
+            nextResponse.headers.set('Set-Cookie', setCookieHeader);
+        }
+
+        return nextResponse;
     } catch (error) {
         console.error('Logout error:', error);
         return NextResponse.json(

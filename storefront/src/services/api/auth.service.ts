@@ -27,11 +27,11 @@ const MOCK_ADDRESSES: Address[] = [
 ];
 
 export const authService = {
-    async login(mobile: string): Promise<{ user: User }> {
+    async login(mobile: string, password: string): Promise<{ user: User }> {
         const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mobile }),
+            body: JSON.stringify({ mobile, password }),
         });
 
         if (!response.ok) {
@@ -39,7 +39,8 @@ export const authService = {
             throw new Error(error.error || 'Login failed');
         }
 
-        return response.json();
+        const data = await response.json();
+        return data.data || data; // Handle wrapped or unwrapped
     },
 
     async logout(): Promise<void> {
@@ -62,7 +63,8 @@ export const authService = {
         }
 
         const data = await response.json();
-        return data.user;
+        // Unwrap nested data structure from NestJS interceptor
+        return data.data?.user || data.user || data;
     },
 
     async getAddresses(): Promise<Address[]> {
@@ -100,7 +102,8 @@ export const authService = {
             throw new Error(error.error || 'Registration failed');
         }
 
-        return response.json();
+        const dataRes = await response.json();
+        return dataRes.data || dataRes;
     },
 
     // Forgot Password Flow (these still work the same - no token storage needed)

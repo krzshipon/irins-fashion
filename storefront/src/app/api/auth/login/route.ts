@@ -1,62 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
-// Mock user data - in production, this would come from your backend
-const MOCK_USER = {
-    id: 'usr_123456',
-    mobile: '01700000000',
-    email: 'irina@example.com',
-    name: 'Irina Shayk',
-    role: 'CUSTOMER',
-    avatarUrl: 'https://ui-avatars.com/api/?name=Irina+Shayk&background=1B4D3E&color=fff',
-};
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { mobile } = body;
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        });
 
-        // Validate mobile format
-        const phoneRegex = /^01[3-9]\d{8}$/;
-        if (!phoneRegex.test(mobile)) {
+        if (!response.ok) {
+            const error = await response.json();
             return NextResponse.json(
-                { error: 'Invalid mobile number format' },
-                { status: 400 }
+                { error: error.message || 'Login failed' },
+                { status: response.status }
             );
         }
 
-        // Generate mock token (in production, this comes from your auth backend)
-        const token = `jwt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const data = await response.json();
 
-        // Determine user data based on mobile
-        const user = mobile === '01700000000'
-            ? MOCK_USER
-            : { ...MOCK_USER, mobile, name: 'New User', id: `usr_${Date.now()}` };
+        const setCookieHeader = response.headers.get('set-cookie');
 
-        // Set HttpOnly cookie
-        const cookieStore = await cookies();
-        cookieStore.set('auth_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60, // 7 days
-            path: '/',
-        });
+        // Proxy the response and forward cookies
+        const nextResponse = NextResponse.json(data);
 
-        // Also store user ID in a separate cookie for quick lookups
-        cookieStore.set('user_id', user.id, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60,
-            path: '/',
-        });
+        if (setCookieHeader) {
+            nextResponse.headers.set('Set-Cookie', setCookieHeader);
+        }
 
-        // Return user data (without token - token is in HttpOnly cookie)
-        return NextResponse.json({ user });
+        return nextResponse;
     } catch (error) {
         console.error('Login error:', error);
         return NextResponse.json(
