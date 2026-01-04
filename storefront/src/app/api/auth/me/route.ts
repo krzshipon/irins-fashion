@@ -38,3 +38,45 @@ export async function GET(request: NextRequest) {
         );
     }
 }
+
+export async function PATCH(request: NextRequest) {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token');
+
+        if (!token) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        const body = await request.json();
+
+        const response = await fetch(`${API_URL}/auth/me`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Cookie: `token=${token.value}`,
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            return NextResponse.json(
+                { error: error.message || 'Failed to update profile' },
+                { status: response.status }
+            );
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
+    } catch (error) {
+        console.error('Update profile error:', error);
+        return NextResponse.json(
+            { error: 'Failed to update profile' },
+            { status: 500 }
+        );
+    }
+}

@@ -74,20 +74,19 @@ export const authService = {
     },
 
     async updateProfile(data: { name?: string; email?: string; mobile?: string }): Promise<User> {
-        // In production, this would call a PATCH /api/auth/profile endpoint
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const response = await fetch('/api/auth/me', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
 
-        // Return updated user (mock)
-        return {
-            id: 'usr_123456',
-            mobile: data.mobile || '01700000000',
-            email: data.email,
-            name: data.name || 'User',
-            role: 'CUSTOMER',
-            avatarUrl: data.name
-                ? `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=1B4D3E&color=fff`
-                : undefined,
-        };
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to update profile');
+        }
+
+        const dataRes = await response.json();
+        return dataRes.data || dataRes;
     },
 
     async register(data: { name: string; mobile: string; password: string }): Promise<{ user: User }> {

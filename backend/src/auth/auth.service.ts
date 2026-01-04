@@ -38,4 +38,12 @@ export class AuthService {
         const { password, ...result } = user;
         return result;
     }
+    async updateProfile(userId: string, data: { name?: string; email?: string; mobile?: string }) {
+        const user = await this.usersService.updateUser({
+            where: { id: userId },
+            data: data,
+        });
+        const { password, ...result } = user;
+        return result;
+    }
 }

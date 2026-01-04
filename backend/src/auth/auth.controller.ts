@@ -1,9 +1,10 @@
-import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Response } from 'express';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoginDto } from './dto/login.dto';
 import { ApiBody, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -53,5 +54,21 @@ export class AuthController {
     @ApiOperation({ summary: 'Get current user profile' })
     getProfile(@Request() req: any) {
         return { user: req.user };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('me')
+    @ApiOperation({ summary: 'Update current user profile' })
+    @ApiBody({ type: UpdateProfileDto })
+    async updateProfile(@Request() req: any, @Body() body: UpdateProfileDto) {
+        // Only allow updating specific fields
+        const { name, email, mobile } = body;
+
+        // Use UsersService to update
+        // Note: We need to inject UsersService here, but currently only AuthService is injected.
+        // Option 1: Add updateProfile to AuthService (cleaner architecture)
+        // Option 2: Inject UsersService here.
+        // Let's go with Option 1: Delegate to AuthService.
+        return this.authService.updateProfile(req.user.id, { name, email, mobile });
     }
 }
