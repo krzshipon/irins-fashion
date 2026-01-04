@@ -104,3 +104,14 @@ export interface Order {
   shippingAddress: Address;
   createdAt: string; // ISO Date
 }
+
+// Tracking
+export interface TrackingEvent {
+  id: string;
+  status: OrderStatus;
+  title: string;
+  description: string;
+  location?: string;
+  timestamp: string; // ISO Date
+  isCompleted: boolean;
+}

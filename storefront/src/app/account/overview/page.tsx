@@ -109,7 +109,7 @@ export default function OverviewPage() {
                         </div>
                         <div className={styles.orderFooter}>
                             <p className={styles.orderTotal}>Total: ৳{recentOrder.total.toLocaleString()}</p>
-                            <button className={styles.trackBtn}>Track Order</button>
+                            <Link href={`/orders/${recentOrder.id}`} className={styles.trackBtn}>Track Order</Link>
                         </div>
                     </div>
                 ) : (

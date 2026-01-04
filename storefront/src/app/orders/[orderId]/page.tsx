@@ -183,6 +183,175 @@ const OrderDetailsPage = () => {
                     </div>
                 </div>
 
+                {/* Order Tracking Timeline */}
+                <div style={{
+                    backgroundColor: '#fff',
+                    borderRadius: '16px',
+                    border: '2px solid #e5e5e5',
+                    padding: '24px',
+                    marginBottom: '24px',
+                }}>
+                    <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#111', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg style={{ width: '20px', height: '20px', color: '#1b4d3e' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {t.orders.trackOrder || 'Track Your Order'}
+                    </h2>
+
+                    {/* Progress Steps */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginBottom: '16px' }}>
+                        {/* Progress Line */}
+                        <div style={{
+                            position: 'absolute',
+                            top: '20px',
+                            left: '40px',
+                            right: '40px',
+                            height: '4px',
+                            backgroundColor: '#e5e5e5',
+                            zIndex: 0,
+                        }} />
+                        <div style={{
+                            position: 'absolute',
+                            top: '20px',
+                            left: '40px',
+                            width: order.status === 'processing' ? '0%'
+                                : order.status === 'confirmed' ? '33%'
+                                    : order.status === 'shipped' ? '66%'
+                                        : order.status === 'delivered' ? 'calc(100% - 80px)'
+                                            : '0%',
+                            height: '4px',
+                            backgroundColor: '#1b4d3e',
+                            zIndex: 1,
+                            transition: 'width 0.5s ease',
+                        }} />
+
+                        {/* Step 1 - Order Placed */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                backgroundColor: '#1b4d3e',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '8px',
+                            }}>
+                                <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: '#1b4d3e' }}>{t.orders.status.orderPlaced || 'Placed'}</span>
+                        </div>
+
+                        {/* Step 2 - Confirmed */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                backgroundColor: ['confirmed', 'shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#e5e5e5',
+                                color: ['confirmed', 'shipped', 'delivered'].includes(order.status) ? '#fff' : '#9ca3af',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '8px',
+                            }}>
+                                {['confirmed', 'shipped', 'delivered'].includes(order.status) ? (
+                                    <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <span style={{ fontSize: '14px', fontWeight: '700' }}>2</span>
+                                )}
+                            </div>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: ['confirmed', 'shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#9ca3af' }}>
+                                {t.orders.status.confirmed}
+                            </span>
+                        </div>
+
+                        {/* Step 3 - Shipped */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                backgroundColor: ['shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#e5e5e5',
+                                color: ['shipped', 'delivered'].includes(order.status) ? '#fff' : '#9ca3af',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '8px',
+                            }}>
+                                {['shipped', 'delivered'].includes(order.status) ? (
+                                    <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <span style={{ fontSize: '14px', fontWeight: '700' }}>3</span>
+                                )}
+                            </div>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: ['shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#9ca3af' }}>
+                                {t.orders.status.shipped}
+                            </span>
+                        </div>
+
+                        {/* Step 4 - Delivered */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                backgroundColor: order.status === 'delivered' ? '#1b4d3e' : '#e5e5e5',
+                                color: order.status === 'delivered' ? '#fff' : '#9ca3af',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '8px',
+                            }}>
+                                {order.status === 'delivered' ? (
+                                    <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <span style={{ fontSize: '14px', fontWeight: '700' }}>4</span>
+                                )}
+                            </div>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: order.status === 'delivered' ? '#1b4d3e' : '#9ca3af' }}>
+                                {t.orders.status.delivered}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Current Status Description */}
+                    <div style={{
+                        marginTop: '20px',
+                        padding: '16px',
+                        backgroundColor: statusConfig.bgColor,
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                    }}>
+                        <svg style={{ width: '24px', height: '24px', color: statusConfig.color }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <span style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: statusConfig.color }}>
+                                {statusConfig.label}
+                            </span>
+                            <span style={{ fontSize: '13px', color: '#6b7280' }}>
+                                {order.status === 'processing' && (t.orders.statusDesc?.processing || 'Your order is being prepared for shipment')}
+                                {order.status === 'confirmed' && (t.orders.statusDesc?.confirmed || 'Order confirmed and ready to ship')}
+                                {order.status === 'shipped' && (t.orders.statusDesc?.shipped || 'Your order is on its way to you')}
+                                {order.status === 'delivered' && (t.orders.statusDesc?.delivered || 'Your order has been delivered successfully')}
+                                {order.status === 'cancelled' && (t.orders.statusDesc?.cancelled || 'This order has been cancelled')}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Main Content Grid */}
                 <div style={{ display: 'grid', gap: '24px' }} className="lg:!grid-cols-[1fr_380px]">
                     {/* Left Column - Order Items */}

@@ -1,4 +1,4 @@
-import { Order } from './types';
+import { Order, TrackingEvent, OrderStatus } from './types';
 
 const MOCK_ORDERS: Order[] = [
     {
@@ -25,7 +25,7 @@ const MOCK_ORDERS: Order[] = [
                 id: 'item_1',
                 productId: 'prod_1',
                 productName: 'Premium Silk Abaya',
-                productImage: 'https://images.unsplash.com/photo-1594576722512-582bcd46fba3?q=80&w=800&auto=format&fit=crop', // Temporary placeholder
+                productImage: 'https://images.unsplash.com/photo-1594576722512-582bcd46fba3?q=80&w=800&auto=format&fit=crop',
                 variant: { color: 'Emerald', size: 'M' },
                 quantity: 1,
                 price: 8500,
@@ -74,6 +74,70 @@ const MOCK_ORDERS: Order[] = [
     },
 ];
 
+// Helper to generate tracking timeline based on order status
+function generateTrackingEvents(order: Order): TrackingEvent[] {
+    const statusOrder: OrderStatus[] = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+    const currentIndex = statusOrder.indexOf(order.status);
+    const orderDate = new Date(order.createdAt);
+
+    const events: TrackingEvent[] = [
+        {
+            id: 'track_1',
+            status: 'PENDING',
+            title: 'Order Placed',
+            description: 'Your order has been placed successfully',
+            location: 'Online',
+            timestamp: orderDate.toISOString(),
+            isCompleted: currentIndex >= 0,
+        },
+        {
+            id: 'track_2',
+            status: 'PROCESSING',
+            title: 'Order Confirmed',
+            description: 'Your order is being prepared for shipment',
+            location: 'Dhaka Warehouse',
+            timestamp: new Date(orderDate.getTime() + 3600000 * 2).toISOString(), // +2 hours
+            isCompleted: currentIndex >= 1,
+        },
+        {
+            id: 'track_3',
+            status: 'SHIPPED',
+            title: 'Shipped',
+            description: 'Your order has been handed to the courier',
+            location: 'Dhaka Sorting Center',
+            timestamp: new Date(orderDate.getTime() + 86400000).toISOString(), // +1 day
+            isCompleted: currentIndex >= 2,
+        },
+        {
+            id: 'track_4',
+            status: 'DELIVERED',
+            title: 'Delivered',
+            description: 'Your order has been delivered successfully',
+            location: order.shippingAddress.city,
+            timestamp: new Date(orderDate.getTime() + 86400000 * 3).toISOString(), // +3 days
+            isCompleted: currentIndex >= 3,
+        },
+    ];
+
+    // If cancelled, add a cancelled event
+    if (order.status === 'CANCELLED') {
+        return [
+            events[0],
+            {
+                id: 'track_cancelled',
+                status: 'CANCELLED',
+                title: 'Order Cancelled',
+                description: 'Your order has been cancelled',
+                location: 'N/A',
+                timestamp: new Date(orderDate.getTime() + 3600000).toISOString(),
+                isCompleted: true,
+            },
+        ];
+    }
+
+    return events;
+}
+
 export const orderService = {
     async getOrders(): Promise<Order[]> {
         await new Promise((resolve) => setTimeout(resolve, 800));
@@ -83,5 +147,16 @@ export const orderService = {
     async getOrderById(id: string): Promise<Order | undefined> {
         await new Promise((resolve) => setTimeout(resolve, 500));
         return MOCK_ORDERS.find((o) => o.id === id);
+    },
+
+    async getOrderTracking(orderId: string): Promise<{ order: Order; tracking: TrackingEvent[] } | null> {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        const order = MOCK_ORDERS.find((o) => o.id === orderId);
+        if (!order) return null;
+
+        return {
+            order,
+            tracking: generateTrackingEvents(order),
+        };
     },
 };

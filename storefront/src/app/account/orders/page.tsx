@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Package, Loader2 } from "lucide-react";
 import { orderService } from "@/services/api/order.service";
 import type { Order } from "@/services/api/types";
@@ -68,7 +69,7 @@ export default function OrdersPage() {
                                 </div>
                                 <div className={styles.orderFooter}>
                                     <p className={styles.orderTotal}>Total: ৳{order.total.toLocaleString()}</p>
-                                    <button className={styles.trackBtn}>View Details</button>
+                                    <Link href={`/orders/${order.id}`} className={styles.trackBtn}>View Details</Link>
                                 </div>
                             </div>
                         </div>
