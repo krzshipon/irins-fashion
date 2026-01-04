@@ -22,6 +22,12 @@ export class UsersService {
         });
     }
 
+    async findByEmail(email: string): Promise<User | null> {
+        return this.prisma.user.findFirst({
+            where: { email }
+        });
+    }
+
     async createUser(data: Prisma.UserCreateInput): Promise<User> {
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(data.password, salt);

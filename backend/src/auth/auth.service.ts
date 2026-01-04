@@ -11,8 +11,15 @@ export class AuthService {
         private jwtService: JwtService,
     ) { }
 
-    async validateUser(mobile: string, pass: string): Promise<any> {
-        const user = await this.usersService.findByMobile(mobile);
+    async validateUser(identifier: string, pass: string): Promise<any> {
+        let user;
+        // Simple check if identifier is email (contains @)
+        if (identifier.includes('@')) {
+            user = await this.usersService.findByEmail(identifier);
+        } else {
+            user = await this.usersService.findByMobile(identifier);
+        }
+
         if (user && (await bcrypt.compare(pass, user.password))) {
             const { password, ...result } = user;
             return result;
