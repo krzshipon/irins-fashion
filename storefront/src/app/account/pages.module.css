@@ -1,0 +1,248 @@
+.page {
+    min-height: 60vh;
+}
+
+.pageTitle {
+    font-family: var(--font-playfair);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card {
+    background-color: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.cardTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin: 0;
+    font-size: 1rem;
+}
+
+.cardIcon {
+    color: var(--color-primary);
+}
+
+.cardAction {
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.cardAction:hover {
+    text-decoration: underline;
+}
+
+.cardContent {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.cardContent p {
+    margin: 0.25rem 0;
+}
+
+.cardContentLabel {
+    color: var(--color-text-muted);
+    margin-right: 0.25rem;
+}
+
+.addressTitle {
+    font-weight: 500;
+    color: var(--color-text-main);
+    margin: 0 0 0.25rem 0;
+}
+
+/* Order Card */
+.orderCard {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.orderHeader {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.orderBody {
+    padding: 1.5rem;
+}
+
+.orderInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.orderId {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: var(--color-text-main);
+    margin: 0;
+}
+
+.orderDate {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0 0;
+}
+
+.statusBadge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: rgba(212, 175, 55, 0.1);
+    color: #b8860b;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.orderItems {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.orderItem {
+    width: 64px;
+    height: 64px;
+    background-color: #f5f5f5;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    border: 1px solid var(--color-border);
+}
+
+.orderItemImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.orderItemQty {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-top-left-radius: 4px;
+}
+
+.orderFooter {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.orderTotal {
+    font-weight: 500;
+    color: var(--color-text-main);
+}
+
+.trackBtn {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-primary);
+    background: none;
+    border: 1px solid var(--color-primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.trackBtn:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 256px;
+}
+
+.loadingIcon {
+    color: var(--color-primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Empty State */
+.emptyState {
+    padding: 3rem;
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.emptyIcon {
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+/* Order Meta Row */
+.orderMetaRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+/* Order List */
+.orderList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}

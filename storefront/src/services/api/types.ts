@@ -52,3 +52,55 @@ export interface AboutPageContent {
   mission: string;
   imageUrl?: string;
 }
+
+// User & Identity
+export type UserRole = 'CUSTOMER' | 'ADMIN';
+
+export interface User {
+  id: string;
+  mobile: string;
+  email?: string;
+  name?: string;
+  role: UserRole;
+  avatarUrl?: string;
+}
+
+export interface Address {
+  id: string;
+  label: string; // "Home", "Work", etc.
+  recipientName: string;
+  street: string;
+  city: string;
+  division: string;
+  postalCode: string;
+  phone: string;
+  isDefault: boolean;
+}
+
+// Orders
+export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  productImage: string;
+  variant?: {
+    size?: string;
+    color?: string;
+  };
+  quantity: number;
+  price: number;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  status: OrderStatus;
+  items: OrderItem[];
+  subtotal: number;
+  shippingCost: number;
+  total: number;
+  shippingAddress: Address;
+  createdAt: string; // ISO Date
+}

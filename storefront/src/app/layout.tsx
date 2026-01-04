@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "@/styles/globals.css";
 import { LocalizationProvider } from "@/context/LocalizationContext";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -23,9 +24,11 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
         <LocalizationProvider>
           <CartProvider>
-            <MainLayout>
-              {children}
-            </MainLayout>
+            <AuthProvider>
+              <MainLayout>
+                {children}
+              </MainLayout>
+            </AuthProvider>
           </CartProvider>
         </LocalizationProvider>
       </body>
