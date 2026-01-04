@@ -10,11 +10,18 @@ interface RegisterData {
     password: string;
 }
 
+interface UpdateProfileData {
+    name?: string;
+    email?: string;
+    mobile?: string;
+}
+
 interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: (mobile: string) => Promise<void>;
     register: (data: RegisterData) => Promise<void>;
+    updateProfile: (data: UpdateProfileData) => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -49,13 +56,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(response.user);
     };
 
+    const updateProfile = async (data: UpdateProfileData) => {
+        const updatedUser = await authService.updateProfile(data);
+        setUser(updatedUser);
+    };
+
     const logout = async () => {
         await authService.logout();
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, register, updateProfile, logout }}>
             {children}
         </AuthContext.Provider>
     );

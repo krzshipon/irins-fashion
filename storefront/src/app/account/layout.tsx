@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Package, MapPin, LogOut, Loader2 } from "lucide-react";
+import { LayoutDashboard, Package, MapPin, LogOut, Loader2, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./account.module.css";
 
@@ -25,6 +25,7 @@ export default function AccountLayout({
 
     const navItems = [
         { href: "/account/overview", label: "Overview", icon: LayoutDashboard },
+        { href: "/account/profile", label: "Edit Profile", icon: User },
         { href: "/account/orders", label: "My Orders", icon: Package },
         { href: "/account/addresses", label: "Addresses", icon: MapPin },
     ];

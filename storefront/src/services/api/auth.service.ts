@@ -86,6 +86,30 @@ export const authService = {
         return MOCK_ADDRESSES;
     },
 
+    async updateProfile(data: { name?: string; email?: string; mobile?: string }): Promise<User> {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('mock_auth_token');
+            if (!token) {
+                throw new Error('Unauthorized');
+            }
+        }
+
+        // Simulate updating user profile
+        const updatedUser: User = {
+            ...MOCK_USER,
+            name: data.name || MOCK_USER.name,
+            email: data.email || MOCK_USER.email,
+            mobile: data.mobile || MOCK_USER.mobile,
+            avatarUrl: data.name
+                ? `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=1B4D3E&color=fff`
+                : MOCK_USER.avatarUrl,
+        };
+
+        return updatedUser;
+    },
+
     async register(data: { name: string; mobile: string; password: string }): Promise<{ user: User; token: string }> {
         // Simulate API delay
         await new Promise((resolve) => setTimeout(resolve, 1200));

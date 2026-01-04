@@ -52,7 +52,7 @@ export default function OverviewPage() {
                             <User size={18} className={styles.cardIcon} />
                             Profile Details
                         </h2>
-                        <button className={styles.cardAction}>Edit</button>
+                        <Link href="/account/profile" className={styles.cardAction}>Edit</Link>
                     </div>
                     <div className={styles.cardContent}>
                         <p><span className={styles.cardContentLabel}>Name:</span> {user?.name}</p>
