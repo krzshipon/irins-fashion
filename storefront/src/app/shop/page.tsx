@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/common/ProductCard';
 import { getAllProducts, SortOption } from '@/services/api/products';
 import { Product } from '@/services/api/types';
@@ -9,7 +10,6 @@ import Link from 'next/link';
 import SortSelect from '@/components/category/SortSelect';
 import styles from './shop.module.css';
 
-// Category icon mapping
 // Category icon mapping
 const categoryIcons: Record<string, string> = {
     'Hijab': '🧕',
@@ -21,14 +21,24 @@ const categoryIcons: Record<string, string> = {
 
 export default function ShopPage() {
     const { dictionary: t } = useLocalization();
+    const searchParams = useSearchParams();
+    const collectionParam = searchParams?.get('collection');
+
     const [products, setProducts] = useState<Product[]>([]);
     const [allCategories, setAllCategories] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
-    const [isNew, setIsNew] = useState(false);
+    const [isNew, setIsNew] = useState(collectionParam === 'new');
     const [sortOption, setSortOption] = useState<SortOption | ''>('');
     const [loading, setLoading] = useState(true);
+
+    // Update isNew when collection param changes
+    useEffect(() => {
+        if (collectionParam === 'new') {
+            setIsNew(true);
+        }
+    }, [collectionParam]);
 
     useEffect(() => {
         const fetchProducts = async () => {

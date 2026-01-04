@@ -1,15 +1,6 @@
 import { User, Address } from './types';
 
-// Mock User Data
-const MOCK_USER: User = {
-    id: 'usr_123456',
-    mobile: '01700000000',
-    email: 'irina@example.com',
-    name: 'Irina Shayk',
-    role: 'CUSTOMER',
-    avatarUrl: 'https://ui-avatars.com/api/?name=Irina+Shayk&background=1B4D3E&color=fff',
-};
-
+// Mock addresses (still used for profile data)
 const MOCK_ADDRESSES: Address[] = [
     {
         id: 'addr_1',
@@ -36,117 +27,91 @@ const MOCK_ADDRESSES: Address[] = [
 ];
 
 export const authService = {
-    async login(mobile: string): Promise<{ user: User; token: string }> {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+    async login(mobile: string): Promise<{ user: User }> {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile }),
+        });
 
-        let response;
-        if (mobile === '01700000000') {
-            response = {
-                user: MOCK_USER,
-                token: 'mock_jwt_token_xyz',
-            };
-        } else {
-            // Auto-register simulation for new numbers (as per requirement)
-            response = {
-                user: { ...MOCK_USER, mobile, name: 'New User' },
-                token: 'mock_jwt_token_new',
-            };
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Login failed');
         }
 
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('mock_auth_token', response.token);
-        }
-
-        return response;
+        return response.json();
     },
 
     async logout(): Promise<void> {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('mock_auth_token');
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error('Logout failed');
         }
     },
 
     async getProfile(): Promise<User> {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        const response = await fetch('/api/auth/me', {
+            method: 'GET',
+        });
 
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('mock_auth_token');
-            if (!token) {
-                throw new Error('Unauthorized');
-            }
+        if (!response.ok) {
+            throw new Error('Unauthorized');
         }
 
-        return MOCK_USER;
+        const data = await response.json();
+        return data.user;
     },
 
     async getAddresses(): Promise<Address[]> {
+        // Simulate API delay
         await new Promise((resolve) => setTimeout(resolve, 600));
         return MOCK_ADDRESSES;
     },
 
     async updateProfile(data: { name?: string; email?: string; mobile?: string }): Promise<User> {
+        // In production, this would call a PATCH /api/auth/profile endpoint
         await new Promise((resolve) => setTimeout(resolve, 800));
 
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('mock_auth_token');
-            if (!token) {
-                throw new Error('Unauthorized');
-            }
-        }
-
-        // Simulate updating user profile
-        const updatedUser: User = {
-            ...MOCK_USER,
-            name: data.name || MOCK_USER.name,
-            email: data.email || MOCK_USER.email,
-            mobile: data.mobile || MOCK_USER.mobile,
+        // Return updated user (mock)
+        return {
+            id: 'usr_123456',
+            mobile: data.mobile || '01700000000',
+            email: data.email,
+            name: data.name || 'User',
+            role: 'CUSTOMER',
             avatarUrl: data.name
                 ? `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=1B4D3E&color=fff`
-                : MOCK_USER.avatarUrl,
+                : undefined,
         };
-
-        return updatedUser;
     },
 
-    async register(data: { name: string; mobile: string; password: string }): Promise<{ user: User; token: string }> {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+    async register(data: { name: string; mobile: string; password: string }): Promise<{ user: User }> {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
 
-        // Simulate registration - create new user
-        const newUser: User = {
-            id: `usr_${Date.now()}`,
-            mobile: data.mobile,
-            name: data.name,
-            role: 'CUSTOMER',
-            avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=1B4D3E&color=fff`,
-        };
-
-        const response = {
-            user: newUser,
-            token: `mock_jwt_token_${Date.now()}`,
-        };
-
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('mock_auth_token', response.token);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Registration failed');
         }
 
-        return response;
+        return response.json();
     },
 
-    // Forgot Password Flow
+    // Forgot Password Flow (these still work the same - no token storage needed)
     async requestPasswordReset(mobile: string): Promise<{ success: boolean; message: string }> {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Simulate checking if account exists
-        // For demo: accept any valid BD mobile number
         const phoneRegex = /^01[3-9]\d{8}$/;
         if (!phoneRegex.test(mobile)) {
             throw new Error('Invalid mobile number format');
         }
 
-        // Simulate sending OTP (in production, this would send an SMS)
         console.log(`[MOCK] OTP sent to ${mobile}: 123456`);
 
         return {
@@ -158,7 +123,6 @@ export const authService = {
     async verifyOTP(mobile: string, otp: string): Promise<{ success: boolean; resetToken: string }> {
         await new Promise((resolve) => setTimeout(resolve, 800));
 
-        // Mock OTP verification - accept "123456" as valid OTP
         if (otp === '123456') {
             return {
                 success: true,
@@ -172,7 +136,6 @@ export const authService = {
     async resetPassword(resetToken: string, newPassword: string): Promise<{ success: boolean }> {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Mock password reset
         if (!resetToken || newPassword.length < 6) {
             throw new Error('Invalid request');
         }
@@ -182,4 +145,3 @@ export const authService = {
         };
     },
 };
-
