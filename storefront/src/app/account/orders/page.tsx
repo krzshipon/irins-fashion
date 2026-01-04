@@ -2,14 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Package, Loader2 } from "lucide-react";
+import { Package, Loader2, ArrowRight, Truck, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { orderService } from "@/services/api/order.service";
 import type { Order } from "@/services/api/types";
-import styles from "../pages.module.css";
+import styles from "./orders.module.css";
+import { useLocalization } from "@/context/LocalizationContext";
+
+type TabStatus = 'all' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export default function OrdersPage() {
+    const { dictionary: t } = useLocalization();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<TabStatus>('all');
 
     useEffect(() => {
         const loadOrders = async () => {
@@ -26,50 +31,124 @@ export default function OrdersPage() {
         loadOrders();
     }, []);
 
+    const filteredOrders = activeTab === 'all'
+        ? orders
+        : orders.filter(order => order.status.toLowerCase() === activeTab);
+
+    const tabs = [
+        { id: 'all', label: 'All Orders' },
+        { id: 'processing', label: 'Processing' },
+        { id: 'shipped', label: 'On The Way' },
+        { id: 'delivered', label: 'Completed' },
+        { id: 'cancelled', label: 'Cancelled' },
+    ];
+
+    const getStatusIcon = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'processing': return <Clock size={14} />;
+            case 'confirmed': return <CheckCircle2 size={14} />;
+            case 'shipped': return <Truck size={14} />;
+            case 'delivered': return <Package size={14} />;
+            case 'cancelled': return <XCircle size={14} />;
+            default: return <Clock size={14} />;
+        }
+    };
+
     if (loading) {
         return (
-            <div className={styles.loading}>
-                <Loader2 className={styles.loadingIcon} size={32} />
+            <div className={styles.empty}>
+                <Loader2 className="animate-spin" size={32} />
             </div>
         );
     }
 
     return (
         <div className={styles.page}>
-            <h1 className={styles.pageTitle}>My Orders</h1>
+            <div className={styles.header}>
+                <h1 className={styles.title}>My Orders</h1>
+                <p className={styles.subtitle}>Track and manage your recent purchases</p>
+            </div>
 
-            {orders.length === 0 ? (
-                <div className={styles.card}>
-                    <div className={styles.emptyState}>
-                        <Package size={48} className={styles.emptyIcon} />
-                        <p>You haven&apos;t placed any orders yet.</p>
-                    </div>
+            {/* Status Tabs */}
+            <div className={styles.tabs}>
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as TabStatus)}
+                        className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ''}`}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {filteredOrders.length === 0 ? (
+                <div className={styles.empty}>
+                    <Package size={48} className={styles.emptyIcon} />
+                    <p className={styles.emptyText}>No {activeTab !== 'all' ? activeTab : ''} orders found.</p>
                 </div>
             ) : (
-                <div className={styles.orderList}>
-                    {orders.map((order) => (
-                        <div key={order.id} className={styles.orderCard}>
-                            <div className={styles.orderHeader}>
-                                <div className={styles.orderInfo}>
-                                    <p className={styles.orderId}>{order.id}</p>
-                                    <p className={styles.orderDate}>
-                                        Placed on {new Date(order.createdAt).toLocaleDateString()}
-                                    </p>
+                <div className={styles.list}>
+                    {filteredOrders.map((order) => (
+                        <div key={order.id} className={styles.card}>
+                            {/* Card Header */}
+                            <div className={styles.cardHeader}>
+                                <div>
+                                    <div className={styles.orderId}>Order #{order.id}</div>
+                                    <div className={styles.orderDate}>
+                                        Placed on {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                    </div>
                                 </div>
-                                <span className={styles.statusBadge}>{order.status}</span>
+                                <div className={`${styles.badge} ${styles[order.status.toLowerCase()] || styles.processing}`}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        {getStatusIcon(order.status)}
+                                        {order.status}
+                                    </span>
+                                </div>
                             </div>
-                            <div className={styles.orderBody}>
-                                <div className={styles.orderItems}>
+
+                            {/* Card Body */}
+                            <div className={styles.cardBody}>
+                                {/* Items Horizontal Scroll */}
+                                <div className={styles.items}>
                                     {order.items.map((item) => (
-                                        <div key={item.id} className={styles.orderItem}>
-                                            <img src={item.productImage} alt={item.productName} className={styles.orderItemImage} />
-                                            <span className={styles.orderItemQty}>x{item.quantity}</span>
-                                        </div>
+                                        <img
+                                            key={item.id}
+                                            src={item.productImage}
+                                            alt={item.productName}
+                                            className={styles.itemImage}
+                                            title={`${item.productName} x${item.quantity}`}
+                                        />
                                     ))}
+                                    {order.items.length > 5 && (
+                                        <div style={{
+                                            width: '70px',
+                                            height: '70px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            backgroundColor: '#f9fafb',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e5e5e5',
+                                            color: '#6b7280',
+                                            fontSize: '14px',
+                                            fontWeight: '600'
+                                        }}>
+                                            +{order.items.length - 5}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className={styles.orderFooter}>
-                                    <p className={styles.orderTotal}>Total: ৳{order.total.toLocaleString()}</p>
-                                    <Link href={`/orders/${order.id}`} className={styles.trackBtn}>View Details</Link>
+
+                                {/* Footer Summary */}
+                                <div className={styles.summary}>
+                                    <div>
+                                        <p className={styles.totalLabel}>Total Amount</p>
+                                        <p className={styles.totalAmount}>৳{order.total.toLocaleString()}</p>
+                                    </div>
+                                    <Link href={`/orders/${order.id}`} className={styles.button}>
+                                        View Order Details
+                                        <ArrowRight size={16} />
+                                    </Link>
                                 </div>
                             </div>
                         </div>
