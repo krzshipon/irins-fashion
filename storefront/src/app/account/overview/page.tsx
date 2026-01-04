@@ -2,35 +2,37 @@
 
 import { useEffect, useState } from "react";
 import { User, Package, MapPin, Loader2 } from "lucide-react";
-import { authService } from "@/services/api/auth.service";
+import { useAuth } from "@/context/AuthContext"; // Import useAuth
 import { orderService } from "@/services/api/order.service";
-import type { User as UserType, Order } from "@/services/api/types";
+import type { Order } from "@/services/api/types";
 import Link from "next/link";
 import styles from "../pages.module.css";
 
 export default function OverviewPage() {
-    const [user, setUser] = useState<UserType | null>(null);
+    const { user, loading: authLoading } = useAuth(); // Use context
     const [recentOrder, setRecentOrder] = useState<Order | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [ordersLoading, setOrdersLoading] = useState(true);
 
     useEffect(() => {
-        const loadData = async () => {
+        const loadOrders = async () => {
             try {
-                const [userData, orders] = await Promise.all([
-                    authService.getProfile(),
-                    orderService.getOrders()
-                ]);
-                setUser(userData);
+                const orders = await orderService.getOrders();
                 setRecentOrder(orders[0] || null);
             } catch (error) {
-                console.error("Failed to load profile data", error);
+                console.error("Failed to load orders", error);
             } finally {
-                setLoading(false);
+                setOrdersLoading(false);
             }
         };
 
-        loadData();
-    }, []);
+        if (user) {
+            loadOrders();
+        } else {
+            setOrdersLoading(false);
+        }
+    }, [user]);
+
+    const loading = authLoading || ordersLoading;
 
     if (loading) {
         return (

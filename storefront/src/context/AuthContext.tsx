@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 const user = await authService.getProfile();
                 setUser(user);
-            } catch {
+            } catch (error) {
                 // Expected when not logged in - silently ignore
             } finally {
                 setLoading(false);

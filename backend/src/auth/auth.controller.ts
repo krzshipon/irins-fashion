@@ -1,5 +1,6 @@
 import { Controller, Request, Post, UseGuards, Body, Get, Res, UnauthorizedException, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Response } from 'express';
@@ -11,7 +12,10 @@ import { ApiBody, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private usersService: UsersService
+    ) { }
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
@@ -52,8 +56,13 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @Get('me')
     @ApiOperation({ summary: 'Get current user profile' })
-    getProfile(@Request() req: any) {
-        return { user: req.user };
+    async getProfile(@Request() req: any) {
+        const user = await this.usersService.findOne({ id: req.user.id });
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+        const { password, ...result } = user;
+        return { user: result };
     }
 
     @UseGuards(JwtAuthGuard)
