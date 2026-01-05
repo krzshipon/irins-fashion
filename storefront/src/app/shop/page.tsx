@@ -10,22 +10,16 @@ import Link from 'next/link';
 import SortSelect from '@/components/category/SortSelect';
 import styles from './shop.module.css';
 
-// Category icon mapping
-const categoryIcons: Record<string, string> = {
-    'Hijab': '🧕',
-    'Abaya': '👗',
-    'Borkha': '👗',
-    'Gown': '👗',
-    'Accessories': '👜',
-};
+import { getCategories } from '@/services/api/categories'; // Added import
+import { Category } from '@/services/api/types'; // Added import
 
 export default function ShopPage() {
-    const { dictionary: t } = useLocalization();
+    const { dictionary: t, lang } = useLocalization(); // Destructure lang
     const searchParams = useSearchParams();
     const collectionParam = searchParams?.get('collection');
 
     const [products, setProducts] = useState<Product[]>([]);
-    const [allCategories, setAllCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]); // Changed type to Category[]
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
@@ -38,10 +32,21 @@ export default function ShopPage() {
         setIsNew(collectionParam === 'new');
     }, [collectionParam]);
 
+    // Fetch Categories on Mount
+    useEffect(() => {
+        const fetchCategoriesData = async () => {
+            const data = await getCategories();
+            // Sort by sortOrder
+            const sorted = data.sort((a, b) => a.sortOrder - b.sortOrder);
+            setCategories(sorted);
+        };
+        fetchCategoriesData();
+    }, []);
+
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
-            const { products, categories } = await getAllProducts(
+            const { products: fetchedProducts } = await getAllProducts(
                 selectedCategories.length > 0 ? selectedCategories : undefined,
                 {
                     minPrice: minPrice ? Number(minPrice) : undefined,
@@ -50,30 +55,18 @@ export default function ShopPage() {
                 },
                 sortOption || undefined
             );
-            setProducts(products);
-            setAllCategories(categories);
+            setProducts(fetchedProducts);
             setLoading(false);
         };
         fetchProducts();
     }, [selectedCategories, minPrice, maxPrice, isNew, sortOption]);
 
-    const toggleCategory = (category: string) => {
+    const toggleCategory = (categoryName: string) => {
         setSelectedCategories(prev =>
-            prev.includes(category)
-                ? prev.filter(c => c !== category)
-                : [...prev, category]
+            prev.includes(categoryName)
+                ? prev.filter(c => c !== categoryName)
+                : [...prev, categoryName]
         );
-    };
-
-    const getCategoryLabel = (category: string): string => {
-        switch (category.toLowerCase()) {
-            case 'hijab': return t.categories.hijab;
-            case 'abaya': return t.categories.abaya;
-            case 'borkha': return t.categories.borkha;
-            case 'gown': return t.categories.gown;
-            case 'accessories': return t.categories.accessories;
-            default: return category;
-        }
     };
 
     const handlePriceFilter = () => {
@@ -99,16 +92,20 @@ export default function ShopPage() {
                     <div className={styles.section}>
                         <h4 className={styles.sectionTitle}>Categories</h4>
                         <div className={styles.categoryList}>
-                            {allCategories.map(category => (
-                                <label key={category} className={styles.categoryItem}>
+                            {categories.map(category => (
+                                <label key={category.id} className={styles.categoryItem}>
                                     <input
                                         type="checkbox"
                                         className={styles.checkbox}
-                                        checked={selectedCategories.includes(category)}
-                                        onChange={() => toggleCategory(category)}
+                                        checked={selectedCategories.includes(category.name)}
+                                        onChange={() => toggleCategory(category.name)}
                                     />
-                                    <span className={styles.categoryIcon}>{categoryIcons[category] || '📦'}</span>
-                                    <span>{getCategoryLabel(category)}</span>
+                                    <span className={styles.categoryIcon}>{category.icon || '📦'}</span>
+                                    <span>
+                                        {lang === 'bn'
+                                            ? category.localizedNames?.bn || category.name
+                                            : category.name}
+                                    </span>
                                 </label>
                             ))}
                         </div>
