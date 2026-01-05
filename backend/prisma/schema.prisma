@@ -37,10 +37,8 @@ model Address {
   userId        String
   label         String // e.g., "Home", "Work"
   recipientName String
-  street        String
-  city          String
+  address       String // Full address text
   division      String
-  postalCode    String?
   phone         String
   isDefault     Boolean @default(false)
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -54,7 +52,6 @@ model Category {
   id          String   @id @default(uuid())
   name        String
   slug        String   @unique
-  description String?
   icon        String?  // Emoji or Icon name
   image       String?  // URL
   localizedNames        Json?    // e.g. { "bn": "..." }
@@ -69,55 +66,84 @@ model Category {
 }
 
 model Product {
-  id            String           @id @default(uuid())
-  sku           String           @unique
-  name          String
-  description   String?
-  localizedNames        Json?    // e.g. { "bn": "..." }
-  localizedDescriptions Json?    // e.g. { "bn": "..." }
-  price         Decimal          @db.Decimal(10, 2)
-  originalPrice Decimal?         @db.Decimal(10, 2)
-  discount      Json?            // e.g. { type: 'percentage', value: 10 }
-  sizeChart     String?          // URL to image
-  currency      String           @default("BDT")
-  categoryId    String
-  image         String // Main display image
-  isNew         Boolean          @default(false)
-  status        String           @default("Draft") // Draft, Published, Archived
-  category      Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  images        ProductImage[]
-  variants      ProductVariant[]
-  badges        ProductBadge[]
-  orderItems    OrderItem[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id                    String          @id @default(uuid())
+  sku                   String          @unique
+  name                  String
+  slug                  String          @unique
+  description           String?
+  localizedNames        Json?           // e.g. { "bn": "..." }
+  localizedDescriptions Json?           // e.g. { "bn": "..." }
+  
+  // Pricing
+  price                 Decimal         @db.Decimal(10, 2)
+  originalPrice         Decimal?        @db.Decimal(10, 2)
+  discount              Json?           // e.g. { type: 'percentage', value: 10 }
+  currency              String          @default("BDT")
+  
+  // Organization
+  categoryId            String
+  category              Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  status                String          @default("Draft") // Draft, Published, Archived
+  
+  // Assets & Relations
+  sizeChart             String?         // URL
+  images                ProductImage[]  // Global images
+  colors                ProductColor[]  // Color variations (groups)
+  badges                ProductBadge[]
+  
+  // Timestamps
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  orderItems            OrderItem[]
 }
 
-model ProductImage {
-  id        String  @id @default(uuid())
-  productId String
-  url       String
-  isPrimary Boolean @default(false)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+model ProductColor {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  name        String   // e.g. "Midnight Blue"
+  code        String   // e.g. "#123456"
+  
+  // Relations
+  images      ProductImage[] 
+  variants    ProductVariant[]
 }
 
 model ProductVariant {
-  id        String  @id @default(uuid())
-  productId String
-  size      String?
-  color     String?
-  sku       String? // Optional explicit SKU for variant
-  stock     Int     @default(100)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id              String       @id @default(uuid())
+  productColorId  String
+  productColor    ProductColor @relation(fields: [productColorId], references: [id], onDelete: Cascade)
+  
+  size            String       // e.g. "M", "L", "XL"
+  sku             String       @unique
+  stock           Int          @default(0)
+  price           Decimal?     // Optional override of product base price
+}
+
+model ProductImage {
+  id              String        @id @default(uuid())
+  url             String
+  isPrimary       Boolean       @default(false)
+  
+  // Relations (Polymorphic-ish: An image belongs to EITHER a Product OR a ProductColor)
+  productId       String?       
+  product         Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  productColorId  String?       
+  productColor    ProductColor? @relation(fields: [productColorId], references: [id], onDelete: Cascade)
 }
 
 model ProductBadge {
   id        String  @id @default(uuid())
   productId String
+  
   type      String // 'new', 'discount', 'bestseller', 'custom'
   text      String
   color     String?
   textColor String?
+  
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 

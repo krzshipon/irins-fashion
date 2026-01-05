@@ -1,4 +1,3 @@
-
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
@@ -6,23 +5,26 @@ import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
-        super({
-            jwtFromRequest: ExtractJwt.fromExtractors([
-                (request: Request) => {
-                    if (request && request.cookies) {
-                        // Check both app-specific cookie names
-                        return request.cookies['admin_token'] || request.cookies['storefront_token'];
-                    }
-                    return null;
-                },
-            ]),
-            ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET || 'dev_secret_key_change_in_prod',
-        });
-    }
+  constructor() {
+    super({
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          if (request && request.cookies) {
+            // Check both app-specific cookie names
+            return (
+              request.cookies['admin_token'] ||
+              request.cookies['storefront_token']
+            );
+          }
+          return null;
+        },
+      ]),
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET || 'dev_secret_key_change_in_prod',
+    });
+  }
 
-    async validate(payload: any) {
-        return { id: payload.sub, mobile: payload.mobile, role: payload.role };
-    }
+  async validate(payload: any) {
+    return { id: payload.sub, mobile: payload.mobile, role: payload.role };
+  }
 }

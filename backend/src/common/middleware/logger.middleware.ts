@@ -3,23 +3,23 @@ import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class ActionLoggerMiddleware implements NestMiddleware {
-    private logger = new Logger('HTTP');
+  private logger = new Logger('HTTP');
 
-    use(request: Request, response: Response, next: NextFunction): void {
-        const { ip, method, path: url } = request;
-        const userAgent = request.get('user-agent') || '';
-        const start = Date.now();
+  use(request: Request, response: Response, next: NextFunction): void {
+    const { ip, method, path: url } = request;
+    const userAgent = request.get('user-agent') || '';
+    const start = Date.now();
 
-        response.on('close', () => {
-            const { statusCode } = response;
-            const contentLength = response.get('content-length');
-            const duration = Date.now() - start;
+    response.on('close', () => {
+      const { statusCode } = response;
+      const contentLength = response.get('content-length');
+      const duration = Date.now() - start;
 
-            this.logger.log(
-                `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip} +${duration}ms`,
-            );
-        });
+      this.logger.log(
+        `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip} +${duration}ms`,
+      );
+    });
 
-        next();
-    }
+    next();
+  }
 }

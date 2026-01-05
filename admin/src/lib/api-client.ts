@@ -41,13 +41,14 @@ class ApiClient {
     }
 
     public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-        const response = await this.client.get<ApiResponse<T>>(url, config);
-        return response.data.data;
+        const response = await this.client.get<T>(url, config);
+        // Check if response has 'data' property matching generic wrapper, else return full body
+        return (response.data as any).data !== undefined ? (response.data as any).data : response.data;
     }
 
     public async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-        const response = await this.client.post<ApiResponse<T>>(url, data, config);
-        return response.data.data;
+        const response = await this.client.post<T>(url, data, config);
+        return (response.data as any).data !== undefined ? (response.data as any).data : response.data;
     }
 
     public async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {

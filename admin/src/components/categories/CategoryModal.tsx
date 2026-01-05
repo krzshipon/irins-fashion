@@ -41,8 +41,8 @@ export default function CategoryModal({
     // Helper to safety get localized text
     const getLocalized = (data: any, field: string, locale: string) => {
         if (!data) return "";
+        // Name might still be top level for English if legacy
         if (field === 'name' && locale === 'en') return data.name || "";
-        if (field === 'description' && locale === 'en') return data.description || "";
 
         const localized = field === 'name' ? data.localizedNames : data.localizedDescriptions;
         return localized?.[locale] || "";
@@ -53,10 +53,9 @@ export default function CategoryModal({
         slug: "",
         icon: "",
         image: "",
-        description: "",
         isActive: true,
         localizedNames: { bn: "" } as Record<string, string>,
-        localizedDescriptions: { bn: "" } as Record<string, string>
+        localizedDescriptions: { en: "", bn: "" } as Record<string, string>
     });
 
     useEffect(() => {
@@ -67,10 +66,9 @@ export default function CategoryModal({
                     slug: initialData.slug || "",
                     icon: initialData.icon || "",
                     image: initialData.image || "",
-                    description: initialData.description || "",
                     isActive: initialData.isActive ?? true,
                     localizedNames: initialData.localizedNames || { bn: "" },
-                    localizedDescriptions: initialData.localizedDescriptions || { bn: "" }
+                    localizedDescriptions: initialData.localizedDescriptions || { en: "", bn: "" }
                 });
                 setPreviewUrl(initialData.image || "");
                 setSelectedFile(null);
@@ -81,10 +79,9 @@ export default function CategoryModal({
                     slug: "",
                     icon: "📦",
                     image: "",
-                    description: "",
                     isActive: true,
                     localizedNames: { bn: "" },
-                    localizedDescriptions: { bn: "" }
+                    localizedDescriptions: { en: "", bn: "" }
                 });
                 setPreviewUrl("");
                 setSelectedFile(null);
@@ -96,54 +93,46 @@ export default function CategoryModal({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        if (activeTab === 'en') {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
-
-            // Auto-generate slug only from English name
-            if (name === "name") {
+        if (name === 'name') {
+            if (activeTab === 'en') {
                 setFormData(prev => ({
                     ...prev,
-                    [name]: value,
+                    name: value,
+                    // Auto-generate slug from English name
                     slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
                 }));
-            }
-        } else {
-            // Handle Bengali updates
-            if (name === 'name') {
+            } else {
                 setFormData(prev => ({
                     ...prev,
-                    localizedNames: { ...prev.localizedNames, bn: value }
-                }));
-            } else if (name === 'description') {
-                setFormData(prev => ({
-                    ...prev,
-                    localizedDescriptions: { ...prev.localizedDescriptions, bn: value }
+                    localizedNames: { ...prev.localizedNames, [activeTab]: value }
                 }));
             }
-        }
-
-        // Image and Icon handle separately or shared? Icon is shared.
-        if (name === "image" || name === "icon" || name === "slug") {
+        } else if (name === 'description') {
+            setFormData(prev => ({
+                ...prev,
+                localizedDescriptions: { ...prev.localizedDescriptions, [activeTab]: value }
+            }));
+        } else if (name === "image" || name === "icon" || name === "slug") {
+            // Shared fields
             setFormData(prev => ({
                 ...prev,
                 [name]: value
             }));
-            // If user manually edits image URL
             if (name === "image") {
                 setPreviewUrl(value);
                 setSelectedFile(null);
             }
+        } else if (name === "isActive") {
+            // Handled by checkbox directly usually, but just in case
         }
     };
 
     const getValue = (field: 'name' | 'description') => {
-        if (activeTab === 'en') {
-            return formData[field];
+        if (field === 'name') {
+            return activeTab === 'en' ? formData.name : formData.localizedNames[activeTab] || "";
         }
-        return field === 'name' ? formData.localizedNames.bn : formData.localizedDescriptions.bn;
+        // Description is always localized
+        return formData.localizedDescriptions[activeTab] || "";
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

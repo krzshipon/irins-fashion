@@ -1,4 +1,3 @@
-
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -6,51 +5,54 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService,
-    ) { }
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
-    async validateUser(identifier: string, pass: string): Promise<any> {
-        let user;
-        // Simple check if identifier is email (contains @)
-        if (identifier.includes('@')) {
-            user = await this.usersService.findByEmail(identifier);
-        } else {
-            user = await this.usersService.findByMobile(identifier);
-        }
-
-        if (user && (await bcrypt.compare(pass, user.password))) {
-            const { password, ...result } = user;
-            return result;
-        }
-        return null;
+  async validateUser(identifier: string, pass: string): Promise<any> {
+    let user;
+    // Simple check if identifier is email (contains @)
+    if (identifier.includes('@')) {
+      user = await this.usersService.findByEmail(identifier);
+    } else {
+      user = await this.usersService.findByMobile(identifier);
     }
 
-    async login(user: any) {
-        const payload = { mobile: user.mobile, sub: user.id, role: user.role };
-        return {
-            access_token: this.jwtService.sign(payload),
-            user: user,
-        };
+    if (user && (await bcrypt.compare(pass, user.password))) {
+      const { password, ...result } = user;
+      return result;
     }
+    return null;
+  }
 
-    async register(data: any) {
-        // Check if user exists
-        const existing = await this.usersService.findByMobile(data.mobile);
-        if (existing) {
-            throw new UnauthorizedException('User already exists');
-        }
-        const user = await this.usersService.createUser(data);
-        const { password, ...result } = user;
-        return result;
+  async login(user: any) {
+    const payload = { mobile: user.mobile, sub: user.id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: user,
+    };
+  }
+
+  async register(data: any) {
+    // Check if user exists
+    const existing = await this.usersService.findByMobile(data.mobile);
+    if (existing) {
+      throw new UnauthorizedException('User already exists');
     }
-    async updateProfile(userId: string, data: { name?: string; email?: string; mobile?: string }) {
-        const user = await this.usersService.updateUser({
-            where: { id: userId },
-            data: data,
-        });
-        const { password, ...result } = user;
-        return result;
-    }
+    const user = await this.usersService.createUser(data);
+    const { password, ...result } = user;
+    return result;
+  }
+  async updateProfile(
+    userId: string,
+    data: { name?: string; email?: string; mobile?: string },
+  ) {
+    const user = await this.usersService.updateUser({
+      where: { id: userId },
+      data: data,
+    });
+    const { password, ...result } = user;
+    return result;
+  }
 }

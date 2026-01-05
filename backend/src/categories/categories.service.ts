@@ -8,7 +8,7 @@ import { UploadService } from 'src/upload/upload.service';
 export class CategoriesService {
   constructor(
     private prisma: PrismaService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
   ) { }
 
   create(createCategoryDto: CreateCategoryDto) {
@@ -33,7 +33,7 @@ export class CategoriesService {
   findOne(id: string) {
     return this.prisma.category.findUnique({
       where: { id },
-      include: { _count: { select: { products: true } } }
+      include: { _count: { select: { products: true } } },
     });
   }
 
@@ -48,7 +48,7 @@ export class CategoriesService {
     const category = await this.prisma.category.findUnique({ where: { id } });
     return this.prisma.category.update({
       where: { id },
-      data: { isActive: !category?.isActive }
+      data: { isActive: !category?.isActive },
     });
   }
 
@@ -58,9 +58,9 @@ export class CategoriesService {
       where: { id },
       include: {
         products: {
-          include: { images: true }
-        }
-      }
+          include: { images: true },
+        },
+      },
     });
 
     if (category) {
@@ -70,9 +70,9 @@ export class CategoriesService {
       if (category.image) imageUrls.push(category.image);
 
       // Product images
-      category.products.forEach(product => {
-        if (product.image) imageUrls.push(product.image);
-        product.images.forEach(img => imageUrls.push(img.url));
+      category.products.forEach((product) => {
+
+        product.images.forEach((img) => imageUrls.push(img.url));
       });
 
       // 2. Delete from storage
@@ -94,12 +94,14 @@ export class CategoriesService {
           this.prisma.category.update({
             where: { id },
             data: { sortOrder: index },
-          })
-        )
+          }),
+        ),
       );
     } catch (error) {
       console.error('Reorder Transaction Failed:', error);
-      throw new InternalServerErrorException(`Reorder failed: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Reorder failed: ${error.message}`,
+      );
     }
   }
 }

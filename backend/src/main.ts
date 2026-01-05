@@ -20,8 +20,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       configService.get('FRONTEND_URL'), // Original FRONTEND_URL
-      configService.get('ADMIN_URL'),    // Original ADMIN_URL
-      'http://localhost:3000',           // Added from the provided snippet
+      configService.get('ADMIN_URL'), // Original ADMIN_URL
+      'http://localhost:3000', // Added from the provided snippet
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

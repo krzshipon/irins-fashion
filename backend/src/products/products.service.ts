@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,168 +7,163 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ProductsService {
   constructor(private prisma: PrismaService) { }
 
-  async create(createProductDto: CreateProductDto) {
-    const { categoryName, variants, images, badges, ...productData } = createProductDto;
+  // --- Helpers ---
 
-    // 1. Find Category
-    const category = await this.prisma.category.findFirst({
+  private async findCategory(identifier: string) {
+    return this.prisma.category.findFirst({
       where: {
         OR: [
-          { name: categoryName },
-          { id: categoryName } // Allow passing ID directly if needed
-        ]
-      }
-    });
-
-    if (!category) {
-      throw new Error(`Category '${categoryName}' not found`);
-    }
-
-    // 2. Prepare Data
-    // Map simple string badges to Badge objects
-    const badgeData = (badges || []).map(b => {
-      let type = 'custom';
-      let color = '#000000';
-      if (b.toLowerCase().includes('new')) { type = 'new'; color = '#10b981'; } // Emerald
-      if (b.toLowerCase().includes('best')) { type = 'bestseller'; color = '#f59e0b'; } // Amber
-      return { type, text: b, color, textColor: '#ffffff' };
-    });
-
-    // 3. Create Product with Relations
-    return this.prisma.product.create({
-      data: {
-        ...productData,
-        categoryId: category.id,
-        image: productData.image || (images && images.length > 0 ? images[0].url : ''), // Fallback to first image
-        images: {
-          create: images?.map(img => ({ url: img.url, isPrimary: img.isPrimary || false }))
-        },
-        variants: {
-          create: variants?.map(v => ({
-            color: v.colorName,
-            size: null, // We store sizes in a separate structure? 
-            // Schema has: size String?, color String?, sku String?, stock Int
-            // But Frontend sends: variants: [{ sizes: [{ size, stock, price }] }]
-            // We need to flatten this structure for Prisma "ProductVariant" model?
-            // Wait, schema model ProductVariant is simple flat list?
-            // model ProductVariant { size, color, sku, stock }
-            // So for each color-size combination, we create a row.
-            // Yes, let's flatten it.
-          }))
-        },
-        badges: {
-          create: badgeData
-        }
-      }
-    });
-  }
-
-  // Re-evaluating Schema vs Frontend Structure:
-  // Frontend sends: ColorVariant { sizes: SizeVariant[] }
-  // Schema: ProductVariant { size, color, sku, stock }
-  // So one ColorVariant with 3 sizes = 3 ProductVariant rows in DB.
-
-  async createFull(createProductDto: CreateProductDto) {
-    const { categoryName, variants, images, badges, ...productData } = createProductDto;
-
-    // 1. Find Category
-    const category = await this.prisma.category.findFirst({
-      where: {
-        OR: [
-          { name: { equals: categoryName, mode: 'insensitive' } },
-          { id: categoryName }
-        ]
-      }
-    });
-
-    if (!category) {
-      throw new Error(`Category '${categoryName}' not found`);
-    }
-
-    // 2. Flatten Variants (Color Group -> Individual SKU rows)
-    const flattenedVariants: any[] = [];
-    if (variants) {
-      for (const colorVar of variants) {
-        // Create variants for each size
-        if (colorVar.sizes && colorVar.sizes.length > 0) {
-          for (const sizeVar of colorVar.sizes) {
-            flattenedVariants.push({
-              color: colorVar.colorName,
-              size: sizeVar.size,
-              sku: sizeVar.sku || `${createProductDto.sku}-${colorVar.colorName}-${sizeVar.size}`.toUpperCase().replace(/\s+/g, '-'),
-              stock: parseInt(sizeVar.stock || '0'),
-              // Store color code/images? Schema doesn't support it directly on Variant row yet. 
-              // Schema needs update or we store it in a separate table?
-              // Current Schema: ProductVariant { size, color, sku, stock }
-              // It misses "colorCode" and "images" specific to color.
-              // Missing Schema Field!
-              // Let's rely on JSON field or update schema.
-              // For now, I will store metadata in a JSON field if possible, OR just stick to basic schema and ignore color code/images for backend persistence temporarily until next schema update, or update schema NOW.
-              // Actually, PLAN said "Complex variants support".
-              // Let's check Schema again.
-            });
-          }
-        } else {
-          // Color only variant?
-          flattenedVariants.push({
-            color: colorVar.colorName,
-            size: null,
-            stock: 0,
-            sku: `${createProductDto.sku}-${colorVar.colorName}`.toUpperCase().replace(/\s+/g, '-')
-          });
-        }
-      }
-    }
-
-    // 3. Badges
-    const badgeData = (badges || []).map(b => {
-      let type = 'custom';
-      let color = '#3b82f6'; // Blue default
-      if (b.toLowerCase().includes('new')) { type = 'new'; color = '#10b981'; }
-      if (b.toLowerCase().includes('best')) { type = 'bestseller'; color = '#f59e0b'; }
-      if (b.toLowerCase().includes('limit')) { type = 'limited'; color = '#ef4444'; }
-      return { type, text: b, color, textColor: '#ffffff' };
-    });
-
-    // 4. Create
-    return this.prisma.product.create({
-      data: {
-        ...productData,
-        // Make sure Decimal is handled
-        price: productData.price,
-        originalPrice: productData.originalPrice,
-        categoryId: category.id,
-        image: productData.image || (images && images.length > 0 ? images[0].url : ''),
-
-        images: {
-          create: images?.map(img => ({ url: img.url, isPrimary: img.isPrimary || false }))
-        },
-
-        variants: {
-          create: flattenedVariants
-        },
-
-        badges: {
-          create: badgeData
-        }
+          { id: identifier },
+          { name: { equals: identifier, mode: 'insensitive' } },
+        ],
       },
-      include: { variants: true, images: true, badges: true }
     });
   }
 
-  // Override the default create
-  create(createProductDto: CreateProductDto) {
-    return this.createFull(createProductDto);
+  private mapBadges(badges: string[]) {
+    return badges?.map((badgeText) => {
+      let type = 'custom';
+      let color = '#3b82f6';
+      const lower = badgeText.toLowerCase();
+
+      if (lower.includes('new')) { type = 'new'; color = '#10b981'; }
+      else if (lower.includes('best')) { type = 'bestseller'; color = '#f59e0b'; }
+      else if (lower.includes('limit') || lower.includes('sale')) { type = 'limited'; color = '#ef4444'; }
+
+      return { type, text: badgeText, color, textColor: '#ffffff' };
+    }) || [];
+  }
+
+  private mapColors(variants: any[] = []) {
+    return variants?.map((colorGroup) => ({
+      name: colorGroup.colorName,
+      code: colorGroup.colorCode,
+      images: {
+        create: colorGroup.images?.map((url: string) => ({
+          url: url,
+          isPrimary: false
+        }))
+      },
+      variants: {
+        create: colorGroup.sizes?.map((sizeVar: any) => ({
+          size: sizeVar.size,
+          sku: sizeVar.sku,
+          stock: sizeVar.stock ? +sizeVar.stock : 0,
+          price: sizeVar.price ? +sizeVar.price : undefined
+        }))
+      }
+    })) || [];
+  }
+
+  // --- CRUD Operations ---
+
+  async create(createProductDto: CreateProductDto) {
+    try {
+      const {
+        categoryName,
+        variants,
+        images,
+        badges,
+        discount,
+        localizedNames,
+        localizedDescriptions,
+        ...productData
+      } = createProductDto;
+
+      const category = await this.findCategory(categoryName);
+      if (!category) {
+        throw new BadRequestException(`Category '${categoryName}' not found`);
+      }
+
+      return await this.prisma.product.create({
+        data: {
+          ...productData,
+          category: { connect: { id: category.id } },
+          discount: discount as any,
+          localizedNames: localizedNames as any,
+          localizedDescriptions: localizedDescriptions as any,
+          images: {
+            create: images?.map((img) => ({ url: img.url, isPrimary: img.isPrimary })),
+          },
+          colors: {
+            create: this.mapColors(variants || [])
+          },
+          badges: {
+            create: this.mapBadges(badges || []),
+          },
+        },
+        include: {
+          colors: { include: { variants: true, images: true } },
+          images: true,
+          badges: true,
+          category: true
+        },
+      });
+    } catch (error) {
+      console.error('Error creating product:', error);
+      throw error;
+    }
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    // For now, basic update. Full update logic is complex with relations.
-    return this.prisma.product.update({
-      where: { id },
-      data: {
-        ...updateProductDto,
-        // Handle relations if needed (usually separate endpoints or complex logic)
-      }
+    const {
+      categoryName,
+      variants,
+      images,
+      badges,
+      discount,
+      localizedNames,
+      localizedDescriptions,
+      ...rest
+    } = updateProductDto;
+
+    // Resolve Category if changed
+    let categoryConnect = {};
+    if (categoryName) {
+      const category = await this.findCategory(categoryName);
+      if (!category) throw new BadRequestException(`Category '${categoryName}' not found`);
+      categoryConnect = { category: { connect: { id: category.id } } };
+    }
+
+    // Transaction to ensure atomicity of delete-then-create ops
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Cleanup existing relations
+      if (images) await tx.productImage.deleteMany({ where: { productId: id } });
+      if (badges) await tx.productBadge.deleteMany({ where: { productId: id } });
+      if (variants) await tx.productColor.deleteMany({ where: { productId: id } });
+
+      // 2. Update Product
+      const product = await tx.product.update({
+        where: { id },
+        data: {
+          ...rest,
+          ...categoryConnect,
+          discount: discount as any,
+          localizedNames: localizedNames as any,
+          localizedDescriptions: localizedDescriptions as any,
+
+          // Re-create relations
+          images: images ? {
+            create: images.map(img => ({ url: img.url, isPrimary: img.isPrimary }))
+          } : undefined,
+
+          badges: badges ? {
+            create: this.mapBadges(badges)
+          } : undefined,
+
+          colors: variants ? {
+            create: this.mapColors(variants)
+          } : undefined,
+        },
+        include: {
+          colors: { include: { variants: true, images: true } },
+          images: true,
+          badges: true,
+          category: true
+        }
+      });
+
+      return product;
     });
   }
 
@@ -188,16 +183,16 @@ export class ProductsService {
 
       const products = await this.prisma.product.findMany({
         where: { categoryId: category.id },
-        include: { images: true, variants: true, badges: true, category: true },
-        orderBy: { createdAt: 'desc' }
+        include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+        orderBy: { createdAt: 'desc' },
       });
 
       return { products, category };
     }
 
     const products = await this.prisma.product.findMany({
-      include: { images: true, variants: true, badges: true, category: true },
-      orderBy: { createdAt: 'desc' }
+      include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+      orderBy: { createdAt: 'desc' },
     });
 
     return { products, category: null };
@@ -206,7 +201,7 @@ export class ProductsService {
   findOne(id: string) {
     return this.prisma.product.findUnique({
       where: { id },
-      include: { images: true, variants: true, badges: true, category: true }
+      include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
 }

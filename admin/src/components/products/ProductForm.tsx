@@ -130,7 +130,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     const handleImageUpload = async (file: File, type: 'product' | 'sizeChart') => {
         try {
             const folder = type === 'sizeChart' ? 'size-charts' : 'products';
-            const { url } = await uploadService.uploadImage(file, folder);
+            const url = await uploadService.uploadImage(file, folder);
 
             if (type === 'sizeChart') {
                 setFormData((prev: any) => ({ ...prev, sizeChart: url }));
@@ -186,9 +186,10 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
             showSuccess(isEdit ? "Updated" : "Created", "Product saved successfully.");
             router.push("/products");
-        } catch (err) {
-            showError("Error", "Failed to save product.");
+        } catch (err: any) {
             console.error(err);
+            const errorMessage = err.response?.data?.message || err.message || "Failed to save product.";
+            showError("Error", errorMessage);
         }
     };
 
