@@ -25,8 +25,8 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all products or filter by category' })
-  findAll(@Query('category') categorySlug?: string) {
-    return this.productsService.findAll(categorySlug);
+  findAll(@Query('category') categorySlug?: string, @Query('take') take?: number) {
+    return this.productsService.findAll(categorySlug, take);
   }
 
   @Get(':id')

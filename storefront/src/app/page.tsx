@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { getFeaturedProducts } from '@/services/api/products';
+import { getCategories } from '@/services/api/categories';
 import { getHeroBanners } from '@/services/api/marketing';
-import { Product, Banner } from '@/services/api/types';
+import { Product, Banner, Category } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
 import CategorySection from '@/components/home/CategorySection';
 import CategoryProductRow from '@/components/home/CategoryProductRow';
@@ -15,18 +16,21 @@ export default function Home() {
   const { t, locale } = useLocalization();
   const [products, setProducts] = useState<Product[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [productsData, bannersData] = await Promise.all([
+        const [productsData, bannersData, categoriesData] = await Promise.all([
           getFeaturedProducts(),
           getHeroBanners(),
+          getCategories(),
         ]);
         setProducts(productsData);
         setBanners(bannersData);
+        setCategories(categoriesData);
       } catch (error) {
         console.error("Failed to load data", error);
       } finally {
@@ -103,35 +107,14 @@ export default function Home() {
         </div>
       </section>
 
-      <CategoryProductRow
-        titleKey="categories.hijab"
-        categorySlug="Hijab"
-        link="/collection/hijabs"
-      />
-
-      <CategoryProductRow
-        titleKey="categories.abaya"
-        categorySlug="Abaya"
-        link="/collection/abayas"
-      />
-
-      <CategoryProductRow
-        titleKey="categories.borkha"
-        categorySlug="Borkha"
-        link="/collection/borkhas"
-      />
-
-      <CategoryProductRow
-        titleKey="categories.gown"
-        categorySlug="Gown"
-        link="/collection/gowns"
-      />
-
-      <CategoryProductRow
-        titleKey="categories.accessories"
-        categorySlug="Accessories"
-        link="/collection/accessories"
-      />
+      {categories.map((category) => (
+        <CategoryProductRow
+          key={category.id}
+          title={category.localizedNames?.[locale] || category.name}
+          categorySlug={category.slug}
+          link={`/collection/${category.slug}`}
+        />
+      ))}
     </div>
   );
 }

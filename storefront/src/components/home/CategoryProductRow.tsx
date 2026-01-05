@@ -7,7 +7,8 @@ import styles from './CategoryProductRow.module.css';
 import { useLocalization } from '@/context/LocalizationContext';
 
 interface CategoryProductRowProps {
-    titleKey: string;
+    titleKey?: string; // Made optional
+    title?: string;    // Direct title override
     categorySlug: string; // e.g. 'hijab' for fetching products
     link: string; // Link to the full collection
 }
@@ -15,7 +16,7 @@ interface CategoryProductRowProps {
 import { useEffect, useState } from 'react';
 import { getProductsByCategory } from '@/services/api/products';
 
-export default function CategoryProductRow({ titleKey, categorySlug, link }: CategoryProductRowProps) {
+export default function CategoryProductRow({ titleKey, title, categorySlug, link }: CategoryProductRowProps) {
     const { t } = useLocalization();
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -32,7 +33,7 @@ export default function CategoryProductRow({ titleKey, categorySlug, link }: Cat
     return (
         <section className={`container ${styles.section}`}>
             <div className={styles.header}>
-                <h2 className={styles.title}>{t(titleKey)}</h2>
+                <h2 className={styles.title}>{title || (titleKey ? t(titleKey) : '')}</h2>
                 <Link href={link} className={styles.moreLink}>
                     {t('common.seeMore')}
                 </Link>

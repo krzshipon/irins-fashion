@@ -171,7 +171,9 @@ export class ProductsService {
     return this.prisma.product.delete({ where: { id } });
   }
 
-  async findAll(categorySlug?: string) {
+  async findAll(categorySlug?: string, take?: number) {
+    const takeValue = take ? +take : undefined;
+
     if (categorySlug) {
       const category = await this.prisma.category.findUnique({
         where: { slug: categorySlug },
@@ -185,6 +187,7 @@ export class ProductsService {
         where: { categoryId: category.id },
         include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
         orderBy: { createdAt: 'desc' },
+        take: takeValue,
       });
 
       return { products, category };
@@ -193,6 +196,7 @@ export class ProductsService {
     const products = await this.prisma.product.findMany({
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
       orderBy: { createdAt: 'desc' },
+      take: takeValue,
     });
 
     return { products, category: null };

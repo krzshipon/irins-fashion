@@ -400,11 +400,26 @@ export const getProductsBySlug = async (
     }
 };
 
-export const getProductsByCategory = async (category: string, limit: number = 4): Promise<Product[]> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    // Case insensitive match
-    return MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === category.toLowerCase()).slice(0, limit);
+export const getProductsByCategory = async (categorySlug: string, limit: number = 4): Promise<Product[]> => {
+    try {
+        const res = await fetch(`${API_URL}/products?category=${categorySlug}&take=${limit}`, { cache: 'no-store' });
+        if (!res.ok) {
+            console.error(`Failed to fetch products for category ${categorySlug}`);
+            return [];
+        }
+        const data = await res.json();
+        // API response structure might be { products: [], meta: ... } or just [] or { category: ..., products: ... }
+        // Looking at getProductsBySlug, it expects { products: ... }
+        // Checking backend controller...
+        // Assuming backend returns { products: Product[] } or just Product[]
+        // Wait, getProductsBySlug uses /products?category=slug
+        // Let's assume the same endpoint.
+        // getProductsBySlug says: const data = await res.json(); const products = data.products;
+        return data.products || [];
+    } catch (error) {
+        console.error("Error fetching products by category:", error);
+        return [];
+    }
 }
 
 export const getProductById = async (id: string): Promise<Product | undefined> => {
