@@ -164,7 +164,7 @@ export default function CategoryModal({
             if (selectedFile) {
                 setIsUploading(true); // Optional visual cue
                 try {
-                    imageUrl = await uploadService.uploadImage(selectedFile);
+                    imageUrl = await uploadService.uploadImage(selectedFile, 'categories');
                 } catch (uploadError) {
                     console.error("Upload failed", uploadError);
                     showError("Upload Failed", "Could not upload the image. Please try again.");
@@ -352,8 +352,8 @@ export default function CategoryModal({
                                         type="button"
                                         onClick={() => setActiveTab('en')}
                                         className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activeTab === 'en'
-                                                ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
-                                                : 'text-gray-500 hover:text-gray-300'
+                                            ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
+                                            : 'text-gray-500 hover:text-gray-300'
                                             }`}
                                     >
                                         English
@@ -362,8 +362,8 @@ export default function CategoryModal({
                                         type="button"
                                         onClick={() => setActiveTab('bn')}
                                         className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activeTab === 'bn'
-                                                ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
-                                                : 'text-gray-500 hover:text-gray-300'
+                                            ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
+                                            : 'text-gray-500 hover:text-gray-300'
                                             }`}
                                     >
                                         Bengali

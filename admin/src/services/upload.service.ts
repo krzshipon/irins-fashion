@@ -5,9 +5,12 @@ interface UploadResponse {
 }
 
 export const uploadService = {
-    uploadImage: async (file: File): Promise<string> => {
+    uploadImage: async (file: File, folder?: string): Promise<string> => {
         const formData = new FormData();
         formData.append('file', file);
+        if (folder) {
+            formData.append('folder', folder);
+        }
 
         const response = await apiClient.post<UploadResponse>('/upload', formData, {
             headers: {

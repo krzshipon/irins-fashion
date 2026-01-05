@@ -6,6 +6,7 @@ import {
     ParseFilePipe,
     MaxFileSizeValidator,
     FileTypeValidator,
+    Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
@@ -29,7 +30,8 @@ export class UploadController {
             }),
         )
         file: Express.Multer.File,
+        @Body('folder') folder?: string,
     ) {
-        return this.uploadService.uploadFile(file);
+        return this.uploadService.uploadFile(file, folder);
     }
 }
