@@ -90,6 +90,35 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
         }
     };
 
+    // Auto-calculate Selling Price from Base Price & Discount
+    useEffect(() => {
+        const basePrice = parseFloat(formData.originalPrice);
+        const discountType = formData.discount?.type;
+        const discountValue = parseFloat(formData.discount?.value as any);
+
+        if (!isNaN(basePrice)) {
+            let sellingPrice = basePrice;
+
+            if (!isNaN(discountValue) && discountValue > 0) {
+                if (discountType === 'percentage') {
+                    sellingPrice = basePrice - (basePrice * discountValue / 100);
+                } else {
+                    sellingPrice = basePrice - discountValue;
+                }
+            }
+
+            // Round to 2 decimal places if needed, or integer
+            // Assuming integer for BDT mostly, but currency is decimal.
+            // Let's keep decimal precision but maybe round to 2.
+            sellingPrice = Math.max(0, parseFloat(sellingPrice.toFixed(2)));
+
+            setFormData((prev: any) => ({
+                ...prev,
+                price: sellingPrice.toString()
+            }));
+        }
+    }, [formData.originalPrice, formData.discount?.type, formData.discount?.value]);
+
     // --- Handlers ---
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -198,8 +227,11 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             console.log("Submit Payload:", payload);
 
             if (isEdit) {
-                // await productsService.update(initialData.id, payload);
-                // Need id from initialData, but checking props first
+                if (initialData && initialData.id) {
+                    await productsService.update(initialData.id, payload);
+                } else {
+                    throw new Error("Product ID is missing for update operation.");
+                }
             } else {
                 await productsService.create(payload);
             }
@@ -371,20 +403,19 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                         <h3 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Base Pricing</h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Selling Price (৳)</label>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Selling Price (Auto-calculated)</label>
                                 <input
                                     type="number"
                                     name="price"
                                     value={formData.price}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                                    readOnly
+                                    className="w-full px-4 py-2.5 bg-black/40 border border-white/5 rounded-lg text-sm text-gray-400 cursor-not-allowed"
                                     placeholder="0.00"
-                                    required
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Can be overridden by variants.</p>
+                                <p className="text-xs text-gray-500 mt-1">Calculated from Base Price and Discount.</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Original Price (৳)</label>
+                                <label className="block text-sm font-medium text-emerald-400 mb-1">Base Price / MRP (৳)</label>
                                 <input
                                     type="number"
                                     name="originalPrice"
@@ -392,8 +423,9 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                     onChange={handleChange}
                                     className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
                                     placeholder="0.00"
+                                    required
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Strikethrough price (optional).</p>
+                                <p className="text-xs text-gray-500 mt-1">Enter the original price before discount.</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Base SKU</label>

@@ -24,6 +24,6 @@ export const productsService = {
     getAll: (params?: any) => apiClient.get<any>('/products', { params }),
     getOne: (id: string) => apiClient.get<any>(`/products/${id}`),
     create: (data: ProductPayload) => apiClient.post<any>('/products', data),
-    update: (id: string, data: Partial<ProductPayload>) => apiClient.put<any>(`/products/${id}`, data),
+    update: (id: string, data: Partial<ProductPayload>) => apiClient.patch<any>(`/products/${id}`, data),
     delete: (id: string) => apiClient.delete<void>(`/products/${id}`),
 };
