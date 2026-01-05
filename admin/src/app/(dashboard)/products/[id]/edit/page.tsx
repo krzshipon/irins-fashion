@@ -1,29 +1,52 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import ProductForm from "@/components/products/ProductForm";
-
-const MOCK_PRODUCT_DATA = {
-    name: "Premium Silk Hijab - Midnight Blue",
-    slug: "premium-silk-hijab-midnight-blue",
-    description: "Experience the luxury of our Premium Silk Hijab. Crafted from 100% pure silk, this hijab offers a smooth, lightweight feel and a subtle sheen.",
-    price: "1250",
-    salePrice: "1050",
-    category: "Hijab",
-    sku: "SKU-HJB-001",
-    stock: "45",
-    status: "Published",
-    images: [],
-    attributes: [
-        { name: "Material", value: "100% Silk" },
-        { name: "Size", value: "180cm x 70cm" },
-        { name: "Color", value: "Midnight Blue" },
-    ]
-};
+import { useEffect, useState } from "react";
+import { productsService } from "@/services/products.service";
 
 export default function EditProductPage() {
     const router = useRouter();
+    const params = useParams();
+    const { id } = params;
+    const [product, setProduct] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (id) {
+            fetchProduct();
+        }
+    }, [id]);
+
+    const fetchProduct = async () => {
+        try {
+            const data = await productsService.getOne(id as string);
+            setProduct(data);
+        } catch (error) {
+            console.error("Failed to fetch product", error);
+            // Optional: show error toast or redirect
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="text-center py-20">
+                <p className="text-gray-400">Product not found.</p>
+                <button onClick={() => router.back()} className="text-emerald-500 hover:underline mt-2">Go Back</button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -41,7 +64,7 @@ export default function EditProductPage() {
                 </div>
             </div>
 
-            <ProductForm initialData={MOCK_PRODUCT_DATA} isEdit={true} />
+            <ProductForm initialData={product} isEdit={true} />
         </div>
     );
 }

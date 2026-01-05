@@ -24,6 +24,33 @@ interface ProductFormProps {
 
 type Lang = 'en' | 'bn';
 
+const transformInitialData = (data: any) => {
+    if (!data) return null;
+    return {
+        ...data,
+        price: data.price?.toString() || "",
+        originalPrice: data.originalPrice?.toString() || "",
+        categoryName: data.category?.id || data.categoryId || "",
+        badges: data.badges?.map((b: any) => b.text) || [],
+        // Transform Backend Colors -> Frontend Variants
+        variants: data.colors?.map((c: any) => ({
+            id: c.id,
+            colorName: c.name,
+            colorCode: c.code,
+            images: c.images?.map((img: any) => img.url) || [],
+            sizes: c.variants?.map((v: any) => ({
+                id: v.id,
+                size: v.size,
+                price: v.price?.toString() || "",
+                stock: v.stock?.toString() || "",
+                sku: v.sku || ""
+            })) || []
+        })) || [],
+        // Ensure discount is properly structured if valid
+        discount: data.discount || { type: "percentage", value: 0 }
+    };
+};
+
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     const router = useRouter();
     const { showSuccess, showLoading, showConfirm, showError } = useDialog();
@@ -32,22 +59,15 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     const [categories, setCategories] = useState<Category[]>([]);
     const [activeLang, setActiveLang] = useState<Lang>('en');
 
-    const [formData, setFormData] = useState(initialData || {
+    const [formData, setFormData] = useState(transformInitialData(initialData) || {
         name: "",
         slug: "",
         description: "",
         localizedNames: { bn: "" },
         localizedDescriptions: { bn: "" },
         price: "",
-        originalPrice: "", // Was salePrice in frontend but originalPrice in schema/backend? Check schema.
-        // Schema: price (Decimal), originalPrice (Decimal). 
-        // Typically price is selling price, originalPrice is MSRP/Strikethrough.
-        // Let's support both.
-        categoryName: "", // We store Name or ID? DTO expects categoryName. Let's use Name for logic match, or ID.
-        // Service looks up by Name OR ID. Let's send ID for robustness but Name for UI if needed.
-        // Actually, let's bind to Category Name for now per DTO logic or update DTO to prefer ID.
-        // DTO: categoryName string. Service: findFirst({ name: categoryName } OR { id: categoryName }).
-        // Best to use ID as value in <select> and pass it as 'categoryName'.
+        originalPrice: "",
+        categoryName: "",
         sku: "",
         status: "Draft",
         images: [] as { url: string, isPrimary: boolean }[],
