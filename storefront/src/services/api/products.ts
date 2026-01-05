@@ -505,49 +505,62 @@ export const getAllProducts = async (
     filters?: FilterOptions,
     sort?: SortOption
 ): Promise<{ products: Product[], categories: string[] }> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    // Get unique categories
-    const allCategories = [...new Set(MOCK_PRODUCTS.map(p => p.category))];
-
-    let products = [...MOCK_PRODUCTS];
-
-    // Filter by categories
-    if (categories && categories.length > 0) {
-        products = products.filter(p =>
-            categories.some(cat => cat.toLowerCase() === p.category.toLowerCase())
-        );
-    }
-
-    // Filtering
-    if (filters) {
-        if (filters.minPrice !== undefined) {
-            products = products.filter(p => p.price >= filters.minPrice!);
+    try {
+        const res = await fetch(`${API_URL}/products`, { cache: 'no-store' });
+        if (!res.ok) {
+            console.error('Failed to fetch all products');
+            // Fallback to mock
+            return { products: MOCK_PRODUCTS, categories: [...new Set(MOCK_PRODUCTS.map(p => p.category))] };
         }
-        if (filters.maxPrice !== undefined) {
-            products = products.filter(p => p.price <= filters.maxPrice!);
-        }
-        if (filters.isNew) {
-            products = products.filter(p => p.isNew);
-        }
-    }
 
-    // Sorting
-    if (sort) {
-        products.sort((a, b) => {
-            switch (sort) {
-                case 'price_asc':
-                    return a.price - b.price;
-                case 'price_desc':
-                    return b.price - a.price;
-                case 'newest':
-                    return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-                default:
-                    return 0;
+        const response = await res.json();
+        // API wraps response in { statusCode, message, data: { products } }
+        const rawProducts = response.data?.products || response.products || [];
+        let products = rawProducts.map(transformProduct);
+
+        // Get unique categories from fetched products
+        const allCategories = [...new Set(products.map((p: Product) => p.category))];
+
+        // Filter by categories
+        if (categories && categories.length > 0) {
+            products = products.filter((p: Product) =>
+                categories.some(cat => cat.toLowerCase() === p.category.toLowerCase())
+            );
+        }
+
+        // Filtering
+        if (filters) {
+            if (filters.minPrice !== undefined) {
+                products = products.filter((p: Product) => p.price >= filters.minPrice!);
             }
-        });
-    }
+            if (filters.maxPrice !== undefined) {
+                products = products.filter((p: Product) => p.price <= filters.maxPrice!);
+            }
+            if (filters.isNew) {
+                products = products.filter((p: Product) => (p as any).isNew);
+            }
+        }
 
-    return { products, categories: allCategories };
+        // Sorting
+        if (sort) {
+            products.sort((a: Product, b: Product) => {
+                switch (sort) {
+                    case 'price_asc':
+                        return a.price - b.price;
+                    case 'price_desc':
+                        return b.price - a.price;
+                    case 'newest':
+                        return ((b as any).isNew ? 1 : 0) - ((a as any).isNew ? 1 : 0);
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        return { products, categories: allCategories as string[] };
+    } catch (error) {
+        console.error('Error fetching all products:', error);
+        // Fallback to mock
+        return { products: MOCK_PRODUCTS, categories: [...new Set(MOCK_PRODUCTS.map(p => p.category))] };
+    }
 };
