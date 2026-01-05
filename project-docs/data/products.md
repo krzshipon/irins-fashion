@@ -52,6 +52,33 @@ This document contains 10 sample products across Abaya, Hijab, Borkha, and Acces
     *   **Black**:
         *   52, 54, 56: Stock 5 each
 
+### 3a. Front Open Kuku Abaya
+*   **English Name**: Kuku Style Front Open Abaya
+*   **Bengali Name**: কুকু স্টাইল ফ্রন্ট ওপেন আবায়া
+*   **Price**: ৳3,800
+*   **Description**: Modern kuku style cut with front buttons, suitable for university students.
+*   **Bengali Description**: আধুনিক কুকু স্টাইল কাট এবং ফ্রন্ট বাটন, ইউনিভার্সিটি শিক্ষার্থীদের জন্য পারফেক্ট।
+*   **Status**: Published
+*   **Variants**:
+    *   **Beige**:
+        *   52, 54: Stock 10 each
+    *   **Black**:
+        *   52, 54, 56: Stock 15 each
+
+### 3b. Dubai Silk Party Abaya
+*   **English Name**: Dubai Silk Party Wear Abaya
+*   **Bengali Name**: দুবাই সিল্ক পার্টি আবায়া
+*   **Price**: ৳6,500 (Original: ৳7,000)
+*   **Description**: Shiny Dubai silk abaya for parties, includes matching belt.
+*   **Bengali Description**: পার্টির জন্য চকচকে দুবাই সিল্ক আবায়া, সাথে ম্যাচিং বেল্ট।
+*   **Status**: Published
+*   **Discount**: `{ "type": "flat", "value": 500 }`
+*   **Variants**:
+    *   **Gold**:
+        *   54, 56: Stock 5 each
+    *   **Silver**:
+        *   54, 56: Stock 5 each
+
 ---
 
 ## 🧕 Hijab (`hijabs`)
@@ -92,6 +119,28 @@ This document contains 10 sample products across Abaya, Hijab, Borkha, and Acces
     *   **White**: Stock 25
     *   **Grey**: Stock 25
 
+### 6a. Jersey Prayer Hijab
+*   **English Name**: Instant Jersey Prayer Hijab
+*   **Bengali Name**: ইনস্ট্যান্ট জার্সি প্রেয়ার হিজাব
+*   **Price**: ৳550
+*   **Description**: Ready-to-wear instant hijab made of stretchy jersey fabric.
+*   **Bengali Description**: স্ট্রেচেবল জার্সি কাপড়ের তৈরি রেডি-টু-ওয়্যার ইনস্ট্যান্ট হিজাব।
+*   **Status**: Published
+*   **Variants**:
+    *   **Black**: Stock 30
+    *   **Navy**: Stock 20
+
+### 6b. Satin Silk Party Hijab
+*   **English Name**: Luxury Satin Silk Hijab
+*   **Bengali Name**: লাক্সারি সাটিন সিল্ক হিজাব
+*   **Price**: ৳850
+*   **Description**: Glossy satin silk hijab for special occasions.
+*   **Bengali Description**: বিশেষ অনুষ্ঠানের জন্য চকচকে সাটিন সিল্ক হিজাব।
+*   **Status**: Published
+*   **Variants**:
+    *   **Champagne**: Stock 15
+    *   **Rose Gold**: Stock 15
+
 ---
 
 ## 🧥 Borkha (`borkas`)
@@ -116,6 +165,43 @@ This document contains 10 sample products across Abaya, Hijab, Borkha, and Acces
 *   **Status**: Published
 *   **Variants**:
     *   **Coffee**:
+        *   52, 54, 56: Stock 5 each
+
+### 8a. Three Part Borka Set
+*   **English Name**: 3-Piece Borka Set (Gown, Inner, Hijab)
+*   **Bengali Name**: ৩-পিস বোরকা সেট
+*   **Price**: ৳4,000
+*   **Description**: Complete set including outer gown, inner dress, and matching hijab.
+*   **Bengali Description**: আউটার গাউন, ইনার ড্রেস এবং ম্যাচিং হিজাব সহ সম্পূর্ণ সেট।
+*   **Status**: Published
+*   **Variants**:
+    *   **Dusty Pink**:
+        *   52, 54: Stock 8 each
+    *   **Mint**:
+        *   52, 54: Stock 6 each
+
+### 8b. Kaftan Style Borka
+*   **English Name**: Loose Fit Kaftan Borka
+*   **Bengali Name**: লুজ ফিট কাফতান বোরকা
+*   **Price**: ৳3,000
+*   **Description**: Extremely loose fitting kaftan style borka for maximum modesty.
+*   **Bengali Description**: সর্বোচ্চ পর্দার জন্য অত্যন্ত ঢিলেঢালা কাফতান স্টাইল বোরকা।
+*   **Status**: Published
+*   **Variants**:
+    *   **Black**:
+        *   Free Size: Stock 20
+    *   **Dark Grey**:
+        *   Free Size: Stock 15
+
+### 8c. Dubai Irani Borka
+*   **English Name**: Dubai Irani Style Borka
+*   **Bengali Name**: দুবাই ইরানি স্টাইল বোরকা
+*   **Price**: ৳3,500
+*   **Description**: Unique front design inspired by Irani fashion.
+*   **Bengali Description**: ইরানি ফ্যাশন দ্বারা অনুপ্রাণিত অনন্য ফ্রন্ট ডিজাইন।
+*   **Status**: Published
+*   **Variants**:
+    *   **Maroon**:
         *   52, 54, 56: Stock 5 each
 
 ---
@@ -144,3 +230,35 @@ This document contains 10 sample products across Abaya, Hijab, Borkha, and Acces
 *   **Variants**:
     *   **Matte Black**: Stock 50 sets
     *   **Metallic Mixed**: Stock 30 sets
+
+### 11. Niqab (Single Layer)
+*   **English Name**: Breathable Single Layer Niqab
+*   **Bengali Name**: আরামদায়ক সিঙ্গেল লেয়ার নিকাব
+*   **Price**: ৳150
+*   **Description**: Soft chiffon niqab with tying cords. Breathable fabric.
+*   **Bengali Description**: বাঁধার ফিতা সহ নরম শিফন নিকাব। শ্বাসপ্রশ্বাস নেওয়ার উপযোগী কাপড়।
+*   **Status**: Published
+*   **Variants**:
+    *   **Black**: Stock 50
+
+### 12. Hijab Volumizer Scrunchie
+*   **English Name**: Velvet Hijab Volumizer Scrunchie
+*   **Bengali Name**: ভেলভেট হিজাব ভলিউম স্ক্রাঞ্চি
+*   **Price**: ৳200
+*   **Description**: Adds volume to your hijab bun without damaging hair.
+*   **Bengali Description**: চুলের ক্ষতি না করে আপনার হিজাবের খোঁপার ভলিউম বাড়ায়।
+*   **Status**: Published
+*   **Variants**:
+    *   **Black**: Stock 30
+    *   **Brown**: Stock 20
+
+### 13. Arm Sleeves (Extentions)
+*   **English Name**: Cotton Arm Sleeves (Pair)
+*   **Bengali Name**: কটন আর্ম স্লিভস (জোড়া)
+*   **Price**: ৳120
+*   **Description**: Extends sleeve coverage for short-sleeved dresses.
+*   **Bengali Description**: ছোট হাতার জামার জন্য হাতার কভারেজ বাড়ায়।
+*   **Status**: Published
+*   **Variants**:
+    *   **Black**: Stock 40
+    *   **Skin**: Stock 40
