@@ -33,6 +33,13 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
+  @Put('reorder')
+  @ApiOperation({ summary: 'Reorder categories (Admin)' })
+  reorder(@Body() body: { orderedIds: string[] }) {
+    console.log('Reorder Body:', body);
+    return this.categoriesService.reorder(body.orderedIds);
+  }
+
   @Put(':id')
   @ApiOperation({ summary: 'Update category (Admin)' })
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {

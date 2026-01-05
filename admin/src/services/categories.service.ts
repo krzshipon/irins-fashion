@@ -7,4 +7,5 @@ export const categoriesService = {
     update: (id: string, data: Partial<Category>) => apiClient.put<Category>(`/categories/${id}`, data),
     toggleStatus: (id: string) => apiClient.patch<Category>(`/categories/${id}/status`, {}), // PATCH request doesn't need body for status toggle if handled by URL
     delete: (id: string) => apiClient.delete<void>(`/categories/${id}`),
+    reorder: (orderedIds: string[]) => apiClient.put<void>('/categories/reorder', { orderedIds }),
 };

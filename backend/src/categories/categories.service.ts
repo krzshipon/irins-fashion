@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -85,5 +85,21 @@ export class CategoriesService {
     return this.prisma.category.delete({
       where: { id },
     });
+  }
+
+  async reorder(orderedIds: string[]) {
+    try {
+      return await this.prisma.$transaction(
+        orderedIds.map((id, index) =>
+          this.prisma.category.update({
+            where: { id },
+            data: { sortOrder: index },
+          })
+        )
+      );
+    } catch (error) {
+      console.error('Reorder Transaction Failed:', error);
+      throw new InternalServerErrorException(`Reorder failed: ${error.message}`);
+    }
   }
 }
