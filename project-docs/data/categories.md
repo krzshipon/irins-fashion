@@ -1,6 +1,6 @@
-# Irin's Fashion - Official Category Master Data
+# Irin's Fashion - Official Category Master Data (Islamic Women's Wear)
 
-This document contains the finalized category structure for Irin's Fashion. Use this data when creating categories in the Admin Panel to ensure consistency.
+This document contains the refined category structure tailored for the Bangladeshi Islamic fashion market. Use this data for Admin Panel entry.
 
 ## 🧕 Main Categories
 
@@ -9,83 +9,72 @@ This document contains the finalized category structure for Irin's Fashion. Use 
 **Icon:** 🧕
 - **English Name:** Hijab
 - **Bengali Name:** হিজাব
-- **English Description:** Discover our premium collection of breathable and elegant hijabs for every occasion.
-- **Bengali Description:** যেকোনো অনুষ্ঠানের জন্য আমাদের প্রিমিয়াম এবং আরামদায়ক হিজাব কালেকশন দেখুন।
-- **Image Idea:** A stack of neatly folded colorful hijabs or a model wearing a premium silk hijab.
+- **English Description:** Premium Georgette, Chiffon, and Cotton hijabs for daily and party wear.
+- **Bengali Description:** প্রতিদিনের এবং পার্টির জন্য প্রিমিয়াম জর্জেট, শিফন এবং কটন হিজাব।
+- **Market Context:** Very high demand. Includes Solid, Printed, and Instant Hijabs.
 
-### 2. Abaya (বোরকা)
+### 2. Abaya (আবায়া)
 **Slug:** `abayas`
 **Icon:** 👘
 - **English Name:** Abaya
-- **Bengali Name:** বোরকা
-- **English Description:** Elegant and modest abayas designed with contemporary styles and premium fabrics.
-- **Bengali Description:** আধুনিক ডিজাইন এবং প্রিমিয়াম কাপড়ের তৈরি মার্জিত এবং শালীন বোরকা।
-- **Image Idea:** A full-length shot of a flowing Dubai Cherry or Kimono style abaya.
+- **Bengali Name:** আবায়া
+- **English Description:** Dubai Cherry, Crystal, and Kimono style stylish abayas.
+- **Bengali Description:** দুবাই চেরি, ক্রিস্টাল এবং কিমানো স্টাইলের আধুনিক আবায়া কালেকশন।
+- **Market Context:** Perceived as fashionable, modern, often front-open or gown-style modest wear. Distinct from traditional Borka.
 
-### 3. Gown (গাউন)
+### 3. Borka (বোরকা)
+**Slug:** `borkas`
+**Icon:** 🧥
+- **English Name:** Borka
+- **Bengali Name:** বোরকা
+- **English Description:** Traditional modest coat-style borkas for maximum coverage.
+- **Bengali Description:** শালীনতা বজায় রাখার জন্য ঐতিহ্যবাহী কোট বা ঢিলেঢালা বোরকা।
+- **Market Context:** Traditional black or solid color outerwear, typically simpler than Abayas.
+
+### 4. Khimar (খিমার)
+**Slug:** `khimars`
+**Icon:** 🧣
+- **English Name:** Khimar
+- **Bengali Name:** খিমার
+- **English Description:** Long, free-flowing head covering for ultimate modesty and comfort.
+- **Bengali Description:** পরিপূর্ণ পর্দার জন্য লম্বা এবং আরামদায়ক খিমার।
+- **Market Context:** Growing popularity for "full coverage" modest fashion in BD.
+
+### 5. Niqab (নিকাব)
+**Slug:** `niqabs`
+**Icon:** 🕶️
+- **English Name:** Niqab
+- **Bengali Name:** নিকাব
+- **English Description:** Breathable nose pieces and layer niqabs.
+- **Bengali Description:** আরামদায়ক এবং শ্বাসপ্রশ্বাসের উপযোগী নোজ পিস ও লেয়ার নিকাব।
+
+### 6. Modest Gown (মডেস্ট গাউন)
 **Slug:** `gowns`
 **Icon:** 👗
-- **English Name:** Gown
-- **Bengali Name:** গাউন
-- **English Description:** Exquisite party and bridal gowns crafted to make you stand out.
-- **Bengali Description:** পার্টি এবং বিয়ের জন্য তৈরি এক্সক্লুসিভ গাউন যা আপনাকে অনন্য করে তুলবে।
-- **Image Idea:** A luxurious party gown with intricate embroidery.
+- **English Name:** Modest Gown
+- **Bengali Name:** মডেস্ট গাউন
+- **English Description:** Non-transparent, loose-fitting party gowns.
+- **Bengali Description:** পার্টি বা বিশেষ অনুষ্ঠানের জন্য মার্জিত ও ঢিলেঢালা গাউন।
 
-### 4. Kammiz / Salwar Kameez (কামিজ)
-**Slug:** `kammiz`
+### 7. Kurti / Kammiz (কুর্তি/কামিজ)
+**Slug:** `kurtis`
 **Icon:** 👚
-- **English Name:** Salwar Kameez
-- **Bengali Name:** সালোয়ার কামিজ
-- **English Description:** Traditional and fusion salwar kameez sets for daily wear and festivals.
-- **Bengali Description:** নিত্যদিন এবং উৎসবের জন্য ঐতিহ্যবাহী এবং ফিউশন সালোয়ার কামিজ সেট।
-- **Image Idea:** A mannequin or model displaying a stylish 3-piece set.
+- **English Name:** Modest Kurti
+- **Bengali Name:** মডেস্ট কুর্তি
+- **English Description:** Long kurtis and salwar kameez sets for casual wear.
+- **Bengali Description:** ক্যাজুয়াল ব্যবহারের জন্য লম্বা কুর্তি এবং সালোয়ার কামিজ।
 
-### 5. Co-ords / Setups (কো-অর্ডস)
-**Slug:** `co-ords`
-**Icon:** 🧥
-- **English Name:** Co-ord Sets
-- **Bengali Name:** কো-অর্ড সেট
-- **English Description:** Trendy matching top and bottom sets for a chic and effortless look.
-- **Bengali Description:** স্মার্ট এবং সহজ লুকের জন্য ট্রেন্ডি ম্যাচিং টপ এবং বটম সেট।
-- **Image Idea:** A solid color modest tunic and pant set.
-
-### 6. Accessories (এক্সেসরিজ)
+### 8. Accessories (এক্সেসরিজ)
 **Slug:** `accessories`
 **Icon:** 👜
-- **English Name:** Accessories
-- **Bengali Name:** এক্সেসরিজ
-- **English Description:** Complete your modest look with our curated bags, jewelry, and hijab instruments.
-- **Bengali Description:** আমাদের ব্যাগ, গহনা এবং হিজাব অনুষঙ্গ দিয়ে আপনার সাজ পূর্ণ করুন।
-- **Image Idea:** A flat lay of a handbag, hijab pins, and a necklace.
-
-### 7. Essentials / Innerwear (এসেনশিয়ালস)
-**Slug:** `essentials`
-**Icon:** 🧣
-- **English Name:** Essentials
-- **Bengali Name:** এসেনশিয়ালস
-- **English Description:** Must-have modest essentials including undercaps, inners, and socks.
-- **Bengali Description:** আন্ডারক্যাপ, ইনার এবং মোজাসহ প্রয়োজনীয় মডেস্ট এসেনশিয়ালস।
-- **Image Idea:** A neatly arranged display of cotton undercaps and inner tees.
-
-### 8. Footwear (জুতা)
-**Slug:** `footwear`
-**Icon:** 👠
-- **English Name:** Footwear
-- **Bengali Name:** জুতা
-- **English Description:** Stylish and comfortable loafers, flats, and heels to complement your outfit.
-- **Bengali Description:** আপনার পোশাকের সাথে মানানসই স্টাইলিশ এবং আরামদায়ক লোফার, ফ্ল্যাট এবং হিল।
-- **Image Idea:** A pair of premium loafers or embellished flats.
+- **English Name:** Hijab Accessories
+- **Bengali Name:** হিজাব এক্সেসরিজ
+- **English Description:** Inner caps, pins, magnets, and underscarves.
+- **Bengali Description:** ইনার ক্যাপ, পিন, ম্যাগনেট এবং হিজাব বাধার প্রয়োজনীয় অনুষঙ্গ।
 
 ---
 
-## 💡 Usage Guide
-
-1.  **Go to Admin Panel** > **Categories**.
-2.  Click **"Add Category"**.
-3.  **Name (EN):** Copy the "English Name".
-4.  **Description (EN):** Copy the "English Description".
-5.  **Switch Tab to Bengali**.
-6.  **Name (BN):** Copy the "Bengali Name".
-7.  **Description (BN):** Copy the "Bengali Description".
-8.  **Icon:** Copy the Emoji.
-9.  **Image:** Upload a relevant high-quality image to the `categories/` folder.
+## 💡 Note on "Abaya" vs "Borka" in BD
+In the Bangladeshi context:
+*   **Abaya** typically refers to the more fashionable, Dubai-influenced, often front-open or intricately designed outer garments. They are often colorful or have stonework.
+*   **Borka** typically refers to the traditional, closed, coat-type outer garment, most commonly in black, focused purely on utility and coverage rather than fashion.
