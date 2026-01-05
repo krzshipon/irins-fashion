@@ -31,6 +31,8 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
+  localizedNames?: Record<string, string>;
+  localizedDescriptions?: Record<string, string>;
   icon?: string;
   image?: string;
   isActive: boolean;
@@ -50,6 +52,10 @@ export interface Product {
   image: string;
   images: string[];
   description?: string;
+  isNew?: boolean;
+  sizes?: string[]; // Legacy/Simple variant support
+  colors?: string[];
+  colorImages?: Record<string, string>;
   badges?: ProductBadge[];
   variants?: ColorVariant[];
 }

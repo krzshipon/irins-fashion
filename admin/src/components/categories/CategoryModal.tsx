@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     X,
     Upload,
@@ -13,6 +13,7 @@ import {
     Box
 } from "lucide-react";
 import { useDialog } from "@/components/Dialog";
+import { uploadService } from "@/services/upload.service";
 
 interface CategoryModalProps {
     isOpen: boolean;
@@ -30,13 +31,32 @@ export default function CategoryModal({
     isEdit = false
 }: CategoryModalProps) {
     const { showLoading, showSuccess, showError } = useDialog();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false); // Used only for loading state during final submit if needed
+
+    const [activeTab, setActiveTab] = useState<'en' | 'bn'>('en');
+
+    // Helper to safety get localized text
+    const getLocalized = (data: any, field: string, locale: string) => {
+        if (!data) return "";
+        if (field === 'name' && locale === 'en') return data.name || "";
+        if (field === 'description' && locale === 'en') return data.description || "";
+
+        const localized = field === 'name' ? data.localizedNames : data.localizedDescriptions;
+        return localized?.[locale] || "";
+    };
+
     const [formData, setFormData] = useState({
         name: "",
         slug: "",
         icon: "",
         image: "",
         description: "",
-        isActive: true
+        isActive: true,
+        localizedNames: { bn: "" } as Record<string, string>,
+        localizedDescriptions: { bn: "" } as Record<string, string>
     });
 
     useEffect(() => {
@@ -48,8 +68,12 @@ export default function CategoryModal({
                     icon: initialData.icon || "",
                     image: initialData.image || "",
                     description: initialData.description || "",
-                    isActive: initialData.isActive ?? true
+                    isActive: initialData.isActive ?? true,
+                    localizedNames: initialData.localizedNames || { bn: "" },
+                    localizedDescriptions: initialData.localizedDescriptions || { bn: "" }
                 });
+                setPreviewUrl(initialData.image || "");
+                setSelectedFile(null);
             } else {
                 // Reset for new entry
                 setFormData({
@@ -58,26 +82,68 @@ export default function CategoryModal({
                     icon: "📦",
                     image: "",
                     description: "",
-                    isActive: true
+                    isActive: true,
+                    localizedNames: { bn: "" },
+                    localizedDescriptions: { bn: "" }
                 });
+                setPreviewUrl("");
+                setSelectedFile(null);
             }
+            setActiveTab('en');
         }
     }, [isOpen, initialData, isEdit]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
 
-        // Auto-generate slug
-        if (name === "name") {
+        if (activeTab === 'en') {
             setFormData(prev => ({
                 ...prev,
-                slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+                [name]: value
             }));
+
+            // Auto-generate slug only from English name
+            if (name === "name") {
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: value,
+                    slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+                }));
+            }
+        } else {
+            // Handle Bengali updates
+            if (name === 'name') {
+                setFormData(prev => ({
+                    ...prev,
+                    localizedNames: { ...prev.localizedNames, bn: value }
+                }));
+            } else if (name === 'description') {
+                setFormData(prev => ({
+                    ...prev,
+                    localizedDescriptions: { ...prev.localizedDescriptions, bn: value }
+                }));
+            }
         }
+
+        // Image and Icon handle separately or shared? Icon is shared.
+        if (name === "image" || name === "icon" || name === "slug") {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+            // If user manually edits image URL
+            if (name === "image") {
+                setPreviewUrl(value);
+                setSelectedFile(null);
+            }
+        }
+    };
+
+    const getValue = (field: 'name' | 'description') => {
+        if (activeTab === 'en') {
+            return formData[field];
+        }
+        return field === 'name' ? formData.localizedNames.bn : formData.localizedDescriptions.bn;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -92,7 +158,25 @@ export default function CategoryModal({
         );
 
         try {
-            await onSave(formData);
+            let imageUrl = formData.image;
+
+            // Upload image if file selected
+            if (selectedFile) {
+                setIsUploading(true); // Optional visual cue
+                try {
+                    imageUrl = await uploadService.uploadImage(selectedFile);
+                } catch (uploadError) {
+                    console.error("Upload failed", uploadError);
+                    showError("Upload Failed", "Could not upload the image. Please try again.");
+                    setIsUploading(false);
+                    return;
+                }
+                setIsUploading(false);
+            }
+
+            // Save with the final image URL (either expected URL or newly uploaded one)
+            await onSave({ ...formData, image: imageUrl });
+
             showSuccess(
                 isEdit ? "Category Updated" : "Category Created",
                 `Category has been successfully ${isEdit ? 'updated' : 'created'}.`
@@ -100,6 +184,7 @@ export default function CategoryModal({
             onClose();
         } catch (error: any) {
             console.error(error);
+            setIsUploading(false);
 
             // Extract error message
             let errorMessage = "Failed to save category. Please check your connection and try again.";
@@ -154,6 +239,76 @@ export default function CategoryModal({
                             </h3>
 
                             <div className="bg-white/5 rounded-xl p-4 border border-white/5 flex flex-col md:flex-row gap-6">
+                                {/* Image Input - Storage Integrated */}
+                                <div className="flex-1 space-y-1.5">
+                                    <label className="text-xs font-medium text-gray-300">Featured Image</label>
+                                    <div className="relative group">
+                                        <div
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="relative w-full h-64 bg-black/30 rounded-lg border border-white/10 overflow-hidden flex items-center justify-center cursor-pointer hover:border-emerald-500/30 transition-all shadow-inner group-hover:bg-white/5"
+                                        >
+                                            {previewUrl ? (
+                                                <div
+                                                    className="absolute inset-0 bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
+                                                    style={{ backgroundImage: `url(${previewUrl})` }}
+                                                />
+                                            ) : (
+                                                <div className="flex items-center gap-2 text-gray-500 group-hover:text-emerald-400 transition-colors">
+                                                    <Upload size={18} />
+                                                    <span className="text-xs font-medium">Click to upload image</span>
+                                                </div>
+                                            )}
+
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                className="hidden"
+                                                accept="image/png, image/jpeg, image/jpg, image/webp"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        setSelectedFile(file);
+                                                        setPreviewUrl(URL.createObjectURL(file));
+                                                        // Clear manual image URL input so we know to use the file
+                                                        setFormData(prev => ({ ...prev, image: "" }));
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+
+                                        {previewUrl && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setPreviewUrl("");
+                                                    setSelectedFile(null);
+                                                    setFormData(prev => ({ ...prev, image: "" }));
+                                                    if (fileInputRef.current) fileInputRef.current.value = "";
+                                                }}
+                                                className="absolute -top-2 -right-2 p-1 bg-black/80 border border-white/10 text-white rounded-full hover:bg-red-500/80 transition-colors z-20 shadow-xl opacity-0 group-hover:opacity-100"
+                                            >
+                                                <X size={10} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* URL Fallback */}
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            name="image"
+                                            value={formData.image}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-1.5 bg-black/20 border border-white/10 rounded-lg text-gray-300 text-xs focus:border-emerald-500/50 focus:outline-none transition-colors placeholder:text-gray-600"
+                                            placeholder="Or paste image URL here..."
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Divider */}
+                                <div className="hidden md:block w-px bg-white/10 my-1 self-stretch" />
+
                                 {/* Icon Input - Compact */}
                                 <div className="flex flex-row md:flex-col gap-3 min-w-[120px]">
                                     <div className="space-y-1.5 flex-1">
@@ -176,83 +331,67 @@ export default function CategoryModal({
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Divider */}
-                                <div className="hidden md:block w-px bg-white/10 my-1 self-stretch" />
-
-                                {/* Image Input - Compact */}
-                                <div className="flex-1 space-y-1.5">
-                                    <label className="text-xs font-medium text-gray-300">Featured Image</label>
-                                    <div className="relative group">
-                                        <div className="relative w-full h-24 bg-black/30 rounded-lg border border-white/10 overflow-hidden flex items-center justify-center cursor-pointer hover:border-emerald-500/30 transition-all shadow-inner">
-                                            {formData.image ? (
-                                                <div
-                                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                                                    style={{ backgroundImage: `url(${formData.image})` }}
-                                                />
-                                            ) : (
-                                                <div className="flex items-center gap-2 text-gray-500 hover:text-gray-400 transition-colors">
-                                                    <Upload size={18} />
-                                                    <span className="text-xs font-medium">Upload or paste URL</span>
-                                                </div>
-                                            )}
-
-                                            <input
-                                                type="text"
-                                                name="image"
-                                                value={formData.image}
-                                                onChange={handleChange}
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                placeholder="Image URL"
-                                            />
-
-                                            {/* Hover instructions overlay */}
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity duration-200">
-                                                <span className="text-xs text-white font-medium">Click to change image</span>
-                                            </div>
-                                        </div>
-
-                                        {formData.image && (
-                                            <button
-                                                type="button"
-                                                onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
-                                                className="absolute -top-2 -right-2 p-1 bg-black/80 border border-white/10 text-white rounded-full hover:bg-red-500/80 transition-colors z-20 shadow-xl opacity-0 group-hover:opacity-100"
-                                            >
-                                                <X size={10} />
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
                         <div className="h-px bg-white/5" />
 
                         {/* General Info Section */}
+                        <div className="h-px bg-white/5" />
+
+                        {/* General Info Section */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                                <FileText size={14} /> Basic Information
-                            </h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                                    <FileText size={14} /> Basic Information
+                                </h3>
+
+                                {/* Language Tabs */}
+                                <div className="flex bg-black/40 p-1 rounded-lg border border-white/10">
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('en')}
+                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activeTab === 'en'
+                                                ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
+                                                : 'text-gray-500 hover:text-gray-300'
+                                            }`}
+                                    >
+                                        English
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('bn')}
+                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activeTab === 'bn'
+                                                ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
+                                                : 'text-gray-500 hover:text-gray-300'
+                                            }`}
+                                    >
+                                        Bengali
+                                    </button>
+                                </div>
+                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Category Name</label>
+                                    <label className="text-sm font-medium text-gray-300">
+                                        Category Name <span className="text-emerald-500/50 text-xs ml-1">({activeTab.toUpperCase()})</span>
+                                    </label>
                                     <div className="relative">
                                         <Type className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
                                         <input
                                             type="text"
                                             name="name"
-                                            value={formData.name}
+                                            value={getValue('name')}
                                             onChange={handleChange}
-                                            required
+                                            required={activeTab === 'en'}
                                             className="w-full pl-10 pr-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-white focus:border-emerald-500/50 focus:outline-none transition-colors placeholder:text-gray-600"
-                                            placeholder="e.g. Summer Collection"
+                                            placeholder={activeTab === 'en' ? "e.g. Summer Collection" : "উদাহরণ: গ্রীষ্মকালীন সংগ্রহ"}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">URL Slug</label>
+                                    <label className="text-sm font-medium text-gray-300">URL Slug <span className="text-gray-600 text-xs">(Global)</span></label>
                                     <div className="relative">
                                         <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
                                         <input
@@ -267,14 +406,16 @@ export default function CategoryModal({
                                 </div>
 
                                 <div className="md:col-span-2 space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Description</label>
+                                    <label className="text-sm font-medium text-gray-300">
+                                        Description <span className="text-emerald-500/50 text-xs ml-1">({activeTab.toUpperCase()})</span>
+                                    </label>
                                     <textarea
                                         name="description"
-                                        value={formData.description}
+                                        value={getValue('description')}
                                         onChange={handleChange}
                                         rows={3}
                                         className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white focus:border-emerald-500/50 focus:outline-none transition-colors placeholder:text-gray-600 resize-none"
-                                        placeholder="Add a brief description for SEO and user guidance..."
+                                        placeholder={activeTab === 'en' ? "Add a brief description..." : "সংক্ষিপ্ত বিবরণ যোগ করুন..."}
                                     />
                                 </div>
                             </div>
@@ -329,10 +470,20 @@ export default function CategoryModal({
                         <button
                             type="submit"
                             form="categoryForm"
-                            className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-500 hover:to-teal-500 hover:shadow-lg hover:shadow-emerald-900/20 transition-all font-medium text-sm flex items-center gap-2"
+                            disabled={isUploading}
+                            className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-500 hover:to-teal-500 hover:shadow-lg hover:shadow-emerald-900/20 transition-all font-medium text-sm flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {isEdit ? <CheckCircle size={16} /> : <Upload size={16} />}
-                            {isEdit ? "Update Category" : "Create Category"}
+                            {isUploading ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    Uploading...
+                                </>
+                            ) : (
+                                <>
+                                    {isEdit ? <CheckCircle size={16} /> : <Upload size={16} />}
+                                    {isEdit ? "Update Category" : "Create Category"}
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ import { Category } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
 
 export default function CategorySection() {
-    const { t } = useLocalization();
+    const { t, locale } = useLocalization();
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
@@ -41,7 +41,9 @@ export default function CategorySection() {
                                 style={{ objectFit: 'cover' }}
                             />
                         </div>
-                        <span className={styles.label}>{t(`categories.${category.slug}`) || category.name}</span>
+                        <span className={styles.label}>
+                            {category.localizedNames?.[locale] || category.name}
+                        </span>
                     </Link>
                 ))}
             </div>

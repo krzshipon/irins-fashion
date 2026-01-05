@@ -334,52 +334,70 @@ export type FilterOptions = {
 
 export type SortOption = 'price_asc' | 'price_desc' | 'newest';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'; // Ensure this matches used port
+
 export const getProductsBySlug = async (
     slug: string,
     filters?: FilterOptions,
     sort?: SortOption
-): Promise<{ categoryName: string, products: Product[] }> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
+): Promise<{ categoryName: string; products: Product[]; category?: any }> => {
+    try {
+        const res = await fetch(`${API_URL}/products?category=${slug}`, { cache: 'no-store' });
 
-    const categoryName = slugToCategoryMap[slug.toLowerCase()];
+        if (!res.ok) {
+            // Fallback to mock if API fails during transition? No, fail loud or return empty.
+            // If 404/invalid, return empty.
+            return { categoryName: '', products: [] };
+        }
 
-    if (!categoryName) {
+        const data = await res.json();
+        const categoryData = data.category;
+
+        if (!categoryData) {
+            return { categoryName: '', products: [] };
+        }
+
+        let products = data.products as Product[];
+
+        // Filtering (Client-side for now to match interface)
+        if (filters) {
+            if (filters.minPrice !== undefined) {
+                products = products.filter(p => p.price >= filters.minPrice!);
+            }
+            if (filters.maxPrice !== undefined) {
+                products = products.filter(p => p.price <= filters.maxPrice!);
+            }
+            if (filters.isNew) {
+                products = products.filter(p => (p as any).isNew); // isNew might need casting if not in backend types yet
+            }
+        }
+
+        // Sorting
+        if (sort) {
+            products.sort((a, b) => {
+                switch (sort) {
+                    case 'price_asc':
+                        return a.price - b.price;
+                    case 'price_desc':
+                        return b.price - a.price;
+                    case 'newest':
+                        // @ts-ignore
+                        return ((b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        return {
+            categoryName: categoryData.name,
+            products,
+            category: categoryData
+        };
+    } catch (error) {
+        console.error("Error in getProductsBySlug", error);
         return { categoryName: '', products: [] };
     }
-
-    let products = MOCK_PRODUCTS.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
-
-    // Filtering
-    if (filters) {
-        if (filters.minPrice !== undefined) {
-            products = products.filter(p => p.price >= filters.minPrice!);
-        }
-        if (filters.maxPrice !== undefined) {
-            products = products.filter(p => p.price <= filters.maxPrice!);
-        }
-        if (filters.isNew) {
-            products = products.filter(p => p.isNew);
-        }
-    }
-
-    // Sorting
-    if (sort) {
-        products.sort((a, b) => {
-            switch (sort) {
-                case 'price_asc':
-                    return a.price - b.price;
-                case 'price_desc':
-                    return b.price - a.price;
-                case 'newest':
-                    return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0); // Put New items first
-                default:
-                    return 0;
-            }
-        });
-    }
-
-    return { categoryName, products };
 };
 
 export const getProductsByCategory = async (category: string, limit: number = 4): Promise<Product[]> => {

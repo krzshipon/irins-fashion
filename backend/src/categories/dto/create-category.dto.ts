@@ -25,4 +25,10 @@ export class CreateCategoryDto {
     @IsOptional()
     @IsBoolean()
     isActive?: boolean;
+
+    @IsOptional()
+    localizedNames?: Record<string, string>;
+
+    @IsOptional()
+    localizedDescriptions?: Record<string, string>;
 }

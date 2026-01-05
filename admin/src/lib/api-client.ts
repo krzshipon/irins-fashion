@@ -11,12 +11,25 @@ class ApiClient {
                 'Content-Type': 'application/json',
             },
             timeout: 10000,
+            withCredentials: true, // Send cookies with cross-origin requests
         });
 
         this.setupInterceptors();
     }
 
     private setupInterceptors() {
+        this.client.interceptors.request.use(
+            (config) => {
+                // Get token from storage (set during login)
+                const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+                if (token && config.headers) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
+
         this.client.interceptors.response.use(
             (response: AxiosResponse) => response,
             (error) => {

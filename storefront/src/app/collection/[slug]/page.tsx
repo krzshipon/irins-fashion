@@ -6,6 +6,7 @@ import styles from './page.module.css';
 
 import CategoryFilters from '@/components/category/CategoryFilters';
 import SortSelect from '@/components/category/SortSelect';
+import CategoryHeader from '@/components/category/CategoryHeader';
 
 // Type for the page props
 type Props = {
@@ -39,20 +40,18 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     const isNew = resolvedSearchParams.isNew === 'true';
     const sort = resolvedSearchParams.sort as SortOption;
 
-    const { categoryName, products } = await getProductsBySlug(slug, { minPrice, maxPrice, isNew }, sort);
+    const { categoryName, products, category } = await getProductsBySlug(slug, { minPrice, maxPrice, isNew }, sort);
 
     if (!categoryName) {
         notFound();
     }
 
+    // Prepare a fallback category object if only name is returned (legacy/mock support)
+    const categoryObj = category || { name: categoryName, localizedNames: {} };
+
     return (
         <div className={`container ${styles.page}`}>
-            <header className={styles.header}>
-                <div className={styles.breadcrumbs}>
-                    <span>Home</span> / <span>Collection</span> / <span className={styles.active}>{categoryName}</span>
-                </div>
-                <h1 className={styles.title}>{categoryName} Collection</h1>
-            </header>
+            <CategoryHeader category={categoryObj} />
 
             <div className={styles.contentWrapper}>
                 <div className={styles.sidebar}>

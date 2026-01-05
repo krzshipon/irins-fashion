@@ -51,12 +51,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (response.user.role !== 'ADMIN' && response.user.role !== 'SUPERADMIN') {
             throw new Error('Access denied: You are not an admin');
         }
+
+        // Save token for API client
+        if (response.access_token) {
+            localStorage.setItem('authToken', response.access_token);
+        }
+
         setUser(response.user);
         router.push('/');
     };
 
     const logout = async () => {
         await authService.logout();
+        localStorage.removeItem('authToken');
         setUser(null);
         router.push('/login');
     };
