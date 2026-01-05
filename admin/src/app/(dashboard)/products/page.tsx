@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     Plus,
@@ -15,67 +15,33 @@ import {
 } from "lucide-react";
 import { useDialog } from "@/components/Dialog";
 
-// Mock data - will be replaced with API calls
-const MOCK_PRODUCTS = [
-    {
-        id: "h1",
-        sku: "IF-HJB-EM-001",
-        name: "Premium Silk Hijab - Emerald",
-        price: 1250,
-        originalPrice: 1500,
-        category: "Hijab",
-        stock: 45,
-        status: "active",
-        image: "/images/products/hijab-emerald.png",
-    },
-    {
-        id: "h2",
-        sku: "IF-HJB-DR-002",
-        name: "Chiffon Hijab - Dusty Rose",
-        price: 850,
-        category: "Hijab",
-        stock: 120,
-        status: "active",
-        image: "/images/products/hijab-rose.png",
-    },
-    {
-        id: "a1",
-        sku: "IF-ABY-BK-001",
-        name: "Classic Black Abaya",
-        price: 4500,
-        category: "Abaya",
-        stock: 25,
-        status: "active",
-        image: "/images/product-abaya.png",
-    },
-    {
-        id: "a2",
-        sku: "IF-ABY-EM-002",
-        name: "Embroidered Open Abaya",
-        price: 6500,
-        category: "Abaya",
-        stock: 0,
-        status: "out_of_stock",
-        image: "/images/product-abaya.png",
-    },
-    {
-        id: "d1",
-        sku: "IF-DRS-FL-001",
-        name: "Floral Maxi Dress",
-        price: 3500,
-        originalPrice: 3900,
-        category: "Borkha",
-        stock: 35,
-        status: "active",
-        image: "/images/product-dress.png",
-    },
-];
+import { productsService } from "@/services/products.service";
 
 export default function ProductsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const { showConfirm, showSuccess, showLoading } = useDialog();
-    const [products, setProducts] = useState(MOCK_PRODUCTS); // Changed to allow state update
+    const { showConfirm, showSuccess, showLoading, showError } = useDialog();
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const { products } = await productsService.getAll();
+            setProducts(products || []);
+        } catch (error) {
+            console.error(error);
+            showError("Error", "Failed to fetch products");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Initial Fetch
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
     const handleDelete = (id: string) => {
         showConfirm(
@@ -83,11 +49,14 @@ export default function ProductsPage() {
             "Are you sure you want to delete this product? This action cannot be undone.",
             async () => {
                 showLoading("Deleting Product", "Please wait while we delete the product...");
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                setProducts(prev => prev.filter(p => p.id !== id));
-                showSuccess("Product Deleted", "The product has been successfully deleted.");
+                try {
+                    await productsService.delete(id);
+                    setProducts(prev => prev.filter(p => p.id !== id));
+                    showSuccess("Product Deleted", "The product has been successfully deleted.");
+                } catch (error) {
+                    console.error(error);
+                    showError("Error", "Failed to delete product");
+                }
             }
         );
     };
@@ -96,11 +65,15 @@ export default function ProductsPage() {
         const matchesSearch =
             product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             product.sku.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = !selectedCategory || product.category === selectedCategory;
+        const matchesCategory = !selectedCategory || product.category?.name === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
-    const categories = [...new Set(products.map((p) => p.category))];
+    const categories = [...new Set(products.map((p) => p.category?.name).filter(Boolean))];
+
+    if (loading) {
+        return <div className="text-white p-8">Loading products...</div>;
+    }
 
     return (
         <div className="space-y-6">
@@ -145,7 +118,7 @@ export default function ProductsPage() {
                             className="px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-300 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none transition-all"
                         >
                             <option value="">All Categories</option>
-                            {categories.map((cat) => (
+                            {categories.map((cat: any) => (
                                 <option key={cat} value={cat}>
                                     {cat}
                                 </option>
@@ -189,8 +162,12 @@ export default function ProductsPage() {
                                 <tr key={product.id} className="hover:bg-white/5 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-gray-700/50 rounded-lg overflow-hidden flex items-center justify-center">
-                                                <Package className="w-6 h-6 text-gray-500" />
+                                            <div className="w-12 h-12 bg-gray-700/50 rounded-lg overflow-hidden flex items-center justify-center relative">
+                                                {product.image ? (
+                                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Package className="w-6 h-6 text-gray-500" />
+                                                )}
                                             </div>
                                             <div>
                                                 <p className="font-medium text-white text-sm">{product.name}</p>
@@ -201,7 +178,7 @@ export default function ProductsPage() {
                                         <span className="text-sm text-gray-400 font-mono">{product.sku}</span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-400">{product.category}</span>
+                                        <span className="text-sm text-gray-400">{product.category?.name || 'Uncategorized'}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div>
@@ -214,16 +191,21 @@ export default function ProductsPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`text-sm font-medium ${product.stock === 0 ? 'text-red-400' : product.stock < 20 ? 'text-amber-400' : 'text-white'}`}>
-                                            {product.stock}
+                                        {/* Stock aggregation if many variants? For now just use product.stock if available or sum variants? 
+                                            The model doesn't have direct 'stock', it's on variants.
+                                            Let's compute it.
+                                        */}
+                                        <span className={`text-sm font-medium ${(product.variants?.reduce((acc: number, v: any) => acc + v.stock, 0) || 0) === 0 ? 'text-red-400' : 'text-white'
+                                            }`}>
+                                            {product.variants?.reduce((acc: number, v: any) => acc + v.stock, 0) || 0}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${product.status === 'active'
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${product.status === 'Published'
                                             ? 'bg-green-500/10 text-green-400'
-                                            : 'bg-red-500/10 text-red-400'
+                                            : 'bg-white/5 text-gray-400'
                                             }`}>
-                                            {product.status === 'active' ? 'Active' : 'Out of Stock'}
+                                            {product.status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -250,25 +232,22 @@ export default function ProductsPage() {
                                     </td>
                                 </tr>
                             ))}
+                            {filteredProducts.length === 0 && (
+                                <tr>
+                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                                        No products found.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
 
-                {/* Pagination */}
+                {/* Pagination (Simplified for now) */}
                 <div className="px-6 py-4 bg-black/20 border-t border-white/10 flex items-center justify-between">
                     <p className="text-sm text-gray-400">
-                        Showing <span className="font-medium text-white">1</span> to <span className="font-medium text-white">{filteredProducts.length}</span> of{" "}
-                        <span className="font-medium text-white">{products.length}</span> products
+                        Total <span className="font-medium text-white">{filteredProducts.length}</span> products
                     </p>
-                    <div className="flex items-center gap-2">
-                        <button className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50" disabled>
-                            <ChevronLeft size={18} />
-                        </button>
-                        <button className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm font-medium">1</button>
-                        <button className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50" disabled>
-                            <ChevronRight size={18} />
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

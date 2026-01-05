@@ -73,12 +73,17 @@ model Product {
   sku           String           @unique
   name          String
   description   String?
+  localizedNames        Json?    // e.g. { "bn": "..." }
+  localizedDescriptions Json?    // e.g. { "bn": "..." }
   price         Decimal          @db.Decimal(10, 2)
   originalPrice Decimal?         @db.Decimal(10, 2)
+  discount      Json?            // e.g. { type: 'percentage', value: 10 }
+  sizeChart     String?          // URL to image
   currency      String           @default("BDT")
   categoryId    String
   image         String // Main display image
   isNew         Boolean          @default(false)
+  status        String           @default("Draft") // Draft, Published, Archived
   category      Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   images        ProductImage[]
   variants      ProductVariant[]

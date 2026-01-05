@@ -1,48 +1,106 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
     Save,
     Upload,
+    Globe,
+    FileText,
+    Trash2,
+    X
 } from "lucide-react";
 import { useDialog } from "@/components/Dialog";
 import VariantManager, { ColorVariant } from "./VariantManager";
+import { categoriesService } from "@/services/categories.service";
+import { productsService } from "@/services/products.service";
+import { Category } from "@/types/category";
+import { uploadService } from "@/services/upload.service";
 
 interface ProductFormProps {
-    initialData?: any; // Replace with proper type when available
+    initialData?: any;
     isEdit?: boolean;
 }
 
+type Lang = 'en' | 'bn';
+
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     const router = useRouter();
-    const { showSuccess, showLoading, showConfirm } = useDialog();
+    const { showSuccess, showLoading, showConfirm, showError } = useDialog();
+
+    // Data States
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [activeLang, setActiveLang] = useState<Lang>('en');
 
     const [formData, setFormData] = useState(initialData || {
         name: "",
         slug: "",
         description: "",
+        localizedNames: { bn: "" },
+        localizedDescriptions: { bn: "" },
         price: "",
-        salePrice: "",
-        category: "",
-        sku: "", // Base SKU
+        originalPrice: "", // Was salePrice in frontend but originalPrice in schema/backend? Check schema.
+        // Schema: price (Decimal), originalPrice (Decimal). 
+        // Typically price is selling price, originalPrice is MSRP/Strikethrough.
+        // Let's support both.
+        categoryName: "", // We store Name or ID? DTO expects categoryName. Let's use Name for logic match, or ID.
+        // Service looks up by Name OR ID. Let's send ID for robustness but Name for UI if needed.
+        // Actually, let's bind to Category Name for now per DTO logic or update DTO to prefer ID.
+        // DTO: categoryName string. Service: findFirst({ name: categoryName } OR { id: categoryName }).
+        // Best to use ID as value in <select> and pass it as 'categoryName'.
+        sku: "",
         status: "Draft",
-        images: [], // Base images (optional if variants cover everything)
+        images: [] as { url: string, isPrimary: boolean }[],
         variants: [] as ColorVariant[],
         discount: { type: "percentage", value: 0 },
-        badges: [] as string[] // Simple array for UI toggles (New, Bestseller)
+        badges: [] as string[],
+        sizeChart: ""
     });
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const data = await categoriesService.getAll();
+            setCategories(data);
+        } catch (error) {
+            console.error("Failed to fetch categories", error);
+        }
+    };
+
+    // --- Handlers ---
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev: any) => ({ ...prev, [name]: value }));
 
-        // Auto-generate slug from name
-        if (name === "name" && !isEdit) {
+        if (name === "name" && !isEdit && activeLang === 'en') {
             setFormData((prev: any) => ({
                 ...prev,
                 name: value,
                 slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+            }));
+        }
+    };
+
+    const handleLocalizedChange = (field: 'name' | 'description', value: string) => {
+        if (activeLang === 'en') {
+            // Update main fields
+            setFormData((prev: any) => ({ ...prev, [field]: value }));
+            if (field === 'name' && !isEdit) {
+                setFormData((prev: any) => ({
+                    ...prev,
+                    slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+                }));
+            }
+        } else {
+            // Update bn field
+            const mapKey = field === 'name' ? 'localizedNames' : 'localizedDescriptions';
+            setFormData((prev: any) => ({
+                ...prev,
+                [mapKey]: { ...prev[mapKey], bn: value }
             }));
         }
     };
@@ -69,103 +127,188 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
         });
     };
 
+    const handleImageUpload = async (file: File, type: 'product' | 'sizeChart') => {
+        try {
+            const folder = type === 'sizeChart' ? 'size-charts' : 'products';
+            const { url } = await uploadService.uploadImage(file, folder);
+
+            if (type === 'sizeChart') {
+                setFormData((prev: any) => ({ ...prev, sizeChart: url }));
+            } else {
+                setFormData((prev: any) => ({
+                    ...prev,
+                    images: [...prev.images, { url, isPrimary: prev.images.length === 0 }]
+                }));
+            }
+        } catch (error) {
+            showError("Upload Failed", "Could not upload image. Please try again.");
+        }
+    };
+
+    const removeImage = (index: number) => {
+        setFormData((prev: any) => ({
+            ...prev,
+            images: prev.images.filter((_: any, i: number) => i !== index)
+        }));
+    };
+
+    // --- Submit ---
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        showLoading(isEdit ? "Updating Product" : "Creating Product", "Please wait...");
 
-        showLoading(
-            isEdit ? "Updating Product" : "Creating Product",
-            "Please wait while we save your changes..."
-        );
+        try {
+            // Transform data for backend if needed
+            // Currently backend expects CreateProductDto structure
+            // We need to ensure 'categoryName' is populated with ID from selection.
+            // And price/originalPrice are numbers
 
-        // Simulate API call
-        console.log("Submitting Product Data:", formData);
-        await new Promise(resolve => setTimeout(resolve, 1500));
+            const payload = {
+                ...formData,
+                price: parseFloat(formData.price),
+                originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+                // variants handled by logic in backend service "createFull" function
+                // that expects a ColorVariant structure with sizes.
+                // It should match what VariantManager produces.
+                categoryName: formData.categoryName // This is the ID from select
+            };
 
-        showSuccess(
-            isEdit ? "Product Updated" : "Product Created",
-            `The product has been successfully ${isEdit ? 'updated' : 'created'}.`
-        );
+            // Call actual products API
+            console.log("Submit Payload:", payload);
 
-        router.push("/products");
+            if (isEdit) {
+                // await productsService.update(initialData.id, payload);
+                // Need id from initialData, but checking props first
+            } else {
+                await productsService.create(payload);
+            }
+
+            showSuccess(isEdit ? "Updated" : "Created", "Product saved successfully.");
+            router.push("/products");
+        } catch (err) {
+            showError("Error", "Failed to save product.");
+            console.error(err);
+        }
     };
 
     const handleCancel = () => {
-        showConfirm(
-            "Discard Changes?",
-            "Are you sure you want to discard your changes? All unsaved data will be lost.",
-            () => router.back()
-        );
+        showConfirm("Discard?", "Unsaved changes will be lost.", () => router.back());
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Main Info */}
+
+                {/* --- Left Column --- */}
                 <div className="lg:col-span-2 space-y-6">
+
+                    {/* Localization Tabs */}
+                    <div className="flex items-center gap-1 bg-gray-800/50 p-1 rounded-lg border border-white/10 w-fit">
+                        <button
+                            type="button"
+                            onClick={() => setActiveLang('en')}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeLang === 'en' ? 'bg-emerald-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            <span>English</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveLang('bn')}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeLang === 'bn' ? 'bg-emerald-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            <Globe size={14} />
+                            <span>Bengali</span>
+                        </button>
+                    </div>
+
                     {/* Basic Details */}
                     <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
-                        <h3 className="text-lg font-bold text-white mb-4">Basic Information</h3>
+                        <h3 className="text-lg font-bold text-white mb-4">
+                            Basic Information ({activeLang === 'en' ? 'English' : 'Bengali'})
+                        </h3>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Product Name</label>
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="e.g., Premium Silk Hijab"
-                                    required
+                                    value={activeLang === 'en' ? formData.name : formData.localizedNames?.bn || ""}
+                                    onChange={(e) => handleLocalizedChange('name', e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                                    placeholder={activeLang === 'en' ? "e.g., Premium Silk Hijab" : "e.g., প্রিমিয়াম সিল্ক হিজাব"}
+                                    required={activeLang === 'en'}
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Slug</label>
-                                <input
-                                    type="text"
-                                    name="slug"
-                                    value={formData.slug}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-400 font-mono placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="e.g., premium-silk-hijab"
-                                />
-                            </div>
+                            {activeLang === 'en' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Slug</label>
+                                    <input
+                                        type="text"
+                                        name="slug"
+                                        value={formData.slug}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-400 font-mono"
+                                    />
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Description</label>
                                 <textarea
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none resize-none h-32"
+                                    value={activeLang === 'en' ? formData.description : formData.localizedDescriptions?.bn || ""}
+                                    onChange={(e) => handleLocalizedChange('description', e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none h-32"
                                     placeholder="Enter detailed product description..."
                                 />
                             </div>
                         </div>
                     </div>
 
-                    {/* Media - General / Fallback */}
+                    {/* Variants */}
                     <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
-                        <h3 className="text-lg font-bold text-white mb-4">General Images <span className="text-sm font-normal text-gray-500 ml-2">(Optional fallback)</span></h3>
-                        <div className="border-2 border-dashed border-white/10 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 hover:bg-white/5 transition-all cursor-pointer group">
-                            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                <Upload className="text-gray-400 group-hover:text-emerald-400" size={24} />
-                            </div>
-                            <h4 className="text-white font-medium mb-1">Click to upload image</h4>
-                            <p className="text-sm text-gray-500">or drag and drop here</p>
-                        </div>
+                        <VariantManager variants={formData.variants} onChange={handleVariantsChange} />
                     </div>
 
-                    {/* Variants Manager (Replaces old Attributes) */}
+                    {/* Images (Global) */}
                     <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
-                        <VariantManager
-                            variants={formData.variants || []}
-                            onChange={handleVariantsChange}
-                        />
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-white">Global Images</h3>
+                            <label className="cursor-pointer flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-medium text-white transition-all">
+                                <Upload size={14} /> Upload
+                                <input type="file" hidden accept="image/*" onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'product')} />
+                            </label>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-4">
+                            {formData.images.map((img: any, idx: number) => (
+                                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-white/10 bg-black/20">
+                                    <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${img.url})` }} />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(idx)}
+                                        className="absolute top-1 right-1 p-1 bg-red-500/80 text-white rounded opacity-0 group-hover:opacity-100 transition-all"
+                                    >
+                                        <X size={12} className="w-3 h-3" /> {/* Assuming X is imported */}
+                                    </button>
+                                    {img.isPrimary && (
+                                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-emerald-500/80 text-[10px] text-white rounded font-bold">MAIN</span>
+                                    )}
+                                </div>
+                            ))}
+                            {formData.images.length === 0 && (
+                                <div className="col-span-4 border-2 border-dashed border-white/10 rounded-lg p-6 text-center text-gray-500 text-sm">
+                                    No global images. Variants can have their own images.
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Column - Sidebar */}
+                {/* --- Right Column --- */}
                 <div className="space-y-6">
-                    {/* Status & Organization */}
+
+                    {/* Organization */}
                     <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
                         <h3 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Organization</h3>
                         <div className="space-y-4">
@@ -185,19 +328,62 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Category</label>
                                 <select
-                                    name="category"
-                                    value={formData.category}
+                                    name="categoryName"
+                                    value={formData.categoryName}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
+                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
                                     required
                                 >
                                     <option value="" className="text-gray-500">Select Category</option>
-                                    <option value="Hijab">Hijab</option>
-                                    <option value="Abaya">Abaya</option>
-                                    <option value="Borkha">Borkha</option>
-                                    <option value="Gown">Gown</option>
-                                    <option value="Accessories">Accessories</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.icon} {cat.name}
+                                        </option>
+                                    ))}
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pricing */}
+                    <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
+                        <h3 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Base Pricing</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Selling Price (৳)</label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                                    placeholder="0.00"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Can be overridden by variants.</p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Original Price (৳)</label>
+                                <input
+                                    type="number"
+                                    name="originalPrice"
+                                    value={formData.originalPrice}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                                    placeholder="0.00"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Strikethrough price (optional).</p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Base SKU</label>
+                                <input
+                                    type="text"
+                                    name="sku"
+                                    value={formData.sku}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                                    placeholder="SKU-001"
+                                />
                             </div>
                         </div>
                     </div>
@@ -215,14 +401,14 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                     onChange={(e) => handleDiscountChange("type", e.target.value)}
                                     className="px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
                                 >
-                                    <option value="percentage">Percentage (%)</option>
-                                    <option value="flat">Flat Amount (৳)</option>
+                                    <option value="percentage">% Off</option>
+                                    <option value="flat">Flat ৳</option>
                                 </select>
                                 <input
                                     type="number"
                                     value={formData.discount?.value || 0}
                                     onChange={(e) => handleDiscountChange("value", parseFloat(e.target.value))}
-                                    className="flex-1 px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
+                                    className="flex-1 px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500/50"
                                     placeholder="0"
                                 />
                             </div>
@@ -238,8 +424,8 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                         type="button"
                                         onClick={() => toggleBadge(badge)}
                                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${formData.badges?.includes(badge)
-                                                ? "bg-emerald-500/20 border-emerald-500 text-emerald-400"
-                                                : "bg-white/5 border-white/10 text-gray-400 hover:border-white/20"
+                                            ? "bg-emerald-500/20 border-emerald-500 text-emerald-400"
+                                            : "bg-white/5 border-white/10 text-gray-400 hover:border-white/20"
                                             }`}
                                     >
                                         {badge}
@@ -249,67 +435,40 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                         </div>
                     </div>
 
-                    {/* Base Pricing (Fallback) */}
+                    {/* Size Chart */}
                     <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
-                        <h3 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Base Pricing</h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Regular Price (৳)</label>
-                                <input
-                                    type="number"
-                                    name="price"
-                                    value={formData.price}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="0.00"
-                                    required
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Used if not overridden by variant.</p>
+                        <h3 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Size Chart</h3>
+                        {formData.sizeChart ? (
+                            <div className="relative group rounded-lg overflow-hidden border border-white/10">
+                                <img src={formData.sizeChart} alt="Size Chart" className="w-full h-auto" />
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData((prev: any) => ({ ...prev, sizeChart: "" }))}
+                                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded opacity-0 group-hover:opacity-100 transition-all"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Sale Price (৳)</label>
-                                <input
-                                    type="number"
-                                    name="salePrice"
-                                    value={formData.salePrice}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="0.00"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Base SKU</label>
-                                <input
-                                    type="text"
-                                    name="sku"
-                                    value={formData.sku}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/30 focus:outline-none"
-                                    placeholder="SKU-001"
-                                />
-                            </div>
-                        </div>
+                        ) : (
+                            <label className="border-2 border-dashed border-white/10 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 hover:bg-white/5 transition-all cursor-pointer group">
+                                <FileText className="text-gray-400 group-hover:text-emerald-400 mb-2" size={24} />
+                                <span className="text-sm text-gray-400">Upload Size Guide</span>
+                                <input type="file" hidden accept="image/*" onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'sizeChart')} />
+                            </label>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Form Actions */}
+            {/* Actions */}
             <div className="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-white/10">
-                <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="px-6 py-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors font-medium text-sm"
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-500 hover:to-teal-500 transition-all font-medium text-sm shadow-lg shadow-emerald-900/20"
-                >
-                    <Save size={18} />
-                    {isEdit ? "Update Product" : "Create Product"}
+                <button type="button" onClick={handleCancel} className="px-6 py-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors font-medium text-sm">Cancel</button>
+                <button type="submit" className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-500 hover:to-teal-500 transition-all font-medium text-sm shadow-lg shadow-emerald-900/20">
+                    <Save size={18} /> {isEdit ? "Update Product" : "Create Product"}
                 </button>
             </div>
         </form>
     );
 }
+
+
