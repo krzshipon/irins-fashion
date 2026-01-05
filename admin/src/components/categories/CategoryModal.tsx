@@ -98,6 +98,7 @@ export default function CategoryModal({
                 setFormData(prev => ({
                     ...prev,
                     name: value,
+                    localizedNames: { ...prev.localizedNames, en: value },
                     // Auto-generate slug from English name
                     slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
                 }));
