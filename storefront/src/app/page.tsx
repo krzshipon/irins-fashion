@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { getFeaturedProducts } from '@/services/api/products';
@@ -19,8 +19,13 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate fetches (React Strict Mode calls useEffect twice in dev)
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const loadData = async () => {
       try {
         const [productsData, bannersData, categoriesData] = await Promise.all([
@@ -94,7 +99,7 @@ export default function Home() {
       )}
 
       <section className="container">
-        <CategorySection />
+        <CategorySection categories={categories} />
       </section>
 
       <section className={`container ${styles.section}`}>

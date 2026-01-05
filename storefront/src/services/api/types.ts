@@ -100,10 +100,8 @@ export interface Address {
   id: string;
   label: string; // "Home", "Work", etc.
   recipientName: string;
-  street: string;
-  city: string;
+  address: string; // Full address string
   division: string;
-  postalCode: string;
   phone: string;
   isDefault: boolean;
 }

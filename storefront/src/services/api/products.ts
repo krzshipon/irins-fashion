@@ -311,10 +311,80 @@ export const MOCK_PRODUCTS: Product[] = [
     },
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+// Helper function to transform backend product data to frontend Product interface
+const transformProduct = (backendProduct: any): Product => {
+    // Get primary image: first from images array, or from first color's images, or fallback
+    let primaryImage = '/images/placeholder-product.png';
+    if (backendProduct.images && backendProduct.images.length > 0) {
+        primaryImage = backendProduct.images[0].url || backendProduct.images[0];
+    } else if (backendProduct.colors && backendProduct.colors.length > 0) {
+        const firstColor = backendProduct.colors[0];
+        if (firstColor.images && firstColor.images.length > 0) {
+            primaryImage = firstColor.images[0].url || firstColor.images[0];
+        }
+    }
+
+    // Build images array
+    const images: string[] = [];
+    if (backendProduct.images) {
+        images.push(...backendProduct.images.map((img: any) => img.url || img));
+    }
+
+    // Get category name
+    const categoryName = backendProduct.category?.name || '';
+
+    return {
+        id: backendProduct.id,
+        sku: backendProduct.sku,
+        name: backendProduct.name,
+        price: backendProduct.price,
+        originalPrice: backendProduct.originalPrice,
+        discount: backendProduct.discount,
+        currency: 'BDT',
+        category: categoryName,
+        image: primaryImage,
+        images: images,
+        description: backendProduct.description,
+        badges: backendProduct.badges?.map((b: any) => ({
+            type: b.type,
+            text: b.text,
+            color: b.color,
+            textColor: b.textColor
+        })) || [],
+        variants: backendProduct.colors?.map((color: any) => ({
+            id: color.id,
+            colorName: color.name,
+            colorCode: color.hexCode,
+            images: color.images?.map((img: any) => img.url || img) || [],
+            sizes: color.variants?.map((v: any) => ({
+                id: v.id,
+                size: v.size,
+                price: String(v.price || backendProduct.price),
+                stock: String(v.stock || 0),
+                sku: v.sku || backendProduct.sku
+            })) || []
+        })) || []
+    };
+};
+
 export const getFeaturedProducts = async (): Promise<Product[]> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return MOCK_PRODUCTS.filter(p => p.isNew).slice(0, 4);
+    try {
+        // Fetch from API - get newest products
+        const res = await fetch(`${API_URL}/products?take=8`, { cache: 'no-store' });
+        if (!res.ok) {
+            console.error('Failed to fetch featured products');
+            return MOCK_PRODUCTS.filter(p => p.isNew).slice(0, 4); // Fallback to mock
+        }
+        const response = await res.json();
+        // API wraps response in { statusCode, message, data: { products } }
+        const rawProducts = response.data?.products || response.products || [];
+        return rawProducts.map(transformProduct).slice(0, 4);
+    } catch (error) {
+        console.error('Error fetching featured products:', error);
+        return MOCK_PRODUCTS.filter(p => p.isNew).slice(0, 4); // Fallback to mock
+    }
 };
 
 // Helper to map URL slugs to Category names
@@ -334,8 +404,6 @@ export type FilterOptions = {
 
 export type SortOption = 'price_asc' | 'price_desc' | 'newest';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'; // Ensure this matches used port
-
 export const getProductsBySlug = async (
     slug: string,
     filters?: FilterOptions,
@@ -350,14 +418,16 @@ export const getProductsBySlug = async (
             return { categoryName: '', products: [] };
         }
 
-        const data = await res.json();
-        const categoryData = data.category;
+        const response = await res.json();
+        // API wraps response in { statusCode, message, data: { products, category } }
+        const responseData = response.data || response;
+        const categoryData = responseData.category;
 
         if (!categoryData) {
             return { categoryName: '', products: [] };
         }
 
-        let products = data.products as Product[];
+        let products = (responseData.products as any[] || []).map(transformProduct);
 
         // Filtering (Client-side for now to match interface)
         if (filters) {
@@ -400,6 +470,7 @@ export const getProductsBySlug = async (
     }
 };
 
+
 export const getProductsByCategory = async (categorySlug: string, limit: number = 4): Promise<Product[]> => {
     try {
         const res = await fetch(`${API_URL}/products?category=${categorySlug}&take=${limit}`, { cache: 'no-store' });
@@ -407,15 +478,10 @@ export const getProductsByCategory = async (categorySlug: string, limit: number 
             console.error(`Failed to fetch products for category ${categorySlug}`);
             return [];
         }
-        const data = await res.json();
-        // API response structure might be { products: [], meta: ... } or just [] or { category: ..., products: ... }
-        // Looking at getProductsBySlug, it expects { products: ... }
-        // Checking backend controller...
-        // Assuming backend returns { products: Product[] } or just Product[]
-        // Wait, getProductsBySlug uses /products?category=slug
-        // Let's assume the same endpoint.
-        // getProductsBySlug says: const data = await res.json(); const products = data.products;
-        return data.products || [];
+        const response = await res.json();
+        // API wraps response in { statusCode, message, data: { products } }
+        const rawProducts = response.data?.products || response.products || [];
+        return rawProducts.map(transformProduct);
     } catch (error) {
         console.error("Error fetching products by category:", error);
         return [];

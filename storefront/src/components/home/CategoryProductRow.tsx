@@ -13,15 +13,20 @@ interface CategoryProductRowProps {
     link: string; // Link to the full collection
 }
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getProductsByCategory } from '@/services/api/products';
 
 export default function CategoryProductRow({ titleKey, title, categorySlug, link }: CategoryProductRowProps) {
     const { t } = useLocalization();
     const [products, setProducts] = useState<Product[]>([]);
+    const hasFetched = useRef<string | null>(null);
 
     useEffect(() => {
+        // Prevent duplicate fetches (React Strict Mode calls useEffect twice in dev)
+        if (hasFetched.current === categorySlug) return;
+
         const fetchProducts = async () => {
+            hasFetched.current = categorySlug;
             const data = await getProductsByCategory(categorySlug, 4); // Limit 4
             setProducts(data);
         };
