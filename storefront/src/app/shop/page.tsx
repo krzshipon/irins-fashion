@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/common/ProductCard';
 import { getAllProducts, SortOption } from '@/services/api/products';
 import { Product } from '@/services/api/types';
@@ -15,36 +15,40 @@ import { Category } from '@/services/api/types'; // Added import
 
 export default function ShopPage() {
     const { dictionary: t, lang } = useLocalization(); // Destructure lang
+    const router = useRouter(); // Import useRouter
     const searchParams = useSearchParams();
     const collectionParam = searchParams?.get('collection');
     const sortParam = searchParams?.get('sort') as SortOption | null;
+    const categoriesParam = searchParams?.get('categories');
+    const minPriceParam = searchParams?.get('minPrice');
+    const maxPriceParam = searchParams?.get('maxPrice');
 
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]); // Changed type to Category[]
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [minPrice, setMinPrice] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    // Initial State from URL
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(
+        categoriesParam ? categoriesParam.split(',') : []
+    );
+    const [minPrice, setMinPrice] = useState(minPriceParam || '');
+    const [maxPrice, setMaxPrice] = useState(maxPriceParam || '');
     const [isNew, setIsNew] = useState(collectionParam === 'new');
     const [sortOption, setSortOption] = useState<SortOption | ''>(sortParam || '');
     const [loading, setLoading] = useState(true);
 
-    // Sync isNew with collection param
+    // Sync State with URL changes
     useEffect(() => {
+        setSelectedCategories(categoriesParam ? categoriesParam.split(',') : []);
+        setMinPrice(minPriceParam || '');
+        setMaxPrice(maxPriceParam || '');
         setIsNew(collectionParam === 'new');
-    }, [collectionParam]);
-
-    // Sync sortOption with sort param
-    useEffect(() => {
-        if (sortParam) {
-            setSortOption(sortParam);
-        }
-    }, [sortParam]);
+        setSortOption(sortParam || '');
+    }, [collectionParam, sortParam, categoriesParam, minPriceParam, maxPriceParam]);
 
     // Fetch Categories on Mount
     useEffect(() => {
         const fetchCategoriesData = async () => {
             const data = await getCategories();
-            // Sort by sortOrder
             const sorted = data.sort((a, b) => a.sortOrder - b.sortOrder);
             setCategories(sorted);
         };
@@ -69,16 +73,65 @@ export default function ShopPage() {
         fetchProducts();
     }, [selectedCategories, minPrice, maxPrice, isNew, sortOption]);
 
+    const updateUrlParams = (updates: Record<string, string | null | undefined>) => {
+        const params = new URLSearchParams(searchParams?.toString() || '');
+
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value === null || value === undefined || value === '') {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+        });
+
+        router.push(`?${params.toString()}`);
+    };
+
     const toggleCategory = (categoryName: string) => {
-        setSelectedCategories(prev =>
-            prev.includes(categoryName)
-                ? prev.filter(c => c !== categoryName)
-                : [...prev, categoryName]
-        );
+        const newCategories = selectedCategories.includes(categoryName)
+            ? selectedCategories.filter(c => c !== categoryName)
+            : [...selectedCategories, categoryName];
+
+        updateUrlParams({ categories: newCategories.length > 0 ? newCategories.join(',') : null });
     };
 
     const handlePriceFilter = () => {
-        // Trigger re-fetch (useEffect already listens to minPrice/maxPrice)
+        updateUrlParams({
+            minPrice: minPrice || null,
+            maxPrice: maxPrice || null
+        });
+    };
+
+    const clearFilters = () => {
+        // Clear everything but keep collection context if needed? 
+        // User asked for "reset" when going to new collection, implying global reset or context switch.
+        // "Clear All Filters" usually clears currently applied filters.
+        // Let's clear: categories, minPrice, maxPrice. Keep collection if it's "New Arrivals" context? 
+        // Actually, if I'm in "New Arrivals" page (collection=new), "Clear All" might mean clear that too OR clear additional filters.
+        // Let's assume it clears "user applied" filters.
+
+        const params = new URLSearchParams(searchParams?.toString() || '');
+        params.delete('categories');
+        params.delete('minPrice');
+        params.delete('maxPrice');
+        // If "isNew" is driven by collection=new, we might not want to clear 'collection' unless the user explicitly wants to leave that view.
+        // But the "isNew" checkbox toggles 'isNew' state locally in the previous code which didn't seem to update URL 'collection'.
+        // Wait, "Status" filter had a checkbox for "New Arrival".
+
+        if (params.get('collection') === 'new') {
+            // If we are in collection=new mode, maybe we don't clear it via "Clear All"? 
+            // But the checkbox below effectively toggles it.
+        }
+        // Let's just clear specific filters for now.
+        router.push(`?${params.toString()}`);
+    };
+
+    // Status Filter Handler
+    const handleStatusFilter = (checked: boolean) => {
+        // If checked, we might want to set collection=new or just a filter. 
+        // The previous code used collection=new to initialize isNew.
+        // Let's standarize on using 'collection' param for this since backend likely uses it or we mapped it.
+        updateUrlParams({ collection: checked ? 'new' : null });
     };
 
     return (
@@ -153,7 +206,7 @@ export default function ShopPage() {
                                 type="checkbox"
                                 className={styles.checkbox}
                                 checked={isNew}
-                                onChange={(e) => setIsNew(e.target.checked)}
+                                onChange={(e) => handleStatusFilter(e.target.checked)}
                             />
                             {t.products.newArrival}
                         </label>
@@ -163,12 +216,7 @@ export default function ShopPage() {
                     {(selectedCategories.length > 0 || minPrice || maxPrice || isNew) && (
                         <button
                             className={styles.clearBtn}
-                            onClick={() => {
-                                setSelectedCategories([]);
-                                setMinPrice('');
-                                setMaxPrice('');
-                                setIsNew(false);
-                            }}
+                            onClick={clearFilters}
                         >
                             Clear All Filters
                         </button>
