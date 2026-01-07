@@ -3,9 +3,14 @@
 import Link from 'next/link';
 import styles from './Footer.module.css';
 import { useLocalization } from '@/context/LocalizationContext';
+import { Category } from '@/services/api/types';
 
-export default function Footer() {
-    const { dictionary: t } = useLocalization();
+interface FooterProps {
+    categories?: Category[];
+}
+
+export default function Footer({ categories = [] }: FooterProps) {
+    const { dictionary: t, lang } = useLocalization();
 
     return (
         <footer className={styles.footer}>
@@ -18,8 +23,13 @@ export default function Footer() {
                     <h3>{t.footer.shop}</h3>
                     <ul>
                         <li><Link href="/shop">{t.footer.newArrivals}</Link></li>
-                        <li><Link href="/collection/abayas">{t.footer.abayas}</Link></li>
-                        <li><Link href="/collection/hijabs">{t.footer.hijabs}</Link></li>
+                        {categories.slice(0, 5).map(category => (
+                            <li key={category.id}>
+                                <Link href={`/collection/${category.slug}`}>
+                                    {lang === 'bn' ? category.localizedNames?.bn || category.name : category.name}
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className={styles.column}>
