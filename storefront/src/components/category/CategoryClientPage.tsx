@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/common/ProductCard';
 import { getProductsBySlug, SortOption } from '@/services/api/products';
@@ -25,49 +25,64 @@ export default function CategoryClientPage({ slug }: CategoryClientPageProps) {
     const sortParam = searchParams?.get('sort') as SortOption | null;
 
     // Local State
-    const [products, setProducts] = useState<Product[]>([]);
+    const [rawProducts, setRawProducts] = useState<Product[]>([]);
     const [category, setCategory] = useState<Category | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Derived state for the initial render / fast interaction
-    const [minPrice, setMinPrice] = useState(minPriceParam || '');
-    const [maxPrice, setMaxPrice] = useState(maxPriceParam || '');
-    const [isNew, setIsNew] = useState(isNewParam);
-    const [sortOption, setSortOption] = useState<SortOption | ''>(sortParam || '');
-
-    // Sync State with URL changes
-    useEffect(() => {
-        setMinPrice(minPriceParam || '');
-        setMaxPrice(maxPriceParam || '');
-        setIsNew(isNewParam);
-        setSortOption(sortParam || '');
-    }, [minPriceParam, maxPriceParam, isNewParam, sortParam]);
-
-    // Fetch Data
+    // Fetch Data (Only on SLUG change)
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const { products: fetchedProducts, category: fetchedCategory } = await getProductsBySlug(
-                slug,
-                {
-                    minPrice: minPriceParam ? Number(minPriceParam) : undefined,
-                    maxPrice: maxPriceParam ? Number(maxPriceParam) : undefined,
-                    isNew: isNewParam,
-                },
-                sortParam || undefined
-            );
+            // Fetch ALL products for this category (no filters passed to API)
+            const { products: fetchedProducts, category: fetchedCategory } = await getProductsBySlug(slug);
 
-            setProducts(fetchedProducts);
+            setRawProducts(fetchedProducts);
             setCategory(fetchedCategory);
             setLoading(false);
         };
         fetchData();
-    }, [slug, minPriceParam, maxPriceParam, isNewParam, sortParam]);
+    }, [slug]);
 
-    // Construct a fallback category object if we have data or if loading
-    // If loading and no category yet, we might want to show a skeleton or just wait.
-    // For now, let's render what we can.
+    // Derived Display Products (Client-side Filtering & Sorting)
+    const displayedProducts = useMemo(() => {
+        let result = [...rawProducts];
 
+        // 1. Filter by Price
+        if (minPriceParam) {
+            result = result.filter(p => p.price >= Number(minPriceParam));
+        }
+        if (maxPriceParam) {
+            result = result.filter(p => p.price <= Number(maxPriceParam));
+        }
+
+        // 2. Filter by Status
+        if (isNewParam) {
+            // Ensure 'isNew' property is populated correctly by API or derived in transformation
+            result = result.filter(p => p.isNew);
+        }
+
+        // 3. Sort
+        if (sortParam) {
+            result.sort((a, b) => {
+                switch (sortParam) {
+                    case 'price_asc':
+                        return a.price - b.price;
+                    case 'price_desc':
+                        return b.price - a.price;
+                    case 'newest':
+                        // Assuming isNew is boolean, sort true first
+                        return (Number(b.isNew) - Number(a.isNew));
+                    // Or if you have createdAt, use that. But currently utilizing isNew flag.
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        return result;
+    }, [rawProducts, minPriceParam, maxPriceParam, isNewParam, sortParam]);
+
+    // Construct a fallback category object
     const displayCategory = category || {
         id: '',
         name: slug.charAt(0).toUpperCase() + slug.slice(1),
@@ -88,7 +103,7 @@ export default function CategoryClientPage({ slug }: CategoryClientPageProps) {
                 <div className={styles.main}>
                     <div className={styles.toolbar}>
                         <div className={styles.count}>
-                            {loading ? 'Loading...' : `${products.length} Products Found`}
+                            {loading ? 'Loading...' : `${displayedProducts.length} Products Found`}
                         </div>
                         <SortSelect />
                     </div>
@@ -101,12 +116,12 @@ export default function CategoryClientPage({ slug }: CategoryClientPageProps) {
                     ) : (
                         <>
                             <div className={styles.grid}>
-                                {products.map((product) => (
+                                {displayedProducts.map((product) => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
                             </div>
 
-                            {products.length === 0 && (
+                            {displayedProducts.length === 0 && (
                                 <div className={styles.empty}>
                                     <p>No products match your filters.</p>
                                 </div>
