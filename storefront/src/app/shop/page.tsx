@@ -17,6 +17,7 @@ export default function ShopPage() {
     const { dictionary: t, lang } = useLocalization(); // Destructure lang
     const searchParams = useSearchParams();
     const collectionParam = searchParams?.get('collection');
+    const sortParam = searchParams?.get('sort') as SortOption | null;
 
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]); // Changed type to Category[]
@@ -24,13 +25,20 @@ export default function ShopPage() {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [isNew, setIsNew] = useState(collectionParam === 'new');
-    const [sortOption, setSortOption] = useState<SortOption | ''>('');
+    const [sortOption, setSortOption] = useState<SortOption | ''>(sortParam || '');
     const [loading, setLoading] = useState(true);
 
     // Sync isNew with collection param
     useEffect(() => {
         setIsNew(collectionParam === 'new');
     }, [collectionParam]);
+
+    // Sync sortOption with sort param
+    useEffect(() => {
+        if (sortParam) {
+            setSortOption(sortParam);
+        }
+    }, [sortParam]);
 
     // Fetch Categories on Mount
     useEffect(() => {

@@ -347,6 +347,7 @@ const transformProduct = (backendProduct: any): Product => {
         image: primaryImage,
         images: images,
         description: backendProduct.description,
+        isNew: backendProduct.isNew || backendProduct.badges?.some((b: any) => b.type === 'new'),
         badges: backendProduct.badges?.map((b: any) => ({
             type: b.type,
             text: b.text,
