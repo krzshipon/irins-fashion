@@ -17,17 +17,23 @@ export default function ProductCard({ product }: ProductCardProps) {
     const { t } = useLocalization();
     const { addToCart, cartItems } = useCart();
 
+    // Helper to get primary image
+    const primaryImage = product.images.find(img => img.isPrimary)?.url || product.images[0]?.url || '/images/placeholder-product.png';
+
+    // Helper to get default variant for cart (first color, first size)
+    const defaultColor = product.colors?.[0];
+    const defaultVariant = defaultColor?.variants?.[0];
+
     return (
         <div className={styles.card}>
             <div style={{ position: 'relative', height: '350px' }}>
-                <Link href={`/product/${product.sku}`} style={{ display: 'block', height: '100%', width: '100%' }}>
+                <Link href={`/product/${product.slug}`} style={{ display: 'block', height: '100%', width: '100%' }}>
                     <Image
-                        src={product.image}
+                        src={primaryImage}
                         alt={product.name}
                         fill
                         style={{ objectFit: 'cover' }}
                     />
-                    {/* Render Badges */}
                     {/* Render Badges */}
                     {(() => {
                         const allBadges = [...(product.badges || [])];
@@ -38,7 +44,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 ? `${product.discount.value}% OFF`
                                 : `৳${product.discount.value} OFF`;
 
+                            // Create a temporary badge object for display
                             allBadges.push({
+                                id: 'temp-discount',
+                                productId: product.id,
                                 type: 'discount',
                                 text: discountText
                             });
@@ -106,19 +115,19 @@ export default function ProductCard({ product }: ProductCardProps) {
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        const firstVariant = product.variants?.[0];
+                        // Add to cart with default variant if available
                         addToCart(product, {
-                            selectedColor: firstVariant?.colorName,
-                            selectedSize: firstVariant?.sizes?.[0]?.size
+                            selectedColor: defaultColor?.name,
+                            selectedSize: defaultVariant?.size
                         });
                     }}
                 >
                     <ShoppingBag size={20} />
                 </button>
             </div>
-            <Link href={`/product/${product.sku}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className={styles.cardContent}>
-                    <div className={styles.cardCategory}>{product.category}</div>
+                    <div className={styles.cardCategory}>{product.category?.name}</div>
                     <h3 className={styles.cardTitle}>{product.name}</h3>
                     <div className={styles.cardPrice}>
                         {product.originalPrice && product.originalPrice > product.price && (

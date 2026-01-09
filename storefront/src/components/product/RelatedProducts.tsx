@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Product } from '@/services/api/types';
-import { getProductsByCategory } from '@/services/api/products';
+import { getProductsBySlug } from '@/services/api/products';
 import ProductCard from '@/components/common/ProductCard';
 
 interface RelatedProductsProps {
@@ -15,7 +15,8 @@ export default function RelatedProducts({ category, currentProductId }: RelatedP
 
     useEffect(() => {
         const fetchRelated = async () => {
-            const items = await getProductsByCategory(category, 5);
+            // category prop is now passed as slug from page.tsx
+            const { products: items } = await getProductsBySlug(category);
             // Filter out current product
             setProducts(items.filter(p => p.id !== currentProductId).slice(0, 4));
         };

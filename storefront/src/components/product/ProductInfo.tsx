@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/services/api/types';
 import styles from './ProductDetails.module.css';
@@ -20,61 +20,58 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
 
     // --- Helper Logic for Variants ---
 
-    // Get the currently selected color variant object
-    const currentVariant = product.variants?.find(v => v.colorName === selectedColor);
+    // Get the currently selected color object
+    const currentColor = product.colors?.find(c => c.name === selectedColor);
 
-    // Get available sizes based on current variant
-    const availableSizes = currentVariant ? currentVariant.sizes : [];
+    // Get available sizes based on current color variants
+    const availableSizes = currentColor ? currentColor.variants : [];
 
     const [selectedSize, setSelectedSize] = useState<string | null>(() => {
         // Try to respect initialSize strictly first
         if (initialSize) {
             // Validate against current variant if exists
-            if (currentVariant) {
-                if (currentVariant.sizes.some(s => s.size === initialSize)) return initialSize;
+            if (currentColor) {
+                if (currentColor.variants.some(v => v.size === initialSize)) return initialSize;
             }
         }
 
         // Default to first available size
-        if (currentVariant && currentVariant.sizes.length > 0) {
-            return currentVariant.sizes[0].size;
+        if (currentColor && currentColor.variants.length > 0) {
+            return currentColor.variants[0].size;
         }
-        return null; // No fallback to legacy product.sizes
+        return null;
     });
 
-    // Determine effectively selected size details (if using variants)
-    const currentSizeVariant = currentVariant?.sizes.find(s => s.size === selectedSize);
+    // Determine effectively selected variant details
+    const currentVariant = currentColor?.variants.find(v => v.size === selectedSize);
 
     // Calculate Price (Base or Override)
     const currentPrice = (() => {
-        if (currentSizeVariant && currentSizeVariant.price) {
-            return parseFloat(currentSizeVariant.price);
+        if (currentVariant && currentVariant.price) {
+            return Number(currentVariant.price);
         }
         return product.price;
     })();
 
     // Calculate SKU
-    const currentSku = currentSizeVariant?.sku || product.sku;
+    const currentSku = currentVariant?.sku || product.sku;
 
     // Standalone quantity state
     const [quantity, setQuantity] = useState(1);
     const { addToCart, cartItems } = useCart();
 
     // Effect: When Color changes, ensure Size is valid
-    // We don't use useEffect for this to avoid double-render, but we need to handle it in the parent or derived state.
-    // However, since selectedColor comes from props, we should react to it.
-    // A better pattern here is to reset size in the onColorSelect handler in the parent,
-    // but since we control size state locally here, we use an effect or simple memoization.
-
-    // Simple effect to validate size on color change
-    if (currentVariant && selectedSize && !currentVariant.sizes.some(s => s.size === selectedSize)) {
-        // If current size is invalid for new color, switch to first available
-        if (currentVariant.sizes.length > 0) {
-            setSelectedSize(currentVariant.sizes[0].size);
-        } else {
-            setSelectedSize(null);
+    useEffect(() => {
+        if (currentColor && selectedSize && !currentColor.variants.some(v => v.size === selectedSize)) {
+            if (currentColor.variants.length > 0) {
+                setSelectedSize(currentColor.variants[0].size);
+            } else {
+                setSelectedSize(null);
+            }
+        } else if (currentColor && !selectedSize && currentColor.variants.length > 0) {
+            setSelectedSize(currentColor.variants[0].size);
         }
-    }
+    }, [selectedColor, currentColor, selectedSize]);
 
     // Check if this variant is already in cart
     const existingCartItem = cartItems.find(item =>
@@ -89,18 +86,14 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
     };
 
     const handleAddToCart = () => {
-        if (product.variants?.length && !selectedColor) {
+        if (product.colors?.length && !selectedColor) {
             alert('Please select a color');
             return;
         }
 
         // Add the selected quantity to cart
         for (let i = 0; i < quantity; i++) {
-            addToCart({
-                ...product,
-                price: currentPrice, // Add with correct price
-                sku: currentSku
-            }, {
+            addToCart(product, {
                 selectedColor: selectedColor || undefined,
                 selectedSize: selectedSize || undefined
             });
@@ -110,10 +103,13 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
     };
 
     const handleOrderNow = () => {
-        if (product.variants?.length && !selectedColor) {
+        if (product.colors?.length && !selectedColor) {
             alert('Please select a color');
             return;
         }
+
+        // Helper to find primary image
+        const primaryImage = product.images.find(img => img.isPrimary)?.url || product.images[0]?.url || '/images/placeholder-product.png';
 
         const directOrderItem = {
             id: product.id,
@@ -121,7 +117,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
             name: product.name,
             price: currentPrice, // Use dynamic price
             currency: product.currency,
-            image: product.image,
+            image: primaryImage,
             quantity: quantity,
             selectedColor: selectedColor || undefined,
             selectedSize: selectedSize || undefined,
@@ -132,24 +128,51 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
         router.push('/checkout?direct=true');
     };
 
-    // Helper for color values - uses Variant Hex only
+    // Helper for color values
     const getColorHex = (colorName: string) => {
-        // Check new variants only
-        const variant = product.variants?.find(v => v.colorName === colorName);
-        if (variant && variant.colorCode) return variant.colorCode;
+        const color = product.colors?.find(c => c.name === colorName);
+        if (color && color.code) return color.code;
         return '#CCCCCC'; // Default fallback
     };
 
     // Derived lists for rendering
-    const colorsToRender = product.variants?.map(v => v.colorName) || [];
+    const colorsToRender = product.colors?.map(c => c.name) || [];
+
+    // Size Chart Modal State
+    const [showSizeChart, setShowSizeChart] = useState(false);
 
     return (
         <div className={styles.infoContainer}>
             <div className={styles.header}>
-                <div className={styles.category}>{product.category}</div>
+                <div className={styles.category}>{product.category?.name}</div>
                 <h1 className={styles.title}>{product.name}</h1>
+
+                {/* Badges */}
+                {product.badges && product.badges.length > 0 && (
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                        {product.badges.map((badge, idx) => {
+                            let backgroundColor = '#000000';
+                            let color = '#ffffff';
+                            switch (badge.type) {
+                                case 'new': backgroundColor = '#046A38'; break;
+                                case 'discount': backgroundColor = '#dc2626'; break;
+                                case 'bestseller': backgroundColor = '#f59e0b'; break;
+                                case 'custom': backgroundColor = badge.color || '#000'; color = badge.textColor || '#fff'; break;
+                            }
+                            return (
+                                <span key={idx} style={{
+                                    backgroundColor, color, padding: '4px 8px', borderRadius: '4px',
+                                    fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase'
+                                }}>
+                                    {badge.text}
+                                </span>
+                            );
+                        })}
+                    </div>
+                )}
+
                 <div className={styles.price}>
-                    {product.originalPrice && product.originalPrice > currentPrice && (
+                    {product.originalPrice && currentPrice !== undefined && product.originalPrice > currentPrice && (
                         <span style={{
                             textDecoration: 'line-through',
                             color: '#6b7280',
@@ -164,7 +187,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                         color: product.originalPrice ? '#dc2626' : 'inherit',
                         fontWeight: product.originalPrice ? 'bold' : '500'
                     }}>
-                        {product.currency} {currentPrice.toLocaleString()}
+                        {product.currency} {currentPrice?.toLocaleString() || 'N/A'}
                     </span>
                     {product.discount && (
                         <span style={{
@@ -214,19 +237,29 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                 </div>
             )}
 
-            {/* Sizes Section - Handles SizeVariant[] only */}
+            {/* Sizes Section */}
             {availableSizes && availableSizes.length > 0 && (
                 <div className={styles.optionsSection}>
-                    <label className={styles.optionLabel}>
-                        Size: <span className="font-semibold text-gray-900">{selectedSize}</span>
-                    </label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <label className={styles.optionLabel}>
+                            Size: <span className="font-semibold text-gray-900">{selectedSize}</span>
+                        </label>
+                        {product.sizeChart && (
+                            <button
+                                onClick={() => setShowSizeChart(true)}
+                                style={{
+                                    fontSize: '14px', textDecoration: 'underline', color: '#666',
+                                    border: 'none', background: 'none', cursor: 'pointer'
+                                }}
+                            >
+                                Size Guide
+                            </button>
+                        )}
+                    </div>
                     <div className={styles.swatchGrid}>
-                        {availableSizes.map((sizeItem: any) => {
-                            // Extract size name depending on type - now only expecting object but keeping safe access
-                            const sizeName = sizeItem.size;
-                            // Check stock if variant
-                            const isOutOfStock = sizeItem.stock && parseInt(sizeItem.stock) <= 0;
-
+                        {availableSizes.map((variant: any) => {
+                            const sizeName = variant.size;
+                            const isOutOfStock = variant.stock && parseInt(variant.stock) <= 0;
                             return (
                                 <button
                                     key={sizeName}
@@ -286,6 +319,27 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
             {inCartQuantity > 0 && (
                 <div className={styles.cartIndicator}>
                     ✓ {inCartQuantity} {t.products.alreadyInCart || 'already in cart'}
+                </div>
+            )}
+
+            {/* Size Chart Modal */}
+            {showSizeChart && product.sizeChart && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }} onClick={() => setShowSizeChart(false)}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '20px', borderRadius: '8px',
+                        maxWidth: '90%', maxHeight: '90%', overflow: 'auto', position: 'relative'
+                    }} onClick={e => e.stopPropagation()}>
+                        <button
+                            onClick={() => setShowSizeChart(false)}
+                            style={{ position: 'absolute', top: '10px', right: '10px', border: 'none', background: 'transparent', fontSize: '20px', cursor: 'pointer' }}
+                        >✕</button>
+                        <h3 style={{ marginBottom: '15px' }}>Size Guide</h3>
+                        <img src={product.sizeChart} alt="Size Chart" style={{ maxWidth: '100%', height: 'auto' }} />
+                    </div>
                 </div>
             )}
         </div>

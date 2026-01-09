@@ -1,32 +1,36 @@
-import { getProductBySku } from '@/services/api/products';
+import { getProductBySlug } from '@/services/api/products';
 import ProductDetailsContainer from '@/components/product/ProductDetailsContainer';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import { notFound } from 'next/navigation';
 
 interface ProductPageProps {
     params: Promise<{
-        sku: string;
+        slug: string;
     }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { sku } = await params;
-    const product = await getProductBySku(sku);
+    const { slug } = await params;
+
+    const product = await getProductBySlug(slug);
 
     if (!product) {
         notFound();
     }
 
     // Fallback images if not provided in data
+    // New structure: product.images is array of ProductImage objects { url, isPrimary }
     const galleryImages = product.images && product.images.length > 0
-        ? product.images
-        : [product.image];
+        ? product.images.map(img => img.url)
+        : ['/images/placeholder-product.png'];
+
+    const primaryImage = product.images.find(img => img.isPrimary)?.url || galleryImages[0];
 
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Product',
         name: product.name,
-        image: product.image,
+        image: primaryImage,
         description: product.description,
         brand: {
             '@type': 'Brand',
@@ -34,7 +38,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         },
         offers: {
             '@type': 'Offer',
-            priceCurrency: 'USD', // Assuming USD, adjust as needed
+            priceCurrency: 'BDT',
             price: product.price,
             availability: 'https://schema.org/InStock'
         }
@@ -53,7 +57,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div style={{ padding: '2rem 4%' }}>
                 <RelatedProducts
-                    category={product.category}
+                    category={product.category?.slug || 'all'}
                     currentProductId={product.id}
                 />
             </div>
@@ -62,8 +66,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 export async function generateMetadata({ params }: ProductPageProps) {
-    const { sku } = await params;
-    const product = await getProductBySku(sku);
+    const { slug } = await params;
+    const product = await getProductBySlug(slug);
 
     if (!product) {
         return {
@@ -71,11 +75,13 @@ export async function generateMetadata({ params }: ProductPageProps) {
         };
     }
 
+    const primaryImage = product.images?.find(img => img.isPrimary)?.url || product.images?.[0]?.url;
+
     return {
         title: `${product.name} | IF Shop`,
         description: product.description,
         openGraph: {
-            images: [product.image],
+            images: primaryImage ? [primaryImage] : [],
         },
     };
 }

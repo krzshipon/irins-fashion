@@ -14,7 +14,7 @@ interface CategoryProductRowProps {
 }
 
 import { useEffect, useState, useRef } from 'react';
-import { getProductsByCategory } from '@/services/api/products';
+import { getProductsBySlug } from '@/services/api/products';
 
 export default function CategoryProductRow({ titleKey, title, categorySlug, link }: CategoryProductRowProps) {
     const { t } = useLocalization();
@@ -27,8 +27,10 @@ export default function CategoryProductRow({ titleKey, title, categorySlug, link
 
         const fetchProducts = async () => {
             hasFetched.current = categorySlug;
-            const data = await getProductsByCategory(categorySlug, 4); // Limit 4
-            setProducts(data);
+            // Use getProductsBySlug which fetches by category slug
+            // Backend currently doesn't support 'limit' via this helper, so we slice client-side for now
+            const { products: fetchedProducts } = await getProductsBySlug(categorySlug);
+            setProducts(fetchedProducts.slice(0, 4));
         };
         fetchProducts();
     }, [categorySlug]);

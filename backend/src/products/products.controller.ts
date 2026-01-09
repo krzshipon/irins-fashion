@@ -34,6 +34,18 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  @Get('sku/:sku')
+  @ApiOperation({ summary: 'Get product by SKU' })
+  findBySku(@Param('sku') sku: string) {
+    return this.productsService.findBySku(sku);
+  }
+
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Get product by Slug' })
+  findBySlug(@Param('slug') slug: string) {
+    return this.productsService.findBySlug(slug);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(id, updateProductDto);

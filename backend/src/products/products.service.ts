@@ -208,4 +208,18 @@ export class ProductsService {
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
+
+  findBySku(sku: string) {
+    return this.prisma.product.findUnique({
+      where: { sku },
+      include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+    });
+  }
+
+  findBySlug(slug: string) {
+    return this.prisma.product.findUnique({
+      where: { slug },
+      include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+    });
+  }
 }

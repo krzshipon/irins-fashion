@@ -1,8 +1,48 @@
 export interface ProductBadge {
-  type: 'new' | 'discount' | 'bestseller' | 'custom';
+  id: string;
+  productId: string;
+  type: string;
   text: string;
   color?: string;
   textColor?: string;
+}
+
+export interface ProductImage {
+  id: string;
+  url: string;
+  isPrimary: boolean;
+  productId?: string;
+  productColorId?: string;
+}
+
+export interface ProductVariant {
+  id: string;
+  productColorId: string;
+  size: string;
+  sku: string;
+  stock: number;
+  price?: number; // string in Prisma Decimal, but usually handled as number/string in frontend. Let's stick to number for now or string if needed.
+}
+
+export interface ProductColor {
+  id: string;
+  productId: string;
+  name: string;
+  code: string;
+  images: ProductImage[];
+  variants: ProductVariant[];
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  image?: string;
+  localizedNames?: any;       // Json
+  localizedDescriptions?: any; // Json
+  isActive: boolean;
+  sortOrder: number;
 }
 
 export interface ProductDiscount {
@@ -10,54 +50,27 @@ export interface ProductDiscount {
   value: number;
 }
 
-export interface SizeVariant {
-  id: string;
-  size: string;
-  price: string;
-  stock: string;
-  sku: string;
-}
-
-export interface ColorVariant {
-  id: string;
-  colorName: string;
-  colorCode: string;
-  images: string[];
-  sizes: SizeVariant[];
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  localizedNames?: Record<string, string>;
-  localizedDescriptions?: Record<string, string>;
-  icon?: string;
-  image?: string;
-  isActive: boolean;
-  sortOrder: number;
-  productCount?: number; // Optional as backend aggregation might be needed
-}
-
 export interface Product {
   id: string;
   sku: string;
   name: string;
-  price: number;
-  originalPrice?: number; // MSRP or previous price
-  discount?: ProductDiscount;
-  currency: string;
-  category: string;
-  image: string;
-  images: string[];
+  slug: string;
   description?: string;
-  isNew?: boolean;
-  sizes?: string[]; // Legacy/Simple variant support
-  colors?: string[];
-  colorImages?: Record<string, string>;
-  badges?: ProductBadge[];
-  variants?: ColorVariant[];
+  localizedNames?: any;
+  localizedDescriptions?: any;
+  price: number; // Decimal handling
+  originalPrice?: number;
+  discount?: ProductDiscount; // Json
+  currency: string;
+  categoryId: string;
+  status: string;
+  sizeChart?: string;
+  createdAt: string;
+  updatedAt: string;
+  category: Category;
+  badges: ProductBadge[];
+  colors: ProductColor[];
+  images: ProductImage[];
 }
 
 export interface Banner {

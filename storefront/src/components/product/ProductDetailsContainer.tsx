@@ -20,27 +20,27 @@ export default function ProductDetailsContainer({ product, initialGalleryImages 
     // Lifted state from ProductInfo
     const [selectedColor, setSelectedColor] = useState<string | null>(() => {
         // Robust Variant Check for URL param
-        if (product.variants && product.variants.length > 0) {
-            const paramMatch = product.variants.find(v => v.colorName === colorParam);
-            if (paramMatch) return paramMatch.colorName;
-            return product.variants[0].colorName; // Default to first variant
+        if (product.colors && product.colors.length > 0) {
+            const paramMatch = product.colors.find(c => c.name === colorParam);
+            if (paramMatch) return paramMatch.name;
+            return product.colors[0].name; // Default to first color
         }
         return null;
     });
 
     // Update state if URL changes
     useEffect(() => {
-        if (colorParam && product.variants?.some(v => v.colorName === colorParam)) {
+        if (colorParam && product.colors?.some(c => c.name === colorParam)) {
             setSelectedColor(colorParam);
         }
-    }, [colorParam, product.variants]);
+    }, [colorParam, product.colors]);
 
     // Determine active gallery images
     const currentGalleryImages = (() => {
-        if (selectedColor && product.variants) {
-            const variant = product.variants.find(v => v.colorName === selectedColor);
-            if (variant && variant.images && variant.images.length > 0) {
-                return variant.images;
+        if (selectedColor && product.colors) {
+            const color = product.colors.find(c => c.name === selectedColor);
+            if (color && color.images && color.images.length > 0) {
+                return color.images.map(img => img.url);
             }
         }
         return initialGalleryImages;
