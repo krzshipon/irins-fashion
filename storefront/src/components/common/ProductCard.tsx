@@ -29,7 +29,8 @@ export default function ProductCard({ product }: ProductCardProps) {
     const localizedName = getLocalizedContent(product.localizedNames, locale, product.name);
     // Assuming category also has localizedNames in the Future, but for now fallback to name
     // If category is populated, we might need similar logic if backend provides it
-    const categoryName = product.category?.name;
+    // Use localized category name if available
+    const categoryName = getLocalizedContent(product.category?.localizedNames, locale, product.category?.name || '');
 
     return (
         <div className={styles.card}>

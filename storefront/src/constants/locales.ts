@@ -4,6 +4,7 @@ export interface Dictionary {
     nav: {
         home: string;
         shop: string;
+        newCollection: string;
         about: string;
         contact: string;
         cart: string;
@@ -345,6 +346,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         nav: {
             home: 'Home',
             shop: 'Shop',
+            newCollection: 'New Collection',
             about: 'About',
             contact: 'Contact',
             cart: 'Cart',
@@ -697,6 +699,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         nav: {
             home: 'হোম',
             shop: 'দোকান',
+            newCollection: 'নতুন কালেকশন',
             about: 'আমাদের সম্পর্কে',
             contact: 'যোগাযোগ',
             cart: 'কার্ট',
