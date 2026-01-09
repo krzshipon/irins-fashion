@@ -9,12 +9,14 @@ import { useCart } from '@/context/CartContext';
 
 import { ShoppingBag } from 'lucide-react';
 
+import { getLocalizedContent } from '@/lib/localizationUtils';
+
 interface ProductCardProps {
     product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-    const { t } = useLocalization();
+    const { dictionary: t, locale } = useLocalization();
     const { addToCart, cartItems } = useCart();
 
     // Helper to get primary image
@@ -24,13 +26,18 @@ export default function ProductCard({ product }: ProductCardProps) {
     const defaultColor = product.colors?.[0];
     const defaultVariant = defaultColor?.variants?.[0];
 
+    const localizedName = getLocalizedContent(product.localizedNames, locale, product.name);
+    // Assuming category also has localizedNames in the Future, but for now fallback to name
+    // If category is populated, we might need similar logic if backend provides it
+    const categoryName = product.category?.name;
+
     return (
         <div className={styles.card}>
             <div style={{ position: 'relative', height: '350px' }}>
                 <Link href={`/product/${product.slug}`} style={{ display: 'block', height: '100%', width: '100%' }}>
                     <Image
                         src={primaryImage}
-                        alt={product.name}
+                        alt={localizedName}
                         fill
                         style={{ objectFit: 'cover' }}
                     />
@@ -106,8 +113,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </Link>
                 <button
                     className={styles.addToCartBtn}
-                    title={t('products.addToCart')}
-                    aria-label={t('products.addToCart')}
+                    title={t.products.addToCart}
+                    aria-label={t.products.addToCart}
                     style={{
                         backgroundColor: cartItems.some(item => item.id === product.id) ? '#046A38' : undefined,
                         color: cartItems.some(item => item.id === product.id) ? '#ffffff' : undefined
@@ -127,8 +134,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
             <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className={styles.cardContent}>
-                    <div className={styles.cardCategory}>{product.category?.name}</div>
-                    <h3 className={styles.cardTitle}>{product.name}</h3>
+                    <div className={styles.cardCategory}>{categoryName}</div>
+                    <h3 className={styles.cardTitle}>{localizedName}</h3>
                     <div className={styles.cardPrice}>
                         {product.originalPrice && product.originalPrice > product.price && (
                             <span style={{
