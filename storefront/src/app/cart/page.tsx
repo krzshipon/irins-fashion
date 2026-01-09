@@ -34,9 +34,20 @@ export default function CartPage() {
                             <div key={item.cartItemId} className={styles.cartItem}>
                                 <div className={styles.itemImageContainer}>
                                     {(() => {
-                                        const displayImage = (item.selectedColor && item.colorImages && item.colorImages[item.selectedColor])
-                                            ? item.colorImages[item.selectedColor]
-                                            : item.image;
+                                        let displayImage = null;
+
+                                        // Try to find color-specific image
+                                        if (item.selectedColor && item.colors) {
+                                            const colorData = item.colors.find(c => c.name === item.selectedColor);
+                                            if (colorData && colorData.images && colorData.images.length > 0) {
+                                                displayImage = colorData.images[0].url;
+                                            }
+                                        }
+
+                                        // Fallback to primary product image
+                                        if (!displayImage && item.images && item.images.length > 0) {
+                                            displayImage = item.images.find(img => img.isPrimary)?.url || item.images[0].url;
+                                        }
 
                                         return displayImage ? (
                                             <Image

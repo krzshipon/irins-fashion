@@ -39,6 +39,7 @@ export interface Dictionary {
         remove: string;
         secureCheckout: string;
         allRightsReserved: string;
+        login: string;
     };
     footer: {
         brandTagline: string;
@@ -194,12 +195,23 @@ export interface Dictionary {
         needHelp: string;
         contactSupport: string;
         status: {
+            orderPlaced: string;
             processing: string;
             confirmed: string;
             shipped: string;
             delivered: string;
             cancelled: string;
         };
+        statusDesc: {
+            processing: string;
+            confirmed: string;
+            shipped: string;
+            delivered: string;
+            cancelled: string;
+        };
+        accessDenied: string;
+        accessDeniedDesc: string;
+        trackOrder: string;
     };
     trust: {
         secure: string;
@@ -368,6 +380,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
             remove: 'Remove',
             secureCheckout: 'Secure Checkout',
             allRightsReserved: 'All rights reserved.',
+            login: 'Log In',
         },
         footer: {
             brandTagline: 'Modest fashion for the modern woman.',
@@ -523,12 +536,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
             needHelp: "Need help with your order?",
             contactSupport: "Contact Support",
             status: {
+                orderPlaced: "Order Placed",
                 processing: "Processing",
                 confirmed: "Confirmed",
                 shipped: "Shipped",
                 delivered: "Delivered",
                 cancelled: "Cancelled",
             },
+            statusDesc: {
+                processing: "Your order is being prepared for shipment",
+                confirmed: "Order confirmed and ready to ship",
+                shipped: "Your order is on its way to you",
+                delivered: "Your order has been delivered successfully",
+                cancelled: "This order has been cancelled",
+            },
+            accessDenied: "Order Not Found",
+            accessDeniedDesc: "You don't have permission to view this order. Please log in or check your order ID.",
+            trackOrder: "Track Your Order",
         },
         trust: {
             secure: "Secure",
@@ -708,6 +732,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
             remove: 'সরান',
             secureCheckout: 'নিরাপদ চেকআউট',
             allRightsReserved: 'সর্বস্বত্ব সংরক্ষিত।',
+            login: 'লগ ইন',
         },
         footer: {
             brandTagline: 'আধুনিক নারীদের জন্য শালীন ফ্যাশন।',
@@ -863,12 +888,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
             needHelp: "অর্ডার সংক্রান্ত সাহায্য দরকার?",
             contactSupport: "সাপোর্টে যোগাযোগ করুন",
             status: {
+                orderPlaced: "অর্ডার গ্রহণ করা হয়েছে",
                 processing: "প্রক্রিয়াধীন",
                 confirmed: "নিশ্চিত",
                 shipped: "শিপ করা হয়েছে",
                 delivered: "ডেলিভারি হয়েছে",
                 cancelled: "বাতিল",
             },
+            statusDesc: {
+                processing: "আপনার অর্ডারটি শিপমেন্টের জন্য প্রস্তুত করা হচ্ছে",
+                confirmed: "অর্ডার নিশ্চিত হয়েছে এবং শিপিংয়ের জন্য প্রস্তুত",
+                shipped: "আপনার অর্ডারটি আপনার পথে রয়েছে",
+                delivered: "আপনার অর্ডার সফলভাবে ডেলিভারি হয়েছে",
+                cancelled: "এই অর্ডারটি বাতিল করা হয়েছে",
+            },
+            accessDenied: "অর্ডার পাওয়া যায়নি",
+            accessDeniedDesc: "এই অর্ডারটি দেখার অনুমতি আপনার নেই। অনুগ্রহ করে লগ ইন করুন বা আপনার অর্ডার আইডি চেক করুন।",
+            trackOrder: "আপনার অর্ডার ট্র্যাক করুন",
         },
         trust: {
             secure: "নিরাপদ",

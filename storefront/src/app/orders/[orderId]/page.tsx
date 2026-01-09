@@ -8,7 +8,53 @@ import { useLocalization } from '@/context/LocalizationContext';
 import { useAuth } from '@/context/AuthContext';
 
 // Mock order data - in production this would come from API
-const getMockOrder = (orderId: string) => ({
+type OrderStatus = 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+
+interface Discount {
+    type: 'flat' | 'percentage';
+    value: number;
+}
+
+interface OrderItem {
+    id: string;
+    cartItemId: string;
+    sku: string;
+    currency: string;
+    name: string;
+    image: string;
+    price: number;
+    originalPrice?: number;
+    discount?: Discount;
+    quantity: number;
+    selectedSize?: string;
+    selectedColor?: string;
+    size: string;
+    color: string;
+}
+
+interface Order {
+    id: string;
+    userId: string;
+    status: OrderStatus;
+    createdAt: string;
+    items: OrderItem[];
+    subtotal: number;
+    shippingCost: number;
+    total: number;
+    shippingDetails: {
+        fullName: string;
+        phone: string;
+        email?: string;
+        address: string;
+        city: string;
+        postalCode: string;
+        deliveryZone: 'inside_dhaka' | 'outside_dhaka';
+        notes?: string;
+    };
+    paymentMethod: 'cod';
+}
+
+const getMockOrder = (orderId: string): Order => ({
     id: orderId,
     userId: 'usr_guest', // For guest orders, this would be null or a guest user ID
     status: 'processing',
@@ -60,8 +106,6 @@ const getMockOrder = (orderId: string) => ({
     },
     paymentMethod: 'cod' as const,
 });
-
-type OrderStatus = 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
 
 const OrderDetailsPage = () => {
     const params = useParams();

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Product } from '@/services/api/types';
+import { useLocalization } from '@/context/LocalizationContext';
+import { getLocalizedContent } from '@/lib/localizationUtils';
 import ProductGallery from './ProductGallery';
 import ProductInfo from './ProductInfo';
 import styles from './ProductDetails.module.css';
@@ -46,11 +48,14 @@ export default function ProductDetailsContainer({ product, initialGalleryImages 
         return initialGalleryImages;
     })();
 
+    const { locale } = useLocalization();
+    const localizedTitle = getLocalizedContent(product.localizedNames, locale, product.name);
+
     return (
         <section className={styles.productContainer}>
             <ProductGallery
                 images={currentGalleryImages}
-                title={product.name}
+                title={localizedTitle}
                 selectedColor={selectedColor}
             />
 

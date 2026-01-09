@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/common/ProductCard';
 import { getAllProducts, SortOption } from '@/services/api/products';
@@ -13,8 +13,8 @@ import styles from './shop.module.css';
 import { getCategories } from '@/services/api/categories'; // Added import
 import { Category } from '@/services/api/types'; // Added import
 
-export default function ShopPage() {
-    const { dictionary: t, lang } = useLocalization(); // Destructure lang
+function ShopContent() {
+    const { dictionary: t, locale } = useLocalization(); // Destructure locale
     const router = useRouter(); // Import useRouter
     const searchParams = useSearchParams();
     const collectionParam = searchParams?.get('collection');
@@ -163,7 +163,7 @@ export default function ShopPage() {
                                     />
                                     <span className={styles.categoryIcon}>{category.icon || '📦'}</span>
                                     <span>
-                                        {lang === 'bn'
+                                        {locale === 'bn'
                                             ? category.localizedNames?.bn || category.name
                                             : category.name}
                                     </span>
@@ -253,5 +253,13 @@ export default function ShopPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ShopPage() {
+    return (
+        <Suspense fallback={<div className={styles.loading}><p>Loading...</p></div>}>
+            <ShopContent />
+        </Suspense>
     );
 }

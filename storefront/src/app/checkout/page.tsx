@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart, CartItem } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
@@ -15,7 +15,7 @@ import { validateCoupon, calculateDiscount, Coupon } from '@/services/api/coupon
 import { Address } from '@/services/api/types'; // Import Address type
 import { MapPin, Plus, Check } from 'lucide-react'; // Import icons
 
-const CheckoutPage = () => {
+const CheckoutContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { cartItems, cartCount, clearCart } = useCart();
@@ -141,11 +141,11 @@ const CheckoutPage = () => {
             ...prev,
             fullName: address.recipientName,
             phone: address.phone,
-            address: address.street,
+            address: address.address,
             division: normalizedDivision,
             // Simple heuristic for zone based on city/division
             // In a real app, this would be more robust
-            deliveryZone: (address.city.toLowerCase().includes('dhaka') || address.division.toLowerCase().includes('dhaka'))
+            deliveryZone: (address.division.toLowerCase().includes('dhaka'))
                 ? 'inside_dhaka'
                 : 'outside_dhaka'
         }));
@@ -401,7 +401,7 @@ const CheckoutPage = () => {
                                                 {addr.label}
                                             </div>
                                             <p style={{ fontSize: '14px', color: '#374151', marginBottom: '4px' }}>{addr.recipientName}</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>{addr.street}, {addr.city}</p>
+                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>{addr.address}, {addr.division}</p>
                                             <p style={{ fontSize: '14px', color: '#6b7280' }}>{addr.phone}</p>
                                         </div>
                                     ))}
@@ -442,51 +442,6 @@ const CheckoutPage = () => {
                             />
                         </div>
 
-                        {/* If address is selected, verify phone/zone are still correct (can be edited in form if needed, but here we just show preview is mostly done by the selection) */}
-                        {/* Actually, even if selected, we might want to let them edit the notes or tweak details. 
-                            If we hide the form, they can't edit notes. 
-                            Let's keep the form VISIBLE but populated. 
-                            The 'showNewAddressForm' toggle primarily acts to clear the form for a fresh start.
-                            Wait, the requirement is "auto select... with change address option".
-                            If I keep form visible, it might look redundant.
-                            
-                            Better UX:
-                            If address selected -> Show compact summary card + "Edit" button? Or just populate the form?
-                            The user said: "go with new address just easily input new address as currently has there"
-                            
-                            Let's populate the form when address is selected (which I did in selectAddress).
-                            But if I hide the form, they can't add delivery notes. 
-                            
-                            Correction: `ShippingForm` contains delivery zone and notes. These might not be in the saved address fully (zone is inferred).
-                            So it's safer to ALWAYS show the form, but just fill it with the selected address data.
-                            
-                            The "New Address" button effectively just clears the form. 
-                            The "Saved Address" cards fill the form.
-                            
-                            My implementation above hides the form when address is selected (`!showNewAddressForm`). 
-                            This is problematic for "Notes".
-                            
-                            Let's refine:
-                            ALWAYS show ShippingForm.
-                            Clicking a saved address -> Fills ShippingForm.
-                            Clicking "New Address" -> Clears ShippingForm.
-                            
-                            BUT, the user asked for "auto select... with change address option".
-                            This implies a UI state where the address is "locked in" until changed.
-                            However, for simplicity and to ensure "Notes" and "Zone" are always editable/verifiable, 
-                            populating the form is the most robust approach that doesn't break the existing checkout flow.
-                            
-                            Let's adjust:
-                            I will remove `showNewAddressForm` check for rendering ShippingForm. 
-                            Instead, user just clicks a card to populate.
-                            BUT, visual feedback of "Selected" is good.
-                        */}
-
-                        {/* REVISED APPROACH: Always show ShippingForm, but maybe scroll to it */}
-                        {/* Actually, if I just populate the form, the user can see the values. 
-                             The 'selectedAddressId' visual highlight is enough feedback.
-                             The "New Address" card can just clear the selection and form.
-                          */}
                     </div>
 
                     <div>
@@ -513,6 +468,14 @@ const CheckoutPage = () => {
                 </div>
             </div>
         </div>
+    );
+};
+
+const CheckoutPage = () => {
+    return (
+        <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center' }}>Loading...</div>}>
+            <CheckoutContent />
+        </Suspense>
     );
 };
 

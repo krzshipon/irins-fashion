@@ -65,6 +65,7 @@ export interface Product {
   categoryId: string;
   status: string;
   sizeChart?: string;
+  isNew?: boolean;
   createdAt: string;
   updatedAt: string;
   category: Category;

@@ -37,7 +37,7 @@ export default function CategoryClientPage({ slug }: CategoryClientPageProps) {
             const { products: fetchedProducts, category: fetchedCategory } = await getProductsBySlug(slug);
 
             setRawProducts(fetchedProducts);
-            setCategory(fetchedCategory);
+            setCategory(fetchedCategory || null);
             setLoading(false);
         };
         fetchData();

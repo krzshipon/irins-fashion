@@ -11,8 +11,7 @@ import addressStyles from "./addresses.module.css";
 interface AddressFormData {
     label: string;
     recipientName: string;
-    street: string;
-    city: string;
+    address: string;
     division: string;
     phone: string;
     isDefault: boolean;
@@ -21,8 +20,7 @@ interface AddressFormData {
 const INITIAL_FORM_DATA: AddressFormData = {
     label: "Home",
     recipientName: "",
-    street: "",
-    city: "",
+    address: "",
     division: "Dhaka",
     phone: "",
     isDefault: false,
@@ -57,8 +55,7 @@ export default function AddressesPage() {
             setFormData({
                 label: address.label,
                 recipientName: address.recipientName,
-                street: address.street,
-                city: address.city,
+                address: address.address,
                 division: address.division,
                 phone: address.phone,
                 isDefault: address.isDefault,
@@ -162,7 +159,7 @@ export default function AddressesPage() {
                             <div className={addressStyles.infoRow}>
                                 <div className={addressStyles.iconWrapper}><MapPin size={16} /></div>
                                 <div>
-                                    <p className={addressStyles.infoText}>{address.street}</p>
+                                    <p className={addressStyles.infoText}>{address.address}</p>
                                     <p className={addressStyles.subText}>{address.division}</p>
                                 </div>
                             </div>
@@ -258,8 +255,8 @@ export default function AddressesPage() {
                                     <label className={addressStyles.label}>Full Address</label>
                                     <textarea
                                         className={addressStyles.textarea}
-                                        value={formData.street}
-                                        onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                                        value={formData.address}
+                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                         placeholder="House, Road, Area, etc."
                                         rows={2}
                                         required

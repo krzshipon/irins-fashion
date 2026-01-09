@@ -6,6 +6,7 @@ import { Product } from '@/services/api/types';
 import styles from './ProductDetails.module.css';
 import { useCart } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
+import { getLocalizedContent } from '@/lib/localizationUtils';
 
 interface ProductInfoProps {
     product: Product;
@@ -16,7 +17,10 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product, selectedColor, onColorSelect, initialSize }: ProductInfoProps) {
     const router = useRouter();
-    const { dictionary: t } = useLocalization();
+    const { locale, dictionary: t } = useLocalization();
+
+    const localizedName = getLocalizedContent(product.localizedNames, locale, product.name);
+    const localizedDescription = getLocalizedContent(product.localizedDescriptions, locale, product.description || '');
 
     // --- Helper Logic for Variants ---
 
@@ -145,7 +149,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
         <div className={styles.infoContainer}>
             <div className={styles.header}>
                 <div className={styles.category}>{product.category?.name}</div>
-                <h1 className={styles.title}>{product.name}</h1>
+                <h1 className={styles.title}>{localizedName}</h1>
 
                 {/* Badges */}
                 {product.badges && product.badges.length > 0 && (
@@ -213,7 +217,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
 
             {product.description && (
                 <div className={styles.description}>
-                    <p>{product.description}</p>
+                    <p>{localizedDescription}</p>
                 </div>
             )}
 

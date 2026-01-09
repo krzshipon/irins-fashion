@@ -10,7 +10,7 @@ interface FooterProps {
 }
 
 export default function Footer({ categories = [] }: FooterProps) {
-    const { dictionary: t, lang } = useLocalization();
+    const { dictionary: t, locale } = useLocalization();
 
     return (
         <footer className={styles.footer}>
@@ -26,7 +26,7 @@ export default function Footer({ categories = [] }: FooterProps) {
                         {categories.slice(0, 5).map(category => (
                             <li key={category.id}>
                                 <Link href={`/collection/${category.slug}`}>
-                                    {lang === 'bn' ? category.localizedNames?.bn || category.name : category.name}
+                                    {locale === 'bn' ? category.localizedNames?.bn || category.name : category.name}
                                 </Link>
                             </li>
                         ))}

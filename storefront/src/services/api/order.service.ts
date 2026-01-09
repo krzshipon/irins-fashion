@@ -13,10 +13,8 @@ const MOCK_ORDERS: Order[] = [
             id: 'addr_1',
             label: 'Home',
             recipientName: 'Irina Shayk',
-            street: 'House 12, Road 5',
-            city: 'Dhaka',
+            address: 'House 12, Road 5, Dhaka 1209',
             division: 'Dhaka',
-            postalCode: '1209',
             phone: '01700000000',
             isDefault: true
         },
@@ -53,10 +51,8 @@ const MOCK_ORDERS: Order[] = [
             id: 'addr_1',
             label: 'Home',
             recipientName: 'Irina Shayk',
-            street: 'House 12, Road 5',
-            city: 'Dhaka',
+            address: 'House 12, Road 5, Dhaka 1209',
             division: 'Dhaka',
-            postalCode: '1209',
             phone: '01700000000',
             isDefault: true
         },
@@ -113,7 +109,7 @@ function generateTrackingEvents(order: Order): TrackingEvent[] {
             status: 'DELIVERED',
             title: 'Delivered',
             description: 'Your order has been delivered successfully',
-            location: order.shippingAddress.city,
+            location: order.shippingAddress.division,
             timestamp: new Date(orderDate.getTime() + 86400000 * 3).toISOString(), // +3 days
             isCompleted: currentIndex >= 3,
         },
