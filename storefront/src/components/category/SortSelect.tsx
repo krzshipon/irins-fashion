@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useLocalization } from '@/context/LocalizationContext';
 import styles from './SortSelect.module.css';
 
 export default function SortSelect() {
+    const { dictionary: t } = useLocalization();
     const router = useRouter();
     const searchParams = useSearchParams();
     const currentSort = searchParams?.get('sort') || 'newest';
@@ -17,16 +19,16 @@ export default function SortSelect() {
 
     return (
         <div className={styles.container}>
-            <label htmlFor="sort" className={styles.label}>Sort by:</label>
+            <label htmlFor="sort" className={styles.label}>{t.shop.sortBy}</label>
             <select
                 id="sort"
                 className={styles.select}
                 value={currentSort}
                 onChange={handleSortChange}
             >
-                <option value="newest">Newest Arrivals</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
+                <option value="newest">{t.shop.newestArrivals}</option>
+                <option value="price_asc">{t.shop.priceLowToHigh}</option>
+                <option value="price_desc">{t.shop.priceHighToLow}</option>
             </select>
         </div>
     );

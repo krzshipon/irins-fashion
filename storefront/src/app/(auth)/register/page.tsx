@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Lock, Phone, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLocalization } from "@/context/LocalizationContext";
 import styles from "./register.module.css";
 
 export default function RegisterPage() {
     const router = useRouter();
     const { register } = useAuth();
+    const { dictionary: t } = useLocalization();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -26,13 +28,13 @@ export default function RegisterPage() {
 
         // Validation
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match.");
+            setError(t.auth.register.passwordsDoNotMatch);
             setIsLoading(false);
             return;
         }
 
         if (formData.password.length < 6) {
-            setError("Password must be at least 6 characters.");
+            setError(t.auth.register.passwordTooShort);
             setIsLoading(false);
             return;
         }
@@ -40,7 +42,7 @@ export default function RegisterPage() {
         // BD Mobile validation (01XXXXXXXXX - 11 digits starting with 01)
         const phoneRegex = /^01[3-9]\d{8}$/;
         if (!phoneRegex.test(formData.mobile)) {
-            setError("Please enter a valid BD mobile number (01XXXXXXXXX).");
+            setError(t.auth.register.invalidMobile);
             setIsLoading(false);
             return;
         }
@@ -53,7 +55,7 @@ export default function RegisterPage() {
             });
             router.push("/account/overview");
         } catch (err) {
-            setError("Registration failed. Please try again.");
+            setError(t.auth.register.registrationFailed);
         } finally {
             setIsLoading(false);
         }
@@ -64,22 +66,22 @@ export default function RegisterPage() {
             <div className={styles.wrapper}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <h2 className={styles.title}>Create Account</h2>
+                    <h2 className={styles.title}>{t.auth.register.title}</h2>
                     <p className={styles.subtitle}>
-                        Join us for exclusive offers and faster checkout
+                        {t.auth.register.subtitle}
                     </p>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Full Name</label>
+                        <label className={styles.label}>{t.auth.register.fullName}</label>
                         <div className={styles.inputWrapper}>
                             <User className={styles.inputIcon} size={18} />
                             <input
                                 type="text"
                                 required
-                                placeholder="Your full name"
+                                placeholder={t.auth.register.fullNamePlaceholder}
                                 className={styles.input}
                                 value={formData.name}
                                 onChange={(e) =>
@@ -90,13 +92,13 @@ export default function RegisterPage() {
                     </div>
 
                     <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Mobile Number</label>
+                        <label className={styles.label}>{t.auth.register.mobileNumber}</label>
                         <div className={styles.inputWrapper}>
                             <Phone className={styles.inputIcon} size={18} />
                             <input
                                 type="tel"
                                 required
-                                placeholder="01XXXXXXXXX"
+                                placeholder={t.auth.register.mobilePlaceholder}
                                 className={styles.input}
                                 value={formData.mobile}
                                 onChange={(e) =>
@@ -107,13 +109,13 @@ export default function RegisterPage() {
                     </div>
 
                     <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Password</label>
+                        <label className={styles.label}>{t.auth.register.password}</label>
                         <div className={styles.inputWrapper}>
                             <Lock className={styles.inputIcon} size={18} />
                             <input
                                 type="password"
                                 required
-                                placeholder="At least 6 characters"
+                                placeholder={t.auth.register.passwordPlaceholder}
                                 className={styles.input}
                                 value={formData.password}
                                 onChange={(e) =>
@@ -124,13 +126,13 @@ export default function RegisterPage() {
                     </div>
 
                     <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Confirm Password</label>
+                        <label className={styles.label}>{t.auth.register.confirmPassword}</label>
                         <div className={styles.inputWrapper}>
                             <Lock className={styles.inputIcon} size={18} />
                             <input
                                 type="password"
                                 required
-                                placeholder="Confirm your password"
+                                placeholder={t.auth.register.confirmPasswordPlaceholder}
                                 className={styles.input}
                                 value={formData.confirmPassword}
                                 onChange={(e) =>
@@ -147,18 +149,18 @@ export default function RegisterPage() {
                         disabled={isLoading}
                         className={styles.submitBtn}
                     >
-                        {isLoading ? "Creating account..." : "Create Account"}
+                        {isLoading ? t.auth.register.creatingAccount : t.auth.register.createAccount}
                         {!isLoading && <ArrowRight size={16} />}
                     </button>
 
                     <p className={styles.terms}>
-                        By registering, you agree to our{" "}
+                        {t.auth.register.termsPrefix}{" "}
                         <Link href="/policy/privacy" className={styles.termsLink}>
-                            Privacy Policy
+                            {t.auth.register.privacyPolicy}
                         </Link>{" "}
-                        and{" "}
+                        {t.auth.register.and}{" "}
                         <Link href="/policy/terms" className={styles.termsLink}>
-                            Terms of Service
+                            {t.auth.register.termsOfService}
                         </Link>
                     </p>
                 </form>
@@ -166,9 +168,9 @@ export default function RegisterPage() {
                 {/* Footer */}
                 <div className={styles.footer}>
                     <p className={styles.footerText}>
-                        Already have an account?{" "}
+                        {t.auth.register.hasAccount}{" "}
                         <Link href="/login" className={styles.loginLink}>
-                            Sign in
+                            {t.auth.register.signIn}
                         </Link>
                     </p>
                 </div>

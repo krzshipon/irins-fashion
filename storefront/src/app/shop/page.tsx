@@ -147,11 +147,11 @@ function ShopContent() {
             <div className={styles.contentWrapper}>
                 {/* Sidebar */}
                 <aside className={styles.sidebar}>
-                    <h3 className={styles.filterTitle}>Filter</h3>
+                    <h3 className={styles.filterTitle}>{t.shop.filter}</h3>
 
                     {/* Category Filter */}
                     <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Categories</h4>
+                        <h4 className={styles.sectionTitle}>{t.shop.categories}</h4>
                         <div className={styles.categoryList}>
                             {categories.map(category => (
                                 <label key={category.id} className={styles.categoryItem}>
@@ -174,11 +174,11 @@ function ShopContent() {
 
                     {/* Price Filter */}
                     <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Price (BDT)</h4>
+                        <h4 className={styles.sectionTitle}>{t.shop.price}</h4>
                         <div className={styles.inputGroup}>
                             <input
                                 type="number"
-                                placeholder="Min"
+                                placeholder={t.shop.min}
                                 className={styles.input}
                                 value={minPrice}
                                 onChange={(e) => setMinPrice(e.target.value)}
@@ -188,7 +188,7 @@ function ShopContent() {
                             <span>-</span>
                             <input
                                 type="number"
-                                placeholder="Max"
+                                placeholder={t.shop.max}
                                 className={styles.input}
                                 value={maxPrice}
                                 onChange={(e) => setMaxPrice(e.target.value)}
@@ -200,7 +200,7 @@ function ShopContent() {
 
                     {/* Status Filter */}
                     <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Status</h4>
+                        <h4 className={styles.sectionTitle}>{t.shop.status}</h4>
                         <label className={styles.checkboxLabel}>
                             <input
                                 type="checkbox"
@@ -218,7 +218,7 @@ function ShopContent() {
                             className={styles.clearBtn}
                             onClick={clearFilters}
                         >
-                            Clear All Filters
+                            {t.shop.clearAllFilters}
                         </button>
                     )}
                 </aside>
@@ -247,7 +247,7 @@ function ShopContent() {
                         </div>
                     ) : (
                         <div className={styles.empty}>
-                            <p>No products found matching your filters.</p>
+                            <p>{t.shop.noProductsFound}</p>
                         </div>
                     )}
                 </div>

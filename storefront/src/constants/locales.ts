@@ -15,6 +15,93 @@ export interface Dictionary {
     section: {
         categories: string;
     };
+    shop: {
+        filter: string;
+        categories: string;
+        price: string;
+        min: string;
+        max: string;
+        status: string;
+        clearAllFilters: string;
+        noProductsFound: string;
+        sortBy: string;
+        newestArrivals: string;
+        priceLowToHigh: string;
+        priceHighToLow: string;
+    };
+    auth: {
+        login: {
+            title: string;
+            subtitle: string;
+            mobileNumber: string;
+            mobilePlaceholder: string;
+            password: string;
+            passwordPlaceholder: string;
+            forgotPassword: string;
+            rememberMe: string;
+            signIn: string;
+            signingIn: string;
+            noAccount: string;
+            createAccount: string;
+            invalidCredentials: string;
+        };
+        register: {
+            title: string;
+            subtitle: string;
+            fullName: string;
+            fullNamePlaceholder: string;
+            mobileNumber: string;
+            mobilePlaceholder: string;
+            password: string;
+            passwordPlaceholder: string;
+            confirmPassword: string;
+            confirmPasswordPlaceholder: string;
+            createAccount: string;
+            creatingAccount: string;
+            termsPrefix: string;
+            privacyPolicy: string;
+            and: string;
+            termsOfService: string;
+            hasAccount: string;
+            signIn: string;
+            passwordsDoNotMatch: string;
+            passwordTooShort: string;
+            invalidMobile: string;
+            registrationFailed: string;
+        };
+        forgotPassword: {
+            title: string;
+            subtitle: string;
+            mobileNumber: string;
+            mobilePlaceholder: string;
+            sendOtp: string;
+            sendingOtp: string;
+            backToLogin: string;
+            verifyOtpTitle: string;
+            verifyOtpSubtitle: string;
+            didntReceiveCode: string;
+            resendOtp: string;
+            resendIn: string;
+            verifyOtp: string;
+            verifying: string;
+            changeNumber: string;
+            newPasswordTitle: string;
+            newPasswordSubtitle: string;
+            newPassword: string;
+            confirmPassword: string;
+            resetPassword: string;
+            resetting: string;
+            successTitle: string;
+            successMessage: string;
+            goToLogin: string;
+            rememberPassword: string;
+            completeOtp: string;
+            invalidOtp: string;
+            failedToSendOtp: string;
+            failedToResendOtp: string;
+            failedToResetPassword: string;
+        };
+    };
     categories: {
         hijab: string;
         abaya: string;
@@ -356,6 +443,93 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
         section: {
             categories: 'Shop by Category',
+        },
+        shop: {
+            filter: 'Filter',
+            categories: 'Categories',
+            price: 'Price (BDT)',
+            min: 'Min',
+            max: 'Max',
+            status: 'Status',
+            clearAllFilters: 'Clear All Filters',
+            noProductsFound: 'No products found matching your filters.',
+            sortBy: 'Sort by:',
+            newestArrivals: 'Newest Arrivals',
+            priceLowToHigh: 'Price: Low to High',
+            priceHighToLow: 'Price: High to Low',
+        },
+        auth: {
+            login: {
+                title: 'Welcome Back',
+                subtitle: 'Sign in to access your orders and profile',
+                mobileNumber: 'Mobile Number',
+                mobilePlaceholder: '017...',
+                password: 'Password',
+                passwordPlaceholder: '••••••••',
+                forgotPassword: 'Forgot password?',
+                rememberMe: 'Remember my credentials',
+                signIn: 'Sign in',
+                signingIn: 'Signing in...',
+                noAccount: "Don't have an account?",
+                createAccount: 'Create one now',
+                invalidCredentials: 'Invalid mobile number or password.',
+            },
+            register: {
+                title: 'Create Account',
+                subtitle: 'Join us for exclusive offers and faster checkout',
+                fullName: 'Full Name',
+                fullNamePlaceholder: 'Your full name',
+                mobileNumber: 'Mobile Number',
+                mobilePlaceholder: '01XXXXXXXXX',
+                password: 'Password',
+                passwordPlaceholder: 'At least 6 characters',
+                confirmPassword: 'Confirm Password',
+                confirmPasswordPlaceholder: 'Confirm your password',
+                createAccount: 'Create Account',
+                creatingAccount: 'Creating account...',
+                termsPrefix: 'By registering, you agree to our',
+                privacyPolicy: 'Privacy Policy',
+                and: 'and',
+                termsOfService: 'Terms of Service',
+                hasAccount: 'Already have an account?',
+                signIn: 'Sign in',
+                passwordsDoNotMatch: 'Passwords do not match.',
+                passwordTooShort: 'Password must be at least 6 characters.',
+                invalidMobile: 'Please enter a valid BD mobile number (01XXXXXXXXX).',
+                registrationFailed: 'Registration failed. Please try again.',
+            },
+            forgotPassword: {
+                title: 'Forgot Password?',
+                subtitle: "Enter your mobile number and we'll send you a verification code",
+                mobileNumber: 'Mobile Number',
+                mobilePlaceholder: '01XXXXXXXXX',
+                sendOtp: 'Send OTP',
+                sendingOtp: 'Sending OTP...',
+                backToLogin: 'Back to Login',
+                verifyOtpTitle: 'Verify OTP',
+                verifyOtpSubtitle: 'Enter the 6-digit code sent to',
+                didntReceiveCode: "Didn't receive the code?",
+                resendOtp: 'Resend OTP',
+                resendIn: 'Resend in',
+                verifyOtp: 'Verify OTP',
+                verifying: 'Verifying...',
+                changeNumber: 'Change Number',
+                newPasswordTitle: 'Create New Password',
+                newPasswordSubtitle: 'Enter a new password for your account',
+                newPassword: 'New Password',
+                confirmPassword: 'Confirm Password',
+                resetPassword: 'Reset Password',
+                resetting: 'Resetting...',
+                successTitle: 'Password Reset Successful!',
+                successMessage: 'Your password has been updated. Redirecting to login...',
+                goToLogin: 'Go to Login',
+                rememberPassword: 'Remember your password?',
+                completeOtp: 'Please enter the complete OTP',
+                invalidOtp: 'Invalid OTP',
+                failedToSendOtp: 'Failed to send OTP',
+                failedToResendOtp: 'Failed to resend OTP',
+                failedToResetPassword: 'Failed to reset password',
+            },
         },
         categories: {
             hijab: 'Hijabs',
@@ -709,6 +883,93 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
         section: {
             categories: 'বিভাগ অনুযায়ী কেনাকাটা',
+        },
+        shop: {
+            filter: 'ফিল্টার',
+            categories: 'বিভাগ',
+            price: 'মূল্য (টাকা)',
+            min: 'সর্বনিম্ন',
+            max: 'সর্বোচ্চ',
+            status: 'স্ট্যাটাস',
+            clearAllFilters: 'সব ফিল্টার মুছুন',
+            noProductsFound: 'আপনার ফিল্টার অনুযায়ী কোনো পণ্য পাওয়া যায়নি।',
+            sortBy: 'সাজান:',
+            newestArrivals: 'নতুন আগমন',
+            priceLowToHigh: 'মূল্য: কম থেকে বেশি',
+            priceHighToLow: 'মূল্য: বেশি থেকে কম',
+        },
+        auth: {
+            login: {
+                title: 'স্বাগতম',
+                subtitle: 'আপনার অর্ডার এবং প্রোফাইল দেখতে সাইন ইন করুন',
+                mobileNumber: 'মোবাইল নম্বর',
+                mobilePlaceholder: '০১৭...',
+                password: 'পাসওয়ার্ড',
+                passwordPlaceholder: '••••••••',
+                forgotPassword: 'পাসওয়ার্ড ভুলে গেছেন?',
+                rememberMe: 'আমার তথ্য মনে রাখুন',
+                signIn: 'সাইন ইন',
+                signingIn: 'সাইন ইন হচ্ছে...',
+                noAccount: 'আকাউন্ট নেই?',
+                createAccount: 'এখনই তৈরি করুন',
+                invalidCredentials: 'ভুল মোবাইল নম্বর বা পাসওয়ার্ড।',
+            },
+            register: {
+                title: 'আকাউন্ট তৈরি করুন',
+                subtitle: 'বিশেষ অফার এবং দ্রুত চেকআউটের জন্য যুক্ত হন',
+                fullName: 'পূর্ণ নাম',
+                fullNamePlaceholder: 'আপনার পূর্ণ নাম',
+                mobileNumber: 'মোবাইল নম্বর',
+                mobilePlaceholder: '০১XXXXXXXXX',
+                password: 'পাসওয়ার্ড',
+                passwordPlaceholder: 'কমপক্ষে ৬ অক্ষর',
+                confirmPassword: 'পাসওয়ার্ড নিশ্চিত করুন',
+                confirmPasswordPlaceholder: 'পাসওয়ার্ড নিশ্চিত করুন',
+                createAccount: 'আকাউন্ট তৈরি করুন',
+                creatingAccount: 'আকাউন্ট তৈরি হচ্ছে...',
+                termsPrefix: 'নিবন্ধন করে আপনি আমাদের',
+                privacyPolicy: 'গোপনীয়তা নীতি',
+                and: 'এবং',
+                termsOfService: 'সেবার শর্তাবলী',
+                hasAccount: 'ইতিমধ্যে আকাউন্ট আছে?',
+                signIn: 'সাইন ইন',
+                passwordsDoNotMatch: 'পাসওয়ার্ড মিলছে না।',
+                passwordTooShort: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।',
+                invalidMobile: 'অনুগ্রহ করে সঠিক BD মোবাইল নম্বর লিখুন (০১XXXXXXXXX)।',
+                registrationFailed: 'নিবন্ধন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।',
+            },
+            forgotPassword: {
+                title: 'পাসওয়ার্ড ভুলে গেছেন?',
+                subtitle: 'আপনার মোবাইল নম্বর লিখুন, আমরা একটি ভেরিফিকেশন কোড পাঠাব',
+                mobileNumber: 'মোবাইল নম্বর',
+                mobilePlaceholder: '০১XXXXXXXXX',
+                sendOtp: 'OTP পাঠান',
+                sendingOtp: 'OTP পাঠানো হচ্ছে...',
+                backToLogin: 'লগইনে ফিরে যান',
+                verifyOtpTitle: 'OTP যাচাই',
+                verifyOtpSubtitle: 'পাঠানো ৬ সংখ্যার কোড লিখুন',
+                didntReceiveCode: 'কোড পাননি?',
+                resendOtp: 'আবার পাঠান',
+                resendIn: 'আবার পাঠাতে পারবেন',
+                verifyOtp: 'OTP যাচাই',
+                verifying: 'যাচাই হচ্ছে...',
+                changeNumber: 'নম্বর পরিবর্তন',
+                newPasswordTitle: 'নতুন পাসওয়ার্ড তৈরি করুন',
+                newPasswordSubtitle: 'আপনার আকাউন্টের জন্য নতুন পাসওয়ার্ড লিখুন',
+                newPassword: 'নতুন পাসওয়ার্ড',
+                confirmPassword: 'পাসওয়ার্ড নিশ্চিত করুন',
+                resetPassword: 'পাসওয়ার্ড রিসেট',
+                resetting: 'রিসেট হচ্ছে...',
+                successTitle: 'পাসওয়ার্ড রিসেট সফল!',
+                successMessage: 'আপনার পাসওয়ার্ড আপডেট হয়েছে। লগইনে যাচ্ছে...',
+                goToLogin: 'লগইনে যান',
+                rememberPassword: 'পাসওয়ার্ড মনে আছে?',
+                completeOtp: 'অনুগ্রহ করে সম্পূর্ণ OTP লিখুন',
+                invalidOtp: 'ভুল OTP',
+                failedToSendOtp: 'OTP পাঠাতে ব্যর্থ হয়েছে',
+                failedToResendOtp: 'আবার OTP পাঠাতে ব্যর্থ হয়েছে',
+                failedToResetPassword: 'পাসওয়ার্ড রিসেট ব্যর্থ হয়েছে',
+            },
         },
         categories: {
             hijab: 'হিজাব',

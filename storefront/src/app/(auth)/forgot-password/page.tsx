@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ArrowLeft, Phone, Lock, Check } from "lucide-react";
 import { authService } from "@/services/api/auth.service";
+import { useLocalization } from "@/context/LocalizationContext";
 import styles from "./forgot-password.module.css";
 
 type Step = "phone" | "otp" | "password" | "success";
 
 export default function ForgotPasswordPage() {
     const router = useRouter();
+    const { dictionary: t } = useLocalization();
     const [step, setStep] = useState<Step>("phone");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -67,7 +69,7 @@ export default function ForgotPasswordPage() {
             await authService.requestPasswordReset(mobile);
             setStep("otp");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to send OTP");
+            setError(err instanceof Error ? err.message : t.auth.forgotPassword.failedToSendOtp);
         } finally {
             setIsLoading(false);
         }
@@ -102,7 +104,7 @@ export default function ForgotPasswordPage() {
 
         const otpString = otp.join("");
         if (otpString.length !== 6) {
-            setError("Please enter the complete OTP");
+            setError(t.auth.forgotPassword.completeOtp);
             setIsLoading(false);
             return;
         }
@@ -112,7 +114,7 @@ export default function ForgotPasswordPage() {
             setResetToken(result.resetToken);
             setStep("password");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Invalid OTP");
+            setError(err instanceof Error ? err.message : t.auth.forgotPassword.invalidOtp);
         } finally {
             setIsLoading(false);
         }
@@ -129,7 +131,7 @@ export default function ForgotPasswordPage() {
             setResendTimer(60);
             setOtp(["", "", "", "", "", ""]);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to resend OTP");
+            setError(err instanceof Error ? err.message : t.auth.forgotPassword.failedToResendOtp);
         } finally {
             setIsLoading(false);
         }
@@ -141,13 +143,13 @@ export default function ForgotPasswordPage() {
         setError("");
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setError(t.auth.register.passwordsDoNotMatch);
             setIsLoading(false);
             return;
         }
 
         if (password.length < 6) {
-            setError("Password must be at least 6 characters");
+            setError(t.auth.register.passwordTooShort);
             setIsLoading(false);
             return;
         }
@@ -156,7 +158,7 @@ export default function ForgotPasswordPage() {
             await authService.resetPassword(resetToken, password);
             setStep("success");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to reset password");
+            setError(err instanceof Error ? err.message : t.auth.forgotPassword.failedToResetPassword);
         } finally {
             setIsLoading(false);
         }
@@ -172,10 +174,10 @@ export default function ForgotPasswordPage() {
                         <div key={stepNum} style={{ display: "flex", alignItems: "center" }}>
                             <div
                                 className={`${styles.progressStep} ${stepNum < currentStep
-                                        ? styles.progressStepCompleted
-                                        : stepNum === currentStep
-                                            ? styles.progressStepActive
-                                            : styles.progressStepPending
+                                    ? styles.progressStepCompleted
+                                    : stepNum === currentStep
+                                        ? styles.progressStepActive
+                                        : styles.progressStepPending
                                     }`}
                             >
                                 {stepNum < currentStep ? <Check size={16} /> : stepNum}
@@ -202,21 +204,21 @@ export default function ForgotPasswordPage() {
                 {step === "phone" && (
                     <>
                         <div className={styles.header}>
-                            <h2 className={styles.title}>Forgot Password?</h2>
+                            <h2 className={styles.title}>{t.auth.forgotPassword.title}</h2>
                             <p className={styles.subtitle}>
-                                Enter your mobile number and we&apos;ll send you a verification code
+                                {t.auth.forgotPassword.subtitle}
                             </p>
                         </div>
 
                         <form onSubmit={handlePhoneSubmit} className={styles.card}>
                             <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Mobile Number</label>
+                                <label className={styles.label}>{t.auth.forgotPassword.mobileNumber}</label>
                                 <div className={styles.inputWrapper}>
                                     <Phone className={styles.inputIcon} size={18} />
                                     <input
                                         type="tel"
                                         required
-                                        placeholder="01XXXXXXXXX"
+                                        placeholder={t.auth.forgotPassword.mobilePlaceholder}
                                         className={styles.input}
                                         value={mobile}
                                         onChange={(e) => setMobile(e.target.value)}
@@ -231,13 +233,13 @@ export default function ForgotPasswordPage() {
                                 disabled={isLoading}
                                 className={styles.submitBtn}
                             >
-                                {isLoading ? "Sending OTP..." : "Send OTP"}
+                                {isLoading ? t.auth.forgotPassword.sendingOtp : t.auth.forgotPassword.sendOtp}
                                 {!isLoading && <ArrowRight size={16} />}
                             </button>
 
                             <Link href="/login" className={styles.backBtn}>
                                 <ArrowLeft size={16} />
-                                Back to Login
+                                {t.auth.forgotPassword.backToLogin}
                             </Link>
                         </form>
                     </>
@@ -247,9 +249,9 @@ export default function ForgotPasswordPage() {
                 {step === "otp" && (
                     <>
                         <div className={styles.header}>
-                            <h2 className={styles.title}>Verify OTP</h2>
+                            <h2 className={styles.title}>{t.auth.forgotPassword.verifyOtpTitle}</h2>
                             <p className={styles.subtitle}>
-                                Enter the 6-digit code sent to<br />
+                                {t.auth.forgotPassword.verifyOtpSubtitle}<br />
                                 <strong>{mobile}</strong>
                             </p>
                         </div>
@@ -274,7 +276,7 @@ export default function ForgotPasswordPage() {
 
                             <div className={styles.resendContainer}>
                                 <span className={styles.resendText}>
-                                    Didn&apos;t receive the code?{" "}
+                                    {t.auth.forgotPassword.didntReceiveCode}{" "}
                                 </span>
                                 <button
                                     type="button"
@@ -282,7 +284,7 @@ export default function ForgotPasswordPage() {
                                     disabled={resendTimer > 0 || isLoading}
                                     className={styles.resendBtn}
                                 >
-                                    {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend OTP"}
+                                    {resendTimer > 0 ? `${t.auth.forgotPassword.resendIn} ${resendTimer}s` : t.auth.forgotPassword.resendOtp}
                                 </button>
                             </div>
 
@@ -293,7 +295,7 @@ export default function ForgotPasswordPage() {
                                 disabled={isLoading || otp.join("").length !== 6}
                                 className={styles.submitBtn}
                             >
-                                {isLoading ? "Verifying..." : "Verify OTP"}
+                                {isLoading ? t.auth.forgotPassword.verifying : t.auth.forgotPassword.verifyOtp}
                                 {!isLoading && <ArrowRight size={16} />}
                             </button>
 
@@ -306,7 +308,7 @@ export default function ForgotPasswordPage() {
                                 className={styles.backBtn}
                             >
                                 <ArrowLeft size={16} />
-                                Change Number
+                                {t.auth.forgotPassword.changeNumber}
                             </button>
                         </form>
                     </>
@@ -316,21 +318,21 @@ export default function ForgotPasswordPage() {
                 {step === "password" && (
                     <>
                         <div className={styles.header}>
-                            <h2 className={styles.title}>Create New Password</h2>
+                            <h2 className={styles.title}>{t.auth.forgotPassword.newPasswordTitle}</h2>
                             <p className={styles.subtitle}>
-                                Enter a new password for your account
+                                {t.auth.forgotPassword.newPasswordSubtitle}
                             </p>
                         </div>
 
                         <form onSubmit={handlePasswordSubmit} className={styles.card}>
                             <div className={styles.fieldGroup}>
-                                <label className={styles.label}>New Password</label>
+                                <label className={styles.label}>{t.auth.forgotPassword.newPassword}</label>
                                 <div className={styles.inputWrapper}>
                                     <Lock className={styles.inputIcon} size={18} />
                                     <input
                                         type="password"
                                         required
-                                        placeholder="At least 6 characters"
+                                        placeholder={t.auth.register.passwordPlaceholder}
                                         className={styles.input}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
@@ -339,13 +341,13 @@ export default function ForgotPasswordPage() {
                             </div>
 
                             <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Confirm Password</label>
+                                <label className={styles.label}>{t.auth.forgotPassword.confirmPassword}</label>
                                 <div className={styles.inputWrapper}>
                                     <Lock className={styles.inputIcon} size={18} />
                                     <input
                                         type="password"
                                         required
-                                        placeholder="Confirm your password"
+                                        placeholder={t.auth.register.confirmPasswordPlaceholder}
                                         className={styles.input}
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -360,7 +362,7 @@ export default function ForgotPasswordPage() {
                                 disabled={isLoading}
                                 className={styles.submitBtn}
                             >
-                                {isLoading ? "Resetting..." : "Reset Password"}
+                                {isLoading ? t.auth.forgotPassword.resetting : t.auth.forgotPassword.resetPassword}
                                 {!isLoading && <ArrowRight size={16} />}
                             </button>
                         </form>
@@ -374,12 +376,12 @@ export default function ForgotPasswordPage() {
                             <div className={styles.successIcon}>
                                 <Check size={40} />
                             </div>
-                            <h3 className={styles.successTitle}>Password Reset Successful!</h3>
+                            <h3 className={styles.successTitle}>{t.auth.forgotPassword.successTitle}</h3>
                             <p className={styles.successMessage}>
-                                Your password has been updated. Redirecting to login...
+                                {t.auth.forgotPassword.successMessage}
                             </p>
                             <Link href="/login" className={styles.submitBtn}>
-                                Go to Login
+                                {t.auth.forgotPassword.goToLogin}
                                 <ArrowRight size={16} />
                             </Link>
                         </div>
@@ -389,9 +391,9 @@ export default function ForgotPasswordPage() {
                 {step !== "success" && (
                     <div className={styles.footer}>
                         <p className={styles.footerText}>
-                            Remember your password?{" "}
+                            {t.auth.forgotPassword.rememberPassword}{" "}
                             <Link href="/login" className={styles.loginLink}>
-                                Sign in
+                                {t.auth.register.signIn}
                             </Link>
                         </p>
                     </div>
