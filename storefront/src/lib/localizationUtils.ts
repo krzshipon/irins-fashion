@@ -13,13 +13,8 @@ export const getLocalizedContent = (
         return content[locale];
     }
 
-    // Fallback logic
-    if (locale === 'bn' && content['en']) return content['en'];
-    if (locale === 'en' && content['bn']) return content['bn'];
-
-    // Return first available key if any
-    const keys = Object.keys(content);
-    if (keys.length > 0) return content[keys[0]];
-
+    // Return fallback if requested locale doesn't exist
+    // This ensures we show the default language (usually English product.name) 
+    // rather than showing wrong language content
     return fallback;
 };
