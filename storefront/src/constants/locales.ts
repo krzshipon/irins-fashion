@@ -426,6 +426,68 @@ export interface Dictionary {
             content: string;
         };
     };
+    termsPage: {
+        title: string;
+        subtitle: string;
+        lastUpdated: string;
+        introduction: {
+            title: string;
+            content: string;
+        };
+        acceptance: {
+            title: string;
+            content: string;
+        };
+        products: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        orders: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        pricing: {
+            title: string;
+            content: string;
+        };
+        shipping: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        returns: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        customOrders: {
+            title: string;
+            content: string;
+            items: string[];
+        };
+        intellectual: {
+            title: string;
+            content: string;
+        };
+        limitation: {
+            title: string;
+            content: string;
+        };
+        governing: {
+            title: string;
+            content: string;
+        };
+        changes: {
+            title: string;
+            content: string;
+        };
+        contact: {
+            title: string;
+            content: string;
+        };
+    };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -868,6 +930,97 @@ export const dictionaries: Record<Locale, Dictionary> = {
                 content: "If you have any questions about this Privacy Policy, please contact us at info@irinsfashion.com or +8801648593538."
             }
         },
+        termsPage: {
+            title: "Terms of Service",
+            subtitle: "Please read these terms carefully before using our services.",
+            lastUpdated: "Last Updated",
+            introduction: {
+                title: "Introduction",
+                content: "Welcome to Irin's Fashion. By accessing or using our website and services, you agree to be bound by these Terms of Service. We are a Dhaka-based modest fashion retailer specializing in hijabs, abayas, borkhas, niqabs, gowns, and women's accessories — offering both ready-made and custom-tailored products."
+            },
+            acceptance: {
+                title: "Acceptance of Terms",
+                content: "By placing an order or using our website, you confirm that you are at least 18 years old or have parental/guardian consent, and that you agree to comply with these terms. If you do not agree with any part of these terms, please do not use our services."
+            },
+            products: {
+                title: "Products and Services",
+                content: "We offer a variety of modest fashion products including:",
+                items: [
+                    "Ready-made hijabs, abayas, borkhas, niqabs, and gowns",
+                    "Custom-tailored garments made to your specifications",
+                    "Women's fashion accessories",
+                    "All products are designed with modesty and elegance in mind"
+                ]
+            },
+            orders: {
+                title: "Orders and Payment",
+                content: "When placing an order, please note:",
+                items: [
+                    "All prices are listed in Bangladeshi Taka (BDT)",
+                    "We accept cash on delivery (COD) within Dhaka and online payments",
+                    "Orders are confirmed only after successful payment verification",
+                    "We reserve the right to cancel orders due to stock unavailability or pricing errors",
+                    "Order confirmation will be sent via SMS or email"
+                ]
+            },
+            pricing: {
+                title: "Pricing",
+                content: "All prices displayed are in BDT and include applicable taxes. We reserve the right to modify prices at any time without prior notice. However, any price changes will not affect orders that have already been confirmed."
+            },
+            shipping: {
+                title: "Shipping and Delivery",
+                content: "We currently serve customers in Dhaka and across Bangladesh:",
+                items: [
+                    "Delivery within Dhaka: 2-3 business days",
+                    "Delivery outside Dhaka: 5-7 business days",
+                    "Custom-tailored orders require additional 7-14 days for preparation",
+                    "Shipping costs are calculated at checkout based on location",
+                    "Tracking information will be provided via SMS"
+                ]
+            },
+            returns: {
+                title: "Returns and Exchanges",
+                content: "We want you to be completely satisfied with your purchase:",
+                items: [
+                    "Ready-made items may be returned within 7 days of delivery if unused and in original packaging",
+                    "Custom-tailored items are non-returnable unless there is a manufacturing defect",
+                    "Intimate wear and accessories are non-returnable for hygiene reasons",
+                    "Refunds are processed within 7-10 business days after receiving the returned item",
+                    "Exchange is subject to product availability"
+                ]
+            },
+            customOrders: {
+                title: "Custom Orders Policy",
+                content: "For custom-tailored garments:",
+                items: [
+                    "50% advance payment is required to start production",
+                    "Accurate measurements must be provided by the customer",
+                    "Production time is typically 7-14 days depending on complexity",
+                    "Minor variations in color or fabric texture may occur",
+                    "Custom orders are final and non-refundable unless defective"
+                ]
+            },
+            intellectual: {
+                title: "Intellectual Property",
+                content: "All content on this website, including but not limited to text, images, logos, designs, and product photos, are the property of Irin's Fashion and are protected by copyright laws. You may not reproduce, distribute, or use any content without our written permission."
+            },
+            limitation: {
+                title: "Limitation of Liability",
+                content: "Irin's Fashion shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use our products or services. Our total liability shall not exceed the amount paid for the specific product or service in question."
+            },
+            governing: {
+                title: "Governing Law",
+                content: "These Terms of Service are governed by and construed in accordance with the laws of Bangladesh. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Dhaka, Bangladesh."
+            },
+            changes: {
+                title: "Changes to Terms",
+                content: "We reserve the right to update or modify these Terms of Service at any time. Changes will be effective immediately upon posting on our website. Your continued use of our services after any changes constitutes acceptance of the new terms."
+            },
+            contact: {
+                title: "Contact Us",
+                content: "If you have any questions about these Terms of Service, please contact us at info@irinsfashion.com or call +8801648593538. Our office is located in Dhaka, Bangladesh."
+            }
+        },
     },
     bn: {
         nav: {
@@ -1307,6 +1460,97 @@ export const dictionaries: Record<Locale, Dictionary> = {
             contact: {
                 title: "যোগাযোগ করুন",
                 content: "এই গোপনীয়তা নীতি সম্পর্কে আপনার কোন প্রশ্ন থাকলে, অনুগ্রহ করে আমাদের সাথে info@irinsfashion.com বা +8801648593538 এ যোগাযোগ করুন।"
+            }
+        },
+        termsPage: {
+            title: "সেবার শর্তাবলী",
+            subtitle: "আমাদের সেবা ব্যবহার করার আগে অনুগ্রহ করে এই শর্তাবলী মনোযোগ সহকারে পড়ুন।",
+            lastUpdated: "সর্বশেষ আপডেট",
+            introduction: {
+                title: "ভূমিকা",
+                content: "আইরিন'স ফ্যাশনে স্বাগতম। আমাদের ওয়েবসাইট এবং সেবা ব্যবহার করে আপনি এই সেবার শর্তাবলী মেনে নিতে সম্মত হচ্ছেন। আমরা ঢাকা-ভিত্তিক একটি শালীন পোশাকের খুচরা বিক্রেতা যারা হিজাব, আবায়া, বোরখা, নেকাব, গাউন এবং মহিলাদের অ্যাক্সেসরিজে বিশেষজ্ঞ — রেডিমেড এবং কাস্টম-টেইলর্ড উভয় পণ্য অফার করে।"
+            },
+            acceptance: {
+                title: "শর্তাবলী গ্রহণ",
+                content: "অর্ডার দেওয়া বা আমাদের ওয়েবসাইট ব্যবহার করে আপনি নিশ্চিত করছেন যে আপনি কমপক্ষে ১৮ বছর বয়সী বা পিতামাতা/অভিভাবকের সম্মতি আছে, এবং আপনি এই শর্তাবলী মেনে চলতে সম্মত। আপনি যদি এই শর্তাবলীর কোন অংশে সম্মত না হন, তাহলে অনুগ্রহ করে আমাদের সেবা ব্যবহার করবেন না।"
+            },
+            products: {
+                title: "পণ্য এবং সেবা",
+                content: "আমরা বিভিন্ন ধরনের শালীন পোশাক পণ্য অফার করি, যার মধ্যে রয়েছে:",
+                items: [
+                    "রেডিমেড হিজাব, আবায়া, বোরখা, নেকাব এবং গাউন",
+                    "আপনার স্পেসিফিকেশন অনুযায়ী কাস্টম-টেইলর্ড পোশাক",
+                    "মহিলাদের ফ্যাশন অ্যাক্সেসরিজ",
+                    "সমস্ত পণ্য শালীনতা এবং সৌন্দর্যের কথা মাথায় রেখে ডিজাইন করা"
+                ]
+            },
+            orders: {
+                title: "অর্ডার এবং পেমেন্ট",
+                content: "অর্ডার দেওয়ার সময় অনুগ্রহ করে লক্ষ্য করুন:",
+                items: [
+                    "সমস্ত মূল্য বাংলাদেশী টাকায় (BDT) উল্লেখ করা হয়েছে",
+                    "আমরা ঢাকার মধ্যে ক্যাশ অন ডেলিভারি (COD) এবং অনলাইন পেমেন্ট গ্রহণ করি",
+                    "সফল পেমেন্ট যাচাইয়ের পরেই অর্ডার নিশ্চিত হয়",
+                    "স্টক অপ্রাপ্যতা বা মূল্য ত্রুটির কারণে অর্ডার বাতিল করার অধিকার আমরা সংরক্ষণ করি",
+                    "অর্ডার নিশ্চিতকরণ SMS বা ইমেলের মাধ্যমে পাঠানো হবে"
+                ]
+            },
+            pricing: {
+                title: "মূল্য নির্ধারণ",
+                content: "প্রদর্শিত সমস্ত মূল্য BDT তে এবং প্রযোজ্য কর অন্তর্ভুক্ত। আমরা পূর্ব বিজ্ঞপ্তি ছাড়াই যেকোনো সময় মূল্য পরিবর্তন করার অধিকার সংরক্ষণ করি। তবে, কোনো মূল্য পরিবর্তন ইতিমধ্যে নিশ্চিত হওয়া অর্ডারগুলিকে প্রভাবিত করবে না।"
+            },
+            shipping: {
+                title: "শিপিং এবং ডেলিভারি",
+                content: "আমরা বর্তমানে ঢাকা এবং সারা বাংলাদেশে গ্রাহকদের সেবা দিই:",
+                items: [
+                    "ঢাকার মধ্যে ডেলিভারি: ২-৩ কর্মদিবস",
+                    "ঢাকার বাইরে ডেলিভারি: ৫-৭ কর্মদিবস",
+                    "কাস্টম-টেইলর্ড অর্ডারের জন্য অতিরিক্ত ৭-১৪ দিন প্রস্তুতির সময় প্রয়োজন",
+                    "শিপিং খরচ লোকেশনের উপর ভিত্তি করে চেকআউটে গণনা করা হয়",
+                    "ট্র্যাকিং তথ্য SMS এর মাধ্যমে প্রদান করা হবে"
+                ]
+            },
+            returns: {
+                title: "রিটার্ন এবং এক্সচেঞ্জ",
+                content: "আমরা চাই আপনি আপনার কেনাকাটায় সম্পূর্ণ সন্তুষ্ট থাকুন:",
+                items: [
+                    "রেডিমেড পণ্য ডেলিভারির ৭ দিনের মধ্যে ফেরত দেওয়া যেতে পারে যদি অব্যবহৃত এবং মূল প্যাকেজিংয়ে থাকে",
+                    "কাস্টম-টেইলর্ড পণ্য ফেরতযোগ্য নয় যদি না উৎপাদন ত্রুটি থাকে",
+                    "স্বাস্থ্যবিধির কারণে অন্তর্বাস এবং অ্যাক্সেসরিজ ফেরতযোগ্য নয়",
+                    "ফেরত পণ্য পাওয়ার পরে ৭-১০ কর্মদিবসের মধ্যে রিফান্ড প্রক্রিয়া করা হয়",
+                    "এক্সচেঞ্জ পণ্যের প্রাপ্যতার উপর নির্ভরশীল"
+                ]
+            },
+            customOrders: {
+                title: "কাস্টম অর্ডার নীতি",
+                content: "কাস্টম-টেইলর্ড পোশাকের জন্য:",
+                items: [
+                    "উৎপাদন শুরু করতে ৫০% অগ্রিম পেমেন্ট প্রয়োজন",
+                    "গ্রাহককে সঠিক মাপ প্রদান করতে হবে",
+                    "উৎপাদন সময় সাধারণত জটিলতার উপর নির্ভর করে ৭-১৪ দিন",
+                    "রঙ বা কাপড়ের টেক্সচারে সামান্য পার্থক্য হতে পারে",
+                    "কাস্টম অর্ডার চূড়ান্ত এবং ত্রুটিপূর্ণ না হলে ফেরতযোগ্য নয়"
+                ]
+            },
+            intellectual: {
+                title: "বুদ্ধিবৃত্তিক সম্পত্তি",
+                content: "এই ওয়েবসাইটের সমস্ত কন্টেন্ট, যার মধ্যে রয়েছে টেক্সট, ছবি, লোগো, ডিজাইন এবং পণ্যের ফটো, আইরিন'স ফ্যাশনের সম্পত্তি এবং কপিরাইট আইন দ্বারা সুরক্ষিত। আমাদের লিখিত অনুমতি ছাড়া কোনো কন্টেন্ট পুনরুৎপাদন, বিতরণ বা ব্যবহার করতে পারবেন না।"
+            },
+            limitation: {
+                title: "দায়বদ্ধতার সীমাবদ্ধতা",
+                content: "আইরিন'স ফ্যাশন আমাদের পণ্য বা সেবা ব্যবহার বা ব্যবহারে অক্ষমতার ফলে সৃষ্ট কোনো পরোক্ষ, আকস্মিক, বিশেষ বা পরিণতিমূলক ক্ষতির জন্য দায়ী থাকবে না। আমাদের মোট দায় প্রশ্নবিদ্ধ নির্দিষ্ট পণ্য বা সেবার জন্য প্রদত্ত পরিমাণের বেশি হবে না।"
+            },
+            governing: {
+                title: "প্রযোজ্য আইন",
+                content: "এই সেবার শর্তাবলী বাংলাদেশের আইন অনুসারে পরিচালিত এবং ব্যাখ্যা করা হয়। এই শর্তাবলী থেকে উদ্ভূত যেকোনো বিরোধ ঢাকা, বাংলাদেশের আদালতের একচেটিয়া এখতিয়ারের অধীন হবে।"
+            },
+            changes: {
+                title: "শর্তাবলী পরিবর্তন",
+                content: "আমরা যেকোনো সময় এই সেবার শর্তাবলী আপডেট বা পরিবর্তন করার অধিকার সংরক্ষণ করি। পরিবর্তনগুলি আমাদের ওয়েবসাইটে পোস্ট করার সাথে সাথে কার্যকর হবে। কোনো পরিবর্তনের পরে আমাদের সেবা ব্যবহার অব্যাহত রাখা নতুন শর্তাবলী গ্রহণ করা বোঝায়।"
+            },
+            contact: {
+                title: "যোগাযোগ করুন",
+                content: "এই সেবার শর্তাবলী সম্পর্কে আপনার কোন প্রশ্ন থাকলে, অনুগ্রহ করে আমাদের সাথে info@irinsfashion.com এ যোগাযোগ করুন বা +8801648593538 এ কল করুন। আমাদের অফিস ঢাকা, বাংলাদেশে অবস্থিত।"
             }
         },
     },
