@@ -2,6 +2,7 @@ import React from 'react';
 import { CartItem } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface OrderSummaryProps {
     items: CartItem[];
@@ -235,11 +236,11 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                 fontSize: '12px',
                 color: '#9ca3af',
             }}>
-                <span>Returns</span>
+                <Link href="/returns" style={{ color: 'inherit', textDecoration: 'none' }}>Returns</Link>
                 <span>•</span>
-                <span>Privacy</span>
+                <Link href="/policy/privacy" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</Link>
                 <span>•</span>
-                <span>Terms</span>
+                <Link href="/policy/terms" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</Link>
             </div>
         </div>
     );
