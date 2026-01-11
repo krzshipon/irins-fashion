@@ -84,14 +84,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                             </div>
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                 <div>
-                                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>
+                                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '6px' }}>
                                         {item.name}
                                     </h3>
-                                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '6px' }}>
+                                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '10px' }}>
                                         {item.selectedSize} / {item.selectedColor}
                                     </p>
                                     {/* Price × Quantity breakdown */}
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', fontSize: '12px', color: '#9ca3af' }}>
                                         {hasDiscount && (
                                             <span style={{
                                                 textDecoration: 'line-through',
@@ -119,13 +119,13 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                                         )}
                                     </div>
                                 </div>
-                                {/* Item Total */}
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
+                                {/* Item Total - with more spacing */}
+                                <div style={{ textAlign: 'right', marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed #e5e5e5' }}>
+                                    <p style={{ fontSize: '16px', fontWeight: '700', color: '#111' }}>
                                         ৳ {itemTotal.toLocaleString()}
                                     </p>
                                     {hasDiscount && (
-                                        <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>
+                                        <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600', marginTop: '4px' }}>
                                             Save ৳ {((itemOriginalPrice - itemPrice) * item.quantity).toLocaleString()}
                                         </p>
                                     )}
