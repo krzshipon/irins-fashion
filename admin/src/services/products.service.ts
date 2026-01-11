@@ -21,9 +21,10 @@ export interface ProductPayload {
 }
 
 export const productsService = {
-    getAll: (params?: any) => apiClient.get<any>('/products', { params }),
-    getOne: (id: string) => apiClient.get<any>(`/products/${id}`),
-    create: (data: ProductPayload) => apiClient.post<any>('/products', data),
-    update: (id: string, data: Partial<ProductPayload>) => apiClient.patch<any>(`/products/${id}`, data),
-    delete: (id: string) => apiClient.delete<void>(`/products/${id}`),
+    getAll: (params?: any) => apiClient.get<any>('/admin/products', { params }),
+    getOne: (id: string) => apiClient.get<any>(`/admin/products/${id}`),
+    create: (data: ProductPayload) => apiClient.post<any>('/admin/products', data),
+    update: (id: string, data: Partial<ProductPayload>) => apiClient.patch<any>(`/admin/products/${id}`, data),
+    delete: (id: string) => apiClient.delete<void>(`/admin/products/${id}`),
 };
+

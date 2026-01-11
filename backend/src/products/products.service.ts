@@ -117,6 +117,9 @@ export class ProductsService {
       ...rest
     } = updateProductDto;
 
+    // Remove fields that Prisma can't handle directly
+    const { categoryId, category, ...productData } = rest as any;
+
     // Resolve Category if changed
     let categoryConnect = {};
     if (categoryName) {
@@ -136,7 +139,7 @@ export class ProductsService {
       const product = await tx.product.update({
         where: { id },
         data: {
-          ...rest,
+          ...productData,
           ...categoryConnect,
           discount: discount as any,
           localizedNames: localizedNames as any,
@@ -184,7 +187,7 @@ export class ProductsService {
       }
 
       const products = await this.prisma.product.findMany({
-        where: { categoryId: category.id, status: 'ACTIVE' },
+        where: { categoryId: category.id, status: 'Published' },
         include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
         orderBy: { createdAt: 'desc' },
         take: takeValue,
@@ -194,7 +197,7 @@ export class ProductsService {
     }
 
     const products = await this.prisma.product.findMany({
-      where: { status: 'ACTIVE' },
+      where: { status: 'Published' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
       orderBy: { createdAt: 'desc' },
       take: takeValue,
@@ -205,22 +208,63 @@ export class ProductsService {
 
   findOne(id: string) {
     return this.prisma.product.findFirst({
-      where: { id, status: 'ACTIVE' },
+      where: { id, status: 'Published' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
 
   findBySku(sku: string) {
     return this.prisma.product.findFirst({
-      where: { sku, status: 'ACTIVE' },
+      where: { sku, status: 'Published' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
 
   findBySlug(slug: string) {
     return this.prisma.product.findFirst({
-      where: { slug, status: 'ACTIVE' },
+      where: { slug, status: 'Published' },
+      include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+    });
+  }
+
+  // --- Admin Methods (no status filter) ---
+
+  async findAllAdmin(categorySlug?: string, take?: number) {
+    const takeValue = take ? +take : undefined;
+
+    if (categorySlug) {
+      const category = await this.prisma.category.findUnique({
+        where: { slug: categorySlug },
+      });
+
+      if (!category) {
+        return { products: [], category: null };
+      }
+
+      const products = await this.prisma.product.findMany({
+        where: { categoryId: category.id },
+        include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+        orderBy: { createdAt: 'desc' },
+        take: takeValue,
+      });
+
+      return { products, category };
+    }
+
+    const products = await this.prisma.product.findMany({
+      include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
+      orderBy: { createdAt: 'desc' },
+      take: takeValue,
+    });
+
+    return { products, category: null };
+  }
+
+  findOneAdmin(id: string) {
+    return this.prisma.product.findFirst({
+      where: { id },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
 }
+
