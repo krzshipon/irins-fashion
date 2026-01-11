@@ -34,7 +34,11 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
             {/* Product Items */}
             <div style={{ marginBottom: '24px' }}>
                 {items.map((item) => {
-                    const itemTotal = item.price * item.quantity;
+                    // Use effectivePrice if available, fallback to price for backward compatibility
+                    const itemPrice = (item as any).effectivePrice ?? item.price;
+                    const itemOriginalPrice = (item as any).originalPrice ?? item.price;
+                    const hasDiscount = itemOriginalPrice > itemPrice;
+                    const itemTotal = itemPrice * item.quantity;
                     return (
                         <div key={item.cartItemId} style={{
                             display: 'flex',
@@ -88,18 +92,16 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                                     </p>
                                     {/* Price × Quantity breakdown */}
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
-                                        <p style={{ fontSize: '12px', color: '#9ca3af' }}>
-                                            {item.originalPrice && item.originalPrice > item.price && (
-                                                <span style={{
-                                                    textDecoration: 'line-through',
-                                                    marginRight: '6px',
-                                                    color: '#9ca3af'
-                                                }}>
-                                                    ৳ {item.originalPrice.toLocaleString()}
-                                                </span>
-                                            )}
-                                            ৳ {item.price.toLocaleString()} × {item.quantity}
-                                        </p>
+                                        {hasDiscount && (
+                                            <span style={{
+                                                textDecoration: 'line-through',
+                                                marginRight: '6px',
+                                                color: '#9ca3af'
+                                            }}>
+                                                ৳ {itemOriginalPrice.toLocaleString()}
+                                            </span>
+                                        )}
+                                        ৳ {itemPrice.toLocaleString()} × {item.quantity}
                                         {item.discount && (
                                             <span style={{
                                                 backgroundColor: '#fee2e2',
@@ -122,9 +124,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                                     <p style={{ fontSize: '15px', fontWeight: '700', color: '#111' }}>
                                         ৳ {itemTotal.toLocaleString()}
                                     </p>
-                                    {item.originalPrice && item.originalPrice > item.price && (
+                                    {hasDiscount && (
                                         <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>
-                                            Save ৳ {((item.originalPrice - item.price) * item.quantity).toLocaleString()}
+                                            Save ৳ {((itemOriginalPrice - itemPrice) * item.quantity).toLocaleString()}
                                         </p>
                                     )}
                                 </div>
