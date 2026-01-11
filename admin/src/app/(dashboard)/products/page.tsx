@@ -181,14 +181,31 @@ export default function ProductsPage() {
                                         <span className="text-sm text-gray-400">{product.category?.name || 'Uncategorized'}</span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div>
-                                            <span className="text-sm font-semibold text-white">৳{product.price.toLocaleString()}</span>
-                                            {product.originalPrice && (
-                                                <span className="text-xs text-gray-500 line-through ml-2">
-                                                    ৳{product.originalPrice.toLocaleString()}
-                                                </span>
-                                            )}
-                                        </div>
+                                        {(() => {
+                                            const hasDiscount = product.discount?.value;
+                                            const hasOriginalPrice = product.originalPrice && product.originalPrice > product.price;
+                                            const showCrossedOut = hasDiscount || hasOriginalPrice;
+                                            const crossedOutPrice = hasOriginalPrice ? product.originalPrice : (hasDiscount ? product.price : null);
+
+                                            // Calculate discounted price if discount exists
+                                            let displayPrice = product.price;
+                                            if (hasDiscount) {
+                                                displayPrice = product.discount.type === 'percentage'
+                                                    ? Math.round(product.price * (1 - product.discount.value / 100))
+                                                    : Math.max(0, product.price - product.discount.value);
+                                            }
+
+                                            return (
+                                                <div>
+                                                    <span className="text-sm font-semibold text-white">৳{displayPrice.toLocaleString()}</span>
+                                                    {showCrossedOut && crossedOutPrice && (
+                                                        <span className="text-xs text-gray-500 line-through ml-2">
+                                                            ৳{crossedOutPrice.toLocaleString()}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
                                     </td>
                                     <td className="px-6 py-4">
                                         {/* Stock aggregation if many variants? For now just use product.stock if available or sum variants? 

@@ -199,8 +199,29 @@ export default function ProductDetailsPage() {
                 <div className="space-y-6">
                     <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-white/10 p-6">
                         <h3 className="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Pricing</h3>
-                        <div className="text-3xl font-bold text-white mb-1">৳{product.price}</div>
-                        {product.originalPrice && <div className="text-sm text-gray-500 line-through">৳{product.originalPrice}</div>}
+                        {(() => {
+                            const hasDiscount = product.discount?.value;
+                            const hasOriginalPrice = product.originalPrice && product.originalPrice > product.price;
+                            const showCrossedOut = hasDiscount || hasOriginalPrice;
+                            const crossedOutPrice = hasOriginalPrice ? product.originalPrice : (hasDiscount ? product.price : null);
+
+                            // Calculate discounted price if discount exists
+                            let displayPrice = product.price;
+                            if (hasDiscount) {
+                                displayPrice = product.discount.type === 'percentage'
+                                    ? Math.round(product.price * (1 - product.discount.value / 100))
+                                    : Math.max(0, product.price - product.discount.value);
+                            }
+
+                            return (
+                                <>
+                                    <div className="text-3xl font-bold text-white mb-1">৳{displayPrice.toLocaleString()}</div>
+                                    {showCrossedOut && crossedOutPrice && (
+                                        <div className="text-sm text-gray-500 line-through">৳{crossedOutPrice.toLocaleString()}</div>
+                                    )}
+                                </>
+                            );
+                        })()}
 
                         <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
                             <div className="flex justify-between text-sm">
