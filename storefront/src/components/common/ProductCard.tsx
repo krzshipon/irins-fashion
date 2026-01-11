@@ -10,6 +10,7 @@ import { useCart } from '@/context/CartContext';
 import { ShoppingBag } from 'lucide-react';
 
 import { getLocalizedContent } from '@/lib/localizationUtils';
+import { applyDiscount } from '@/lib/priceUtils';
 
 interface ProductCardProps {
     product: Product;
@@ -138,22 +139,37 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className={styles.cardCategory}>{categoryName}</div>
                     <h3 className={styles.cardTitle}>{localizedName}</h3>
                     <div className={styles.cardPrice}>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                            <span style={{
-                                textDecoration: 'line-through',
-                                color: '#9ca3af',
-                                fontSize: '0.9em',
-                                marginRight: '8px'
-                            }}>
-                                {product.currency} {product.originalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </span>
-                        )}
-                        <span style={{
-                            color: product.originalPrice ? '#dc2626' : 'inherit',
-                            fontWeight: product.originalPrice ? 'bold' : 'normal'
-                        }}>
-                            {product.currency} {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </span>
+                        {(() => {
+                            // Calculate discounted price
+                            const displayPrice = applyDiscount(product.price, product.discount);
+                            const hasDiscount = product.discount && displayPrice < product.price;
+                            const hasOriginalPrice = product.originalPrice && product.originalPrice > product.price;
+
+                            // Show original price crossed out if: has discount OR has originalPrice
+                            const showCrossedOut = hasDiscount || hasOriginalPrice;
+                            const crossedOutPrice = hasDiscount ? product.price : product.originalPrice;
+
+                            return (
+                                <>
+                                    {showCrossedOut && crossedOutPrice && (
+                                        <span style={{
+                                            textDecoration: 'line-through',
+                                            color: '#9ca3af',
+                                            fontSize: '0.9em',
+                                            marginRight: '8px'
+                                        }}>
+                                            {product.currency} {crossedOutPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                        </span>
+                                    )}
+                                    <span style={{
+                                        color: showCrossedOut ? '#dc2626' : 'inherit',
+                                        fontWeight: showCrossedOut ? 'bold' : 'normal'
+                                    }}>
+                                        {product.currency} {displayPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </>
+                            );
+                        })()}
                     </div>
                 </div>
             </Link>
