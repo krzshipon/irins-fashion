@@ -1,74 +1,6 @@
 import { Order, TrackingEvent, OrderStatus } from './types';
 
-const MOCK_ORDERS: Order[] = [
-    {
-        id: 'ORD-7829-XJ',
-        userId: 'usr_123456',
-        status: 'DELIVERED',
-        createdAt: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
-        subtotal: 12500,
-        shippingCost: 100,
-        total: 12600,
-        shippingAddress: {
-            id: 'addr_1',
-            label: 'Home',
-            recipientName: 'Irina Shayk',
-            address: 'House 12, Road 5, Dhaka 1209',
-            division: 'Dhaka',
-            phone: '01700000000',
-            isDefault: true
-        },
-        items: [
-            {
-                id: 'item_1',
-                productId: 'prod_1',
-                productName: 'Premium Silk Abaya',
-                productImage: 'https://images.unsplash.com/photo-1594576722512-582bcd46fba3?q=80&w=800&auto=format&fit=crop',
-                variant: { color: 'Emerald', size: 'M' },
-                quantity: 1,
-                price: 8500,
-            },
-            {
-                id: 'item_2',
-                productId: 'prod_2',
-                productName: 'Chiffon Hijab',
-                productImage: 'https://images.unsplash.com/photo-1585670210693-e7fdd16b142e?q=80&w=800&auto=format&fit=crop',
-                variant: { color: 'Beige' },
-                quantity: 2,
-                price: 2000,
-            },
-        ],
-    },
-    {
-        id: 'ORD-9921-MC',
-        userId: 'usr_123456',
-        status: 'PROCESSING',
-        createdAt: new Date().toISOString(), // Today
-        subtotal: 4500,
-        shippingCost: 60,
-        total: 4560,
-        shippingAddress: {
-            id: 'addr_1',
-            label: 'Home',
-            recipientName: 'Irina Shayk',
-            address: 'House 12, Road 5, Dhaka 1209',
-            division: 'Dhaka',
-            phone: '01700000000',
-            isDefault: true
-        },
-        items: [
-            {
-                id: 'item_3',
-                productId: 'prod_3',
-                productName: 'Everyday Cotton Tunic',
-                productImage: 'https://images.unsplash.com/photo-1564415319596-8cc0f3c5aa84?q=80&w=800&auto=format&fit=crop',
-                variant: { size: 'L' },
-                quantity: 1,
-                price: 4500,
-            },
-        ],
-    },
-];
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // Helper to generate tracking timeline based on order status
 function generateTrackingEvents(order: Order): TrackingEvent[] {
@@ -109,7 +41,7 @@ function generateTrackingEvents(order: Order): TrackingEvent[] {
             status: 'DELIVERED',
             title: 'Delivered',
             description: 'Your order has been delivered successfully',
-            location: order.shippingAddress.division,
+            location: order.shippingAddress?.division || 'Customer Address',
             timestamp: new Date(orderDate.getTime() + 86400000 * 3).toISOString(), // +3 days
             isCompleted: currentIndex >= 3,
         },
@@ -134,25 +66,99 @@ function generateTrackingEvents(order: Order): TrackingEvent[] {
     return events;
 }
 
+// Transform API response to frontend Order type
+function transformOrder(apiOrder: any): Order {
+    return {
+        id: apiOrder.id,
+        userId: apiOrder.userId,
+        status: apiOrder.status,
+        createdAt: apiOrder.createdAt,
+        subtotal: Number(apiOrder.subtotal),
+        shippingCost: Number(apiOrder.shippingCost),
+        total: Number(apiOrder.total),
+        discount: Number(apiOrder.discount) || 0,
+        shippingAddress: apiOrder.shippingAddressSnapshot ? {
+            id: 'snapshot',
+            label: 'Shipping',
+            recipientName: apiOrder.shippingAddressSnapshot.fullName,
+            address: apiOrder.shippingAddressSnapshot.address,
+            division: apiOrder.shippingAddressSnapshot.division,
+            phone: apiOrder.shippingAddressSnapshot.phone,
+            isDefault: false,
+        } : {
+            id: 'unknown',
+            label: 'Unknown',
+            recipientName: 'Unknown',
+            address: 'Unknown',
+            division: 'Unknown',
+            phone: 'Unknown',
+            isDefault: false,
+        },
+        items: (apiOrder.items || []).map((item: any) => ({
+            id: item.id,
+            productId: item.productId,
+            productName: item.productName,
+            productImage: item.productImage,
+            variant: item.variantSnapshot || {},
+            quantity: item.quantity,
+            price: Number(item.price),
+        })),
+    };
+}
+
 export const orderService = {
     async getOrders(): Promise<Order[]> {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        return MOCK_ORDERS;
+        try {
+            const response = await fetch(`${API_URL}/orders/my/all`, {
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                // For unauthenticated users, return empty array
+                if (response.status === 401) {
+                    return [];
+                }
+                throw new Error('Failed to fetch orders');
+            }
+
+            const orders = await response.json();
+            return orders.map(transformOrder);
+        } catch (error) {
+            console.error('Failed to fetch orders:', error);
+            return [];
+        }
     },
 
     async getOrderById(id: string): Promise<Order | undefined> {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return MOCK_ORDERS.find((o) => o.id === id);
+        try {
+            const response = await fetch(`${API_URL}/orders/${id}`, {
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                return undefined;
+            }
+
+            const order = await response.json();
+            return transformOrder(order);
+        } catch (error) {
+            console.error('Failed to fetch order:', error);
+            return undefined;
+        }
     },
 
     async getOrderTracking(orderId: string): Promise<{ order: Order; tracking: TrackingEvent[] } | null> {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        const order = MOCK_ORDERS.find((o) => o.id === orderId);
-        if (!order) return null;
+        try {
+            const order = await this.getOrderById(orderId);
+            if (!order) return null;
 
-        return {
-            order,
-            tracking: generateTrackingEvents(order),
-        };
+            return {
+                order,
+                tracking: generateTrackingEvents(order),
+            };
+        } catch (error) {
+            console.error('Failed to fetch order tracking:', error);
+            return null;
+        }
     },
 };

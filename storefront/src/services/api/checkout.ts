@@ -1,5 +1,7 @@
 import { Order, ShippingRates } from '@/types/checkout';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 // Fallback shipping rates
 const FALLBACK_RATES: ShippingRates = {
     insideDhaka: 80,
@@ -11,8 +13,8 @@ const FALLBACK_RATES: ShippingRates = {
  */
 export const getShippingRates = async (): Promise<ShippingRates> => {
     try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/shipping-rates');
+        // TODO: Replace with actual API call when endpoint is ready
+        // const response = await fetch(`${API_URL}/shipping-rates`);
         // if (!response.ok) throw new Error('Failed to fetch rates');
         // return await response.json();
 
@@ -34,23 +36,62 @@ export const getShippingRates = async (): Promise<ShippingRates> => {
  * Submit order to the backend
  */
 export const submitOrder = async (order: Order): Promise<{ success: boolean; orderId: string; message: string }> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+        // Transform cart items to API format
+        const orderPayload = {
+            items: order.items.map(item => ({
+                productId: item.id,
+                productName: item.name,
+                productImage: item.images?.find(img => img.isPrimary)?.url || item.images?.[0]?.url || '',
+                quantity: item.quantity,
+                price: (item as any).effectivePrice ?? item.price,
+                variantSnapshot: {
+                    color: item.selectedColor,
+                    size: item.selectedSize,
+                },
+            })),
+            subtotal: order.subtotal,
+            shippingCost: order.shippingCost,
+            total: order.total,
+            couponDiscount: order.couponDiscount,
+            shippingDetails: order.shippingDetails,
+            paymentMethod: order.paymentMethod,
+            appliedCoupon: order.appliedCoupon,
+        };
 
-    // TODO: Replace with actual API call
-    // const response = await fetch('/api/orders', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(order),
-    // });
+        const response = await fetch(`${API_URL}/orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(orderPayload),
+        });
 
-    console.log('Order submitted:', order);
+        const responseData = await response.json();
 
-    const mockOrderId = `ORD-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        if (!response.ok) {
+            return {
+                success: false,
+                orderId: '',
+                message: responseData.message || 'Failed to submit order',
+            };
+        }
 
-    return {
-        success: true,
-        orderId: mockOrderId,
-        message: "Order placed successfully"
-    };
+        // Backend wraps response in {statusCode, message, data: {...}}
+        const data = responseData.data || responseData;
+        return {
+            success: data.success ?? true,
+            orderId: data.orderId || '',
+            message: data.message || 'Order placed successfully',
+        };
+    } catch (error) {
+        console.error('Order submission failed:', error);
+        return {
+            success: false,
+            orderId: '',
+            message: error instanceof Error ? error.message : 'An error occurred',
+        };
+    }
 };
+
