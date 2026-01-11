@@ -94,15 +94,23 @@ function transformOrder(apiOrder: any): Order {
             phone: 'Unknown',
             isDefault: false,
         },
-        items: (apiOrder.items || []).map((item: any) => ({
-            id: item.id,
-            productId: item.productId,
-            productName: item.productName,
-            productImage: item.productImage,
-            variant: item.variantSnapshot || {},
-            quantity: item.quantity,
-            price: Number(item.price),
-        })),
+        items: (apiOrder.items || []).map((item: any) => {
+            // Fallback to product.images if productImage is empty
+            let imageUrl = item.productImage;
+            if (!imageUrl && item.product?.images?.length > 0) {
+                const primaryImage = item.product.images.find((img: any) => img.isPrimary);
+                imageUrl = primaryImage?.url || item.product.images[0]?.url || '';
+            }
+            return {
+                id: item.id,
+                productId: item.productId,
+                productName: item.productName,
+                productImage: imageUrl || '',
+                variant: item.variantSnapshot || {},
+                quantity: item.quantity,
+                price: Number(item.price),
+            };
+        }),
     };
 }
 
@@ -121,8 +129,10 @@ export const orderService = {
                 throw new Error('Failed to fetch orders');
             }
 
-            const orders = await response.json();
-            return orders.map(transformOrder);
+            const responseData = await response.json();
+            // Backend wraps response in {statusCode, message, data: [...]}
+            const orders = responseData.data || responseData;
+            return (Array.isArray(orders) ? orders : []).map(transformOrder);
         } catch (error) {
             console.error('Failed to fetch orders:', error);
             return [];
@@ -139,7 +149,9 @@ export const orderService = {
                 return undefined;
             }
 
-            const order = await response.json();
+            const responseData = await response.json();
+            // Backend wraps response in {statusCode, message, data: {...}}
+            const order = responseData.data || responseData;
             return transformOrder(order);
         } catch (error) {
             console.error('Failed to fetch order:', error);

@@ -6,106 +6,40 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useLocalization } from '@/context/LocalizationContext';
 import { useAuth } from '@/context/AuthContext';
+import { orderService } from '@/services/api/order.service';
 
-// Mock order data - in production this would come from API
-type OrderStatus = 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
-
-interface Discount {
-    type: 'flat' | 'percentage';
-    value: number;
-}
+type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
 interface OrderItem {
     id: string;
-    cartItemId: string;
-    sku: string;
-    currency: string;
-    name: string;
-    image: string;
+    productId: string;
+    productName: string;
+    productImage: string;
     price: number;
-    originalPrice?: number;
-    discount?: Discount;
     quantity: number;
-    selectedSize?: string;
-    selectedColor?: string;
-    size: string;
-    color: string;
+    variant?: { color?: string; size?: string };
 }
 
 interface Order {
     id: string;
-    userId: string;
+    userId?: string;
     status: OrderStatus;
     createdAt: string;
     items: OrderItem[];
     subtotal: number;
     shippingCost: number;
     total: number;
-    shippingDetails: {
-        fullName: string;
-        phone: string;
-        email?: string;
+    discount?: number;
+    shippingAddress: {
+        id: string;
+        label: string;
+        recipientName: string;
         address: string;
-        city: string;
-        postalCode: string;
-        deliveryZone: 'inside_dhaka' | 'outside_dhaka';
-        notes?: string;
+        division: string;
+        phone: string;
+        isDefault: boolean;
     };
-    paymentMethod: 'cod';
 }
-
-const getMockOrder = (orderId: string): Order => ({
-    id: orderId,
-    userId: 'usr_guest', // For guest orders, this would be null or a guest user ID
-    status: 'processing',
-    createdAt: new Date().toISOString(),
-    items: [
-        {
-            id: '1',
-            cartItemId: '1',
-            sku: 'abaya-1',
-            currency: 'BDT',
-            name: 'Elegant Abaya Collection',
-            image: '/images/product-abaya.png',
-            price: 4500,
-            originalPrice: 5000,
-            discount: { type: 'flat' as const, value: 500 },
-            quantity: 2,
-            selectedSize: 'M',
-            selectedColor: 'Black',
-            size: 'M',
-            color: 'Black'
-        },
-        {
-            id: '2',
-            cartItemId: '2',
-            sku: 'hijab-1',
-            currency: 'BDT',
-            name: 'Premium Hijab Set',
-            image: '/images/products/hijab-navy.png',
-            price: 1850,
-            quantity: 1,
-            selectedSize: 'One Size',
-            selectedColor: 'Navy',
-            size: 'One Size',
-            color: 'Navy'
-        },
-    ],
-    subtotal: 10850,
-    shippingCost: 80,
-    total: 10930,
-    shippingDetails: {
-        fullName: 'Fatima Ahmed',
-        phone: '01712345678',
-        email: 'fatima@example.com',
-        address: '123 Gulshan Avenue',
-        city: 'Dhaka',
-        postalCode: '1212',
-        deliveryZone: 'inside_dhaka' as const,
-        notes: ''
-    },
-    paymentMethod: 'cod' as const,
-});
 
 const OrderDetailsPage = () => {
     const params = useParams();
@@ -113,48 +47,56 @@ const OrderDetailsPage = () => {
     const { dictionary: t } = useLocalization();
     const { user, loading: authLoading } = useAuth();
     const [copied, setCopied] = useState(false);
-    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+    const [order, setOrder] = useState<Order | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Check access on mount
+    // Fetch order from API
     useEffect(() => {
-        if (authLoading) return;
+        if (!orderId) return;
 
-        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-        const now = Date.now();
+        const fetchOrder = async () => {
+            try {
+                setLoading(true);
+                const fetchedOrder = await orderService.getOrderById(orderId);
+                if (fetchedOrder) {
+                    setOrder(fetchedOrder as unknown as Order);
+                } else {
+                    setError('Order not found');
+                }
+            } catch (err) {
+                console.error('Failed to fetch order:', err);
+                setError('Failed to load order');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        // Get guest orders from localStorage and filter expired ones
-        const guestOrders: { orderId: string; createdAt: number }[] = typeof window !== 'undefined'
-            ? JSON.parse(localStorage.getItem('guestOrders') || '[]')
-            : [];
+        fetchOrder();
+    }, [orderId]);
 
-        const validOrderIds = guestOrders
-            .filter(order => now - order.createdAt < SEVEN_DAYS_MS)
-            .map(order => order.orderId);
-
-        // In production, you would fetch the order and check ownership
-        // For now, we check:
-        // 1. If user is logged in (they can see their orders)
-        // 2. If orderId is in validOrderIds (guest who placed the order within 7 days)
-        const canAccess = user !== null || validOrderIds.includes(orderId);
-
-        setHasAccess(canAccess);
-    }, [orderId, user, authLoading]);
-
-    // In production, fetch order from API
-    const order = getMockOrder(orderId);
+    // Map backend status to display status
+    const mapStatus = (status: string): OrderStatus => {
+        const statusMap: Record<string, OrderStatus> = {
+            'PENDING': 'PENDING',
+            'PROCESSING': 'PROCESSING',
+            'SHIPPED': 'SHIPPED',
+            'DELIVERED': 'DELIVERED',
+            'CANCELLED': 'CANCELLED',
+        };
+        return statusMap[status] || 'PENDING';
+    };
 
     const getStatusConfig = (status: OrderStatus) => {
         const configs: Record<OrderStatus, { label: string; color: string; bgColor: string }> = {
-            processing: { label: t.orders.status.processing, color: '#92400e', bgColor: '#fef3c7' },
-            confirmed: { label: t.orders.status.confirmed, color: '#1e40af', bgColor: '#dbeafe' },
-            shipped: { label: t.orders.status.shipped, color: '#7c3aed', bgColor: '#ede9fe' },
-            delivered: { label: t.orders.status.delivered, color: '#065f46', bgColor: '#d1fae5' },
-            cancelled: { label: t.orders.status.cancelled, color: '#991b1b', bgColor: '#fee2e2' },
+            PENDING: { label: t.orders.status.processing, color: '#92400e', bgColor: '#fef3c7' },
+            PROCESSING: { label: t.orders.status.confirmed, color: '#1e40af', bgColor: '#dbeafe' },
+            SHIPPED: { label: t.orders.status.shipped, color: '#7c3aed', bgColor: '#ede9fe' },
+            DELIVERED: { label: t.orders.status.delivered, color: '#065f46', bgColor: '#d1fae5' },
+            CANCELLED: { label: t.orders.status.cancelled, color: '#991b1b', bgColor: '#fee2e2' },
         };
-        return configs[status] || configs.processing;
+        return configs[status] || configs.PENDING;
     };
-
-    const statusConfig = getStatusConfig(order.status as OrderStatus);
 
     const handleCopyOrderId = async () => {
         try {
@@ -176,8 +118,8 @@ const OrderDetailsPage = () => {
         });
     };
 
-    // Show loading while checking auth
-    if (authLoading || hasAccess === null) {
+    // Show loading while fetching
+    if (loading || authLoading) {
         return (
             <div style={{
                 backgroundColor: '#f9fafb',
@@ -203,8 +145,8 @@ const OrderDetailsPage = () => {
         );
     }
 
-    // Show access denied if no access
-    if (!hasAccess) {
+    // Show error or not found
+    if (error || !order) {
         return (
             <div style={{
                 backgroundColor: '#f9fafb',
@@ -240,39 +182,26 @@ const OrderDetailsPage = () => {
                         {t.orders.accessDenied || 'Order Not Found'}
                     </h2>
                     <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px', lineHeight: '1.5' }}>
-                        {t.orders.accessDeniedDesc || 'You don\'t have permission to view this order. Please log in or check your order ID.'}
+                        {error || 'Could not find this order. Please check your order ID.'}
                     </p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <Link href="/login" style={{
-                            display: 'block',
-                            padding: '14px 24px',
-                            backgroundColor: '#111',
-                            color: '#fff',
-                            textDecoration: 'none',
-                            borderRadius: '10px',
-                            fontWeight: '600',
-                            fontSize: '14px',
-                        }}>
-                            {t.common.login || 'Log In'}
-                        </Link>
-                        <Link href="/" style={{
-                            display: 'block',
-                            padding: '14px 24px',
-                            backgroundColor: '#fff',
-                            color: '#111',
-                            textDecoration: 'none',
-                            borderRadius: '10px',
-                            fontWeight: '600',
-                            fontSize: '14px',
-                            border: '2px solid #e5e5e5',
-                        }}>
-                            {t.common.backToHome}
-                        </Link>
-                    </div>
+                    <Link href="/" style={{
+                        display: 'block',
+                        padding: '14px 24px',
+                        backgroundColor: '#111',
+                        color: '#fff',
+                        textDecoration: 'none',
+                        borderRadius: '10px',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                    }}>
+                        {t.common.backToHome}
+                    </Link>
                 </div>
             </div>
         );
     }
+
+    const statusConfig = getStatusConfig(mapStatus(order.status));
 
     return (
         <div style={{ backgroundColor: '#f9fafb', minHeight: '100vh' }}>
@@ -384,10 +313,10 @@ const OrderDetailsPage = () => {
                             position: 'absolute',
                             top: '20px',
                             left: '40px',
-                            width: order.status === 'processing' ? '0%'
-                                : order.status === 'confirmed' ? '33%'
-                                    : order.status === 'shipped' ? '66%'
-                                        : order.status === 'delivered' ? 'calc(100% - 80px)'
+                            width: order.status === 'PENDING' ? '0%'
+                                : order.status === 'PROCESSING' ? '33%'
+                                    : order.status === 'SHIPPED' ? '66%'
+                                        : order.status === 'DELIVERED' ? 'calc(100% - 80px)'
                                             : '0%',
                             height: '4px',
                             backgroundColor: '#1b4d3e',
@@ -421,14 +350,14 @@ const OrderDetailsPage = () => {
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '50%',
-                                backgroundColor: ['confirmed', 'shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#e5e5e5',
-                                color: ['confirmed', 'shipped', 'delivered'].includes(order.status) ? '#fff' : '#9ca3af',
+                                backgroundColor: ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#1b4d3e' : '#e5e5e5',
+                                color: ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#fff' : '#9ca3af',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 marginBottom: '8px',
                             }}>
-                                {['confirmed', 'shipped', 'delivered'].includes(order.status) ? (
+                                {['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? (
                                     <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
@@ -436,7 +365,7 @@ const OrderDetailsPage = () => {
                                     <span style={{ fontSize: '14px', fontWeight: '700' }}>2</span>
                                 )}
                             </div>
-                            <span style={{ fontSize: '12px', fontWeight: '600', color: ['confirmed', 'shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#9ca3af' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#1b4d3e' : '#9ca3af' }}>
                                 {t.orders.status.confirmed}
                             </span>
                         </div>
@@ -447,14 +376,14 @@ const OrderDetailsPage = () => {
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '50%',
-                                backgroundColor: ['shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#e5e5e5',
-                                color: ['shipped', 'delivered'].includes(order.status) ? '#fff' : '#9ca3af',
+                                backgroundColor: ['SHIPPED', 'DELIVERED'].includes(order.status) ? '#1b4d3e' : '#e5e5e5',
+                                color: ['SHIPPED', 'DELIVERED'].includes(order.status) ? '#fff' : '#9ca3af',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 marginBottom: '8px',
                             }}>
-                                {['shipped', 'delivered'].includes(order.status) ? (
+                                {['SHIPPED', 'DELIVERED'].includes(order.status) ? (
                                     <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
@@ -462,7 +391,7 @@ const OrderDetailsPage = () => {
                                     <span style={{ fontSize: '14px', fontWeight: '700' }}>3</span>
                                 )}
                             </div>
-                            <span style={{ fontSize: '12px', fontWeight: '600', color: ['shipped', 'delivered'].includes(order.status) ? '#1b4d3e' : '#9ca3af' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: ['SHIPPED', 'DELIVERED'].includes(order.status) ? '#1b4d3e' : '#9ca3af' }}>
                                 {t.orders.status.shipped}
                             </span>
                         </div>
@@ -473,14 +402,14 @@ const OrderDetailsPage = () => {
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '50%',
-                                backgroundColor: order.status === 'delivered' ? '#1b4d3e' : '#e5e5e5',
-                                color: order.status === 'delivered' ? '#fff' : '#9ca3af',
+                                backgroundColor: order.status === 'DELIVERED' ? '#1b4d3e' : '#e5e5e5',
+                                color: order.status === 'DELIVERED' ? '#fff' : '#9ca3af',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 marginBottom: '8px',
                             }}>
-                                {order.status === 'delivered' ? (
+                                {order.status === 'DELIVERED' ? (
                                     <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
@@ -488,7 +417,7 @@ const OrderDetailsPage = () => {
                                     <span style={{ fontSize: '14px', fontWeight: '700' }}>4</span>
                                 )}
                             </div>
-                            <span style={{ fontSize: '12px', fontWeight: '600', color: order.status === 'delivered' ? '#1b4d3e' : '#9ca3af' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: order.status === 'DELIVERED' ? '#1b4d3e' : '#9ca3af' }}>
                                 {t.orders.status.delivered}
                             </span>
                         </div>
@@ -512,11 +441,11 @@ const OrderDetailsPage = () => {
                                 {statusConfig.label}
                             </span>
                             <span style={{ fontSize: '13px', color: '#6b7280' }}>
-                                {order.status === 'processing' && (t.orders.statusDesc?.processing || 'Your order is being prepared for shipment')}
-                                {order.status === 'confirmed' && (t.orders.statusDesc?.confirmed || 'Order confirmed and ready to ship')}
-                                {order.status === 'shipped' && (t.orders.statusDesc?.shipped || 'Your order is on its way to you')}
-                                {order.status === 'delivered' && (t.orders.statusDesc?.delivered || 'Your order has been delivered successfully')}
-                                {order.status === 'cancelled' && (t.orders.statusDesc?.cancelled || 'This order has been cancelled')}
+                                {order.status === 'PENDING' && (t.orders.statusDesc?.processing || 'Your order is being prepared for shipment')}
+                                {order.status === 'PROCESSING' && (t.orders.statusDesc?.confirmed || 'Order confirmed and ready to ship')}
+                                {order.status === 'SHIPPED' && (t.orders.statusDesc?.shipped || 'Your order is on its way to you')}
+                                {order.status === 'DELIVERED' && (t.orders.statusDesc?.delivered || 'Your order has been delivered successfully')}
+                                {order.status === 'CANCELLED' && (t.orders.statusDesc?.cancelled || 'This order has been cancelled')}
                             </span>
                         </div>
                     </div>
@@ -563,8 +492,8 @@ const OrderDetailsPage = () => {
                                             flexShrink: 0,
                                         }}>
                                             <Image
-                                                src={item.image}
-                                                alt={item.name}
+                                                src={item.productImage || '/images/placeholder.png'}
+                                                alt={item.productName}
                                                 fill
                                                 style={{ objectFit: 'cover' }}
                                             />
@@ -589,53 +518,21 @@ const OrderDetailsPage = () => {
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '8px' }}>
-                                                {item.name}
+                                                {item.productName}
                                             </h3>
                                             <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '12px' }}>
-                                                {item.size} / {item.color}
+                                                {item.variant?.size || '-'} / {item.variant?.color || '-'}
                                             </p>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                                     <span style={{ fontSize: '14px', color: '#9ca3af' }}>
-                                                        {item.originalPrice && item.originalPrice > item.price && (
-                                                            <span style={{
-                                                                textDecoration: 'line-through',
-                                                                marginRight: '6px',
-                                                                color: '#9ca3af',
-                                                                fontSize: '0.9em'
-                                                            }}>
-                                                                ৳{item.originalPrice.toLocaleString()}
-                                                            </span>
-                                                        )}
                                                         ৳{item.price.toLocaleString()} × {item.quantity}
                                                     </span>
-                                                    {item.discount && (
-                                                        <span style={{
-                                                            marginTop: '4px',
-                                                            backgroundColor: '#fee2e2',
-                                                            color: '#991b1b',
-                                                            padding: '2px 6px',
-                                                            borderRadius: '4px',
-                                                            fontSize: '11px',
-                                                            fontWeight: '600',
-                                                            width: 'fit-content'
-                                                        }}>
-                                                            {item.discount.type === 'percentage'
-                                                                ? `${item.discount.value}% OFF`
-                                                                : `-৳ ${item.discount.value}`
-                                                            }
-                                                        </span>
-                                                    )}
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
                                                     <span style={{ fontSize: '16px', fontWeight: '700', color: '#111', display: 'block' }}>
                                                         ৳{(item.price * item.quantity).toLocaleString()}
                                                     </span>
-                                                    {item.originalPrice && item.originalPrice > item.price && (
-                                                        <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>
-                                                            Save ৳ {((item.originalPrice - item.price) * item.quantity).toLocaleString()}
-                                                        </span>
-                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -662,27 +559,19 @@ const OrderDetailsPage = () => {
                             </div>
                             <div style={{ padding: '24px' }}>
                                 <p style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '8px' }}>
-                                    {order.shippingDetails.fullName}
+                                    {order.shippingAddress.recipientName}
                                 </p>
                                 <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.6' }}>
-                                    {order.shippingDetails.address}<br />
-                                    {order.shippingDetails.city}, {order.shippingDetails.postalCode}
+                                    {order.shippingAddress.address}<br />
+                                    {order.shippingAddress.division}
                                 </p>
                                 <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e5e5e5' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                                         <svg style={{ width: '16px', height: '16px', color: '#9ca3af' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>+88 {order.shippingDetails.phone}</span>
+                                        <span style={{ fontSize: '14px', color: '#6b7280' }}>+88 {order.shippingAddress.phone}</span>
                                     </div>
-                                    {order.shippingDetails.email && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <svg style={{ width: '16px', height: '16px', color: '#9ca3af' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                            </svg>
-                                            <span style={{ fontSize: '14px', color: '#6b7280' }}>{order.shippingDetails.email}</span>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -720,7 +609,7 @@ const OrderDetailsPage = () => {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span style={{ fontSize: '14px', color: '#6b7280' }}>{t.orders.deliveryZone}</span>
                                         <span style={{ fontSize: '13px', fontWeight: '500', color: '#6b7280' }}>
-                                            {order.shippingDetails.deliveryZone === 'inside_dhaka' ? t.orders.insideDhaka : t.orders.outsideDhaka}
+                                            {order.shippingAddress.division}
                                         </span>
                                     </div>
                                 </div>

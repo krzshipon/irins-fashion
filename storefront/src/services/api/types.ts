@@ -138,12 +138,13 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
-  userId: string;
+  userId?: string | null;
   status: OrderStatus;
   items: OrderItem[];
   subtotal: number;
   shippingCost: number;
   total: number;
+  discount?: number;
   shippingAddress: Address;
   createdAt: string; // ISO Date
 }
