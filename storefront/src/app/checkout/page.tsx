@@ -183,7 +183,9 @@ const CheckoutContent = () => {
         ? [directOrderItem]
         : cartItems;
 
-    const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    // Helper to get effective price with fallback for backward compatibility
+    const getItemPrice = (item: CartItem) => (item as any).effectivePrice ?? item.price;
+    const subtotal = checkoutItems.reduce((total, item) => total + (getItemPrice(item) * item.quantity), 0);
     const FREE_SHIPPING_THRESHOLD = 5000;
     const isFreeShippingEligible = subtotal >= FREE_SHIPPING_THRESHOLD;
 
@@ -244,7 +246,7 @@ const CheckoutContent = () => {
     };
 
     const calculateSubtotal = () => {
-        return checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        return checkoutItems.reduce((total, item) => total + (getItemPrice(item) * item.quantity), 0);
     };
 
     // Update discount if subtotal changes while coupon is applied

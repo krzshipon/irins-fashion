@@ -2,12 +2,15 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/services/api/types';
+import { getEffectivePrice } from '@/lib/priceUtils';
 
 export interface CartItem extends Product {
     quantity: number;
     selectedColor?: string;
     selectedSize?: string;
     cartItemId: string; // Unique ID for the cart entry (e.g. product-id-color-size)
+    effectivePrice: number; // Discounted price for this variant
+    originalPrice: number; // Price before discount (variant or base)
 }
 
 interface CartContextType {
@@ -54,6 +57,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         const { selectedColor, selectedSize } = options || {};
         const cartItemId = generateCartItemId(product.id, selectedColor, selectedSize);
 
+        // Calculate effective price based on variant and discount
+        const { effectivePrice, originalPrice } = getEffectivePrice(product, selectedColor, selectedSize);
+
         setCartItems(prevItems => {
             const existingItem = prevItems.find(item => item.cartItemId === cartItemId);
             if (existingItem) {
@@ -68,7 +74,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                     quantity: 1,
                     selectedColor,
                     selectedSize,
-                    cartItemId
+                    cartItemId,
+                    effectivePrice,
+                    originalPrice
                 }];
             }
         });

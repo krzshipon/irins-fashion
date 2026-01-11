@@ -10,7 +10,9 @@ export default function CartPage() {
     const { cartItems, updateQuantity, removeFromCart } = useCart();
     const { dictionary: t } = useLocalization();
 
-    const totalPrice = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    // Use effectivePrice if available, fallback to price for backward compatibility
+    const getItemPrice = (item: typeof cartItems[0]) => item.effectivePrice ?? item.price;
+    const totalPrice = cartItems.reduce((total, item) => total + (getItemPrice(item) * item.quantity), 0);
     const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
     return (
@@ -103,7 +105,8 @@ export default function CartPage() {
                                         </div>
                                     </div>
                                     <div className={styles.itemPrice}>
-                                        {item.originalPrice && item.originalPrice > item.price && (
+                                        {/* Show original price crossed out if there's a discount */}
+                                        {item.originalPrice && item.originalPrice > getItemPrice(item) && (
                                             <span style={{
                                                 textDecoration: 'line-through',
                                                 color: '#6b7280',
@@ -114,10 +117,10 @@ export default function CartPage() {
                                             </span>
                                         )}
                                         <span style={{
-                                            color: item.originalPrice ? '#dc2626' : 'inherit',
-                                            fontWeight: item.originalPrice ? '500' : 'normal'
+                                            color: (item.originalPrice && item.originalPrice > getItemPrice(item)) ? '#dc2626' : 'inherit',
+                                            fontWeight: (item.originalPrice && item.originalPrice > getItemPrice(item)) ? '500' : 'normal'
                                         }}>
-                                            {item.currency} {item.price.toLocaleString()}
+                                            {item.currency} {getItemPrice(item).toLocaleString()}
                                         </span>
                                     </div>
                                     <button
@@ -129,7 +132,7 @@ export default function CartPage() {
                                 </div>
 
                                 <div className={styles.itemTotal}>
-                                    {item.currency} {(item.price * item.quantity).toLocaleString()}
+                                    {item.currency} {(getItemPrice(item) * item.quantity).toLocaleString()}
                                 </div>
                             </div>
                         ))}

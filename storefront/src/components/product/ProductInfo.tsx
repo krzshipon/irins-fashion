@@ -7,6 +7,7 @@ import styles from './ProductDetails.module.css';
 import { useCart } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
 import { getLocalizedContent } from '@/lib/localizationUtils';
+import { applyDiscount } from '@/lib/priceUtils';
 
 interface ProductInfoProps {
     product: Product;
@@ -49,13 +50,16 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
     // Determine effectively selected variant details
     const currentVariant = currentColor?.variants.find(v => v.size === selectedSize);
 
-    // Calculate Price (Base or Override)
-    const currentPrice = (() => {
+    // Calculate Base Price (before discount) - from variant or product
+    const basePrice = (() => {
         if (currentVariant && currentVariant.price) {
             return Number(currentVariant.price);
         }
         return product.price;
     })();
+
+    // Apply discount to get the display/cart price
+    const currentPrice = applyDiscount(basePrice, product.discount);
 
     // Calculate SKU
     const currentSku = currentVariant?.sku || product.sku;
@@ -119,13 +123,16 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
             id: product.id,
             sku: currentSku,
             name: product.name,
-            price: currentPrice, // Use dynamic price
+            price: currentPrice, // Discounted price
+            effectivePrice: currentPrice, // For cart compatibility
+            originalPrice: basePrice, // Before discount
             currency: product.currency,
             image: primaryImage,
             quantity: quantity,
             selectedColor: selectedColor || undefined,
             selectedSize: selectedSize || undefined,
             cartItemId: `direct-${product.id}-${selectedColor || 'nocolor'}-${selectedSize || 'nosize'}`,
+            discount: product.discount, // Include discount info
         };
 
         sessionStorage.setItem('directOrder', JSON.stringify(directOrderItem));
@@ -176,7 +183,8 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                 )}
 
                 <div className={styles.price}>
-                    {product.originalPrice && currentPrice !== undefined && product.originalPrice > currentPrice && (
+                    {/* Show crossed-out price when there's a discount OR originalPrice */}
+                    {(product.discount || (product.originalPrice && product.originalPrice > currentPrice)) && (
                         <span style={{
                             textDecoration: 'line-through',
                             color: '#6b7280',
@@ -184,12 +192,12 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                             marginRight: '12px',
                             fontWeight: 'normal'
                         }}>
-                            {product.currency} {product.originalPrice.toLocaleString()}
+                            {product.currency} {(product.discount ? basePrice : product.originalPrice)?.toLocaleString()}
                         </span>
                     )}
                     <span style={{
-                        color: product.originalPrice ? '#dc2626' : 'inherit',
-                        fontWeight: product.originalPrice ? 'bold' : '500'
+                        color: (product.discount || product.originalPrice) ? '#dc2626' : 'inherit',
+                        fontWeight: (product.discount || product.originalPrice) ? 'bold' : '500'
                     }}>
                         {product.currency} {currentPrice?.toLocaleString() || 'N/A'}
                     </span>
