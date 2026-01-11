@@ -184,7 +184,7 @@ export class ProductsService {
       }
 
       const products = await this.prisma.product.findMany({
-        where: { categoryId: category.id },
+        where: { categoryId: category.id, status: 'ACTIVE' },
         include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
         orderBy: { createdAt: 'desc' },
         take: takeValue,
@@ -194,6 +194,7 @@ export class ProductsService {
     }
 
     const products = await this.prisma.product.findMany({
+      where: { status: 'ACTIVE' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
       orderBy: { createdAt: 'desc' },
       take: takeValue,
@@ -203,22 +204,22 @@ export class ProductsService {
   }
 
   findOne(id: string) {
-    return this.prisma.product.findUnique({
-      where: { id },
+    return this.prisma.product.findFirst({
+      where: { id, status: 'ACTIVE' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
 
   findBySku(sku: string) {
-    return this.prisma.product.findUnique({
-      where: { sku },
+    return this.prisma.product.findFirst({
+      where: { sku, status: 'ACTIVE' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
 
   findBySlug(slug: string) {
-    return this.prisma.product.findUnique({
-      where: { slug },
+    return this.prisma.product.findFirst({
+      where: { slug, status: 'ACTIVE' },
       include: { images: true, colors: { include: { variants: true, images: true } }, badges: true, category: true },
     });
   }
