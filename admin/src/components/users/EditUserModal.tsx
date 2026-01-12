@@ -25,9 +25,9 @@ export default function EditUserModal({ user, isOpen, onClose, onSave, currentUs
     useEffect(() => {
         if (user) {
             setFormData({
-                name: user.name,
-                email: user.email,
-                mobile: user.mobile,
+                name: user.name || "",
+                email: user.email || "",
+                mobile: user.mobile || "",
                 role: user.role,
                 isActive: user.isActive,
             });

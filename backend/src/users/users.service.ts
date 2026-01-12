@@ -110,4 +110,40 @@ export class UsersService implements OnModuleInit {
       where,
     });
   }
+  async findAll(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+  }): Promise<User[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.user.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include: {
+        _count: {
+          select: { orders: true },
+        },
+        orders: {
+          select: {
+            total: true,
+          }
+        }
+      }
+    });
+  }
+
+  async count(where: Prisma.UserWhereInput): Promise<number> {
+    return this.prisma.user.count({ where });
+  }
+
+  async delete(where: Prisma.UserWhereUniqueInput): Promise<User> {
+    return this.prisma.user.delete({
+      where,
+    });
+  }
 }
