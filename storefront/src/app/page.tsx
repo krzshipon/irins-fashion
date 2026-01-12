@@ -66,6 +66,7 @@ export default function Home() {
             // Use localized text based on current locale
             const title = locale === 'bn' && banner.titleBn ? banner.titleBn : banner.title;
             const subtitle = locale === 'bn' && banner.subtitleBn ? banner.subtitleBn : banner.subtitle;
+            const buttonText = locale === 'bn' && banner.buttonTextBn ? banner.buttonTextBn : (banner.buttonText || t('hero.cta'));
 
             return (
               <div
@@ -78,7 +79,7 @@ export default function Home() {
                   <h1 className={styles.heroTitle}>{title}</h1>
                   <p className={styles.heroSubtitle}>{subtitle}</p>
                   <Link href={banner.link} className={`btn btn-primary`}>
-                    {t('hero.cta')}
+                    {buttonText}
                   </Link>
                 </div>
               </div>

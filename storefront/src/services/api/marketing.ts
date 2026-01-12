@@ -36,18 +36,45 @@ export const MOCK_BANNERS: Banner[] = [
     },
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 // API endpoint to fetch hero banners
 // In production, this would call the backend API
 // Admin app can manage these through: POST/PUT/DELETE /api/banners
 export const getHeroBanners = async (): Promise<Banner[]> => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    try {
+        const res = await fetch(`${API_URL}/banners`, { cache: 'no-store' });
+        if (!res.ok) {
+            console.warn('Failed to fetch banners from API, using fallback');
+            return MOCK_BANNERS;
+        }
 
-    // TODO: Replace with actual API call
-    // const response = await fetch('/api/banners');
-    // return response.json();
+        const response = await res.json();
+        // Handle wrapped response { data: [...] } or direct array
+        const bannersData = Array.isArray(response) ? response : (response.data || []);
 
-    return MOCK_BANNERS;
+        if (Array.isArray(bannersData) && bannersData.length > 0) {
+            return bannersData.map((b: any) => ({
+                id: b.id,
+                title: b.title,
+                titleBn: b.titleBn,
+                subtitle: b.subtitle || "",
+                subtitleBn: b.subtitleBn,
+                image: b.imageUrl, // Map imageUrl -> image
+                link: b.link || "/",
+                buttonText: b.buttonText,
+                buttonTextBn: b.buttonTextBn,
+                description: b.description,
+            }));
+        }
+
+        // If API returns empty array, use fallback
+        return MOCK_BANNERS;
+
+    } catch (error) {
+        console.error('Error fetching banners:', error);
+        return MOCK_BANNERS;
+    }
 };
 
 export const getHeroBanner = async (): Promise<Banner> => {

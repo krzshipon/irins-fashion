@@ -153,5 +153,28 @@ enum OrderStatus {
   PROCESSING
   SHIPPED
   DELIVERED
+
   CANCELLED
+}
+
+
+model Banner {
+  id           String    @id @default(uuid())
+  title        String
+  titleBn      String?
+  subtitle     String?
+  subtitleBn   String?
+  description  String?
+  buttonText   String?
+  buttonTextBn String?
+  imageUrl     String
+  linkType     String?   @default("EXTERNAL") // EXTERNAL, PRODUCT, CATEGORY
+  linkId       String?   // ID of Product or Category
+  link         String?   // Fallback or external URL
+  isActive     Boolean   @default(true)
+  sortOrder    Int       @default(0)
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

@@ -78,8 +78,11 @@ export interface Banner {
   id: string;
   title: string;
   titleBn?: string;
-  subtitle: string;
+  subtitle?: string; // allow optional
   subtitleBn?: string;
+  description?: string;
+  buttonText?: string;
+  buttonTextBn?: string;
   image: string;
   link: string;
   category?: string; // For associating with product categories
