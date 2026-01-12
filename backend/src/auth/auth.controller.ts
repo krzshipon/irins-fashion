@@ -30,7 +30,7 @@ import {
 // Helper to determine cookie name based on app type
 function getCookieName(appType?: string): string {
   if (appType === 'admin') return 'admin_token';
-  return 'storefront_token';
+  return 'storefront_token_v2';
 }
 
 // Roles allowed to access admin panel (must match Prisma enum values)
@@ -42,7 +42,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-  ) {}
+  ) { }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -77,26 +77,31 @@ export class AuthController {
     }
 
     const { access_token, user } = await this.authService.login(req.user);
-    const cookieName = getCookieName(appType);
-
-    // Set HttpOnly Cookie with app-specific name
-    response.cookie(cookieName, access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-      path: '/',
-    });
-
+    this.setAuthCookie(response, access_token, appType);
     return { success: true, user };
   }
 
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
+  @ApiQuery({
+    name: 'app',
+    required: false,
+    description: 'App type: admin or storefront',
+  })
   @ApiResponse({ status: 201, description: 'User successfully registered.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  async register(@Body() body: RegisterDto) {
-    return this.authService.register(body);
+  async register(
+    @Body() body: RegisterDto,
+    @Res({ passthrough: true }) response: any,
+    @Query('app') appType?: string,
+  ) {
+    const user = await this.authService.register(body);
+
+    // Auto-login after registration
+    const { access_token } = await this.authService.login(user);
+    this.setAuthCookie(response, access_token, appType);
+
+    return { success: true, user };
   }
 
   @Post('logout')
@@ -111,8 +116,36 @@ export class AuthController {
     @Query('app') appType?: string,
   ) {
     const cookieName = getCookieName(appType);
-    response.clearCookie(cookieName);
+
+    // Cookie options must match those used in login
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    response.clearCookie(cookieName, cookieOptions);
     return { success: true };
+  }
+
+  private setAuthCookie(response: Response, token: string, appType?: string) {
+    const cookieName = getCookieName(appType);
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    // Clear any existing cookie first
+    response.clearCookie(cookieName, cookieOptions);
+
+    // Set HttpOnly Cookie
+    response.cookie(cookieName, token, {
+      ...cookieOptions,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
   }
 
   @UseGuards(JwtAuthGuard)

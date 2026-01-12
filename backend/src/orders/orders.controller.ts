@@ -10,18 +10,22 @@ import {
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) { }
 
     /**
-     * Create a new order (public - no auth required for guest checkout)
+     * Create a new order (supports both guest and authenticated users)
+     * Uses OptionalJwtAuthGuard to extract user if logged in
      */
+    @UseGuards(OptionalJwtAuthGuard)
     @Post()
     async create(@Body() dto: CreateOrderDto, @Request() req: any) {
         // If user is authenticated, associate the order with them
         const userId = req.user?.id || null;
+
         const order = await this.ordersService.create(dto, userId);
         return {
             success: true,
