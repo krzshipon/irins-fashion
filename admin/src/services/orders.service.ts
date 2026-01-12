@@ -73,22 +73,25 @@ export const ordersService = {
             throw new Error('Failed to fetch orders');
         }
 
-        const data = await response.json();
+        const responseData = await response.json();
+        // Backend wraps response in {statusCode, message, data: {...}}
+        const result = responseData.data || responseData;
+
         return {
-            orders: data.orders.map((o: any) => ({
+            orders: (result.orders || []).map((o: any) => ({
                 ...o,
                 total: Number(o.total),
                 subtotal: Number(o.subtotal),
                 shippingCost: Number(o.shippingCost),
                 discount: Number(o.discount),
-                items: o.items.map((i: any) => ({
+                items: (o.items || []).map((i: any) => ({
                     ...i,
                     price: Number(i.price),
                 })),
             })),
-            total: data.total,
-            page: data.page,
-            totalPages: data.totalPages,
+            total: result.total || 0,
+            page: result.page || 1,
+            totalPages: result.totalPages || 1,
         };
     },
 
@@ -101,14 +104,16 @@ export const ordersService = {
             throw new Error('Failed to fetch order');
         }
 
-        const order = await response.json();
+        const responseData = await response.json();
+        const order = responseData.data || responseData;
+
         return {
             ...order,
             total: Number(order.total),
             subtotal: Number(order.subtotal),
             shippingCost: Number(order.shippingCost),
             discount: Number(order.discount),
-            items: order.items.map((i: any) => ({
+            items: (order.items || []).map((i: any) => ({
                 ...i,
                 price: Number(i.price),
             })),
@@ -127,7 +132,8 @@ export const ordersService = {
             throw new Error('Failed to update order status');
         }
 
-        return response.json();
+        const data = await response.json();
+        return data.data || data;
     },
 
     async getStats(): Promise<OrderStats> {
@@ -139,6 +145,7 @@ export const ordersService = {
             throw new Error('Failed to fetch order stats');
         }
 
-        return response.json();
+        const data = await response.json();
+        return data.data || data;
     },
 };
