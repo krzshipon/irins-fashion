@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Loader2, X, Check, Trash2, Pencil, ChevronDown, User, MapPin, Phone } from "lucide-react";
 import { authService } from "@/services/api/auth.service";
+import { addressesService } from "@/services/api/addresses.service";
 import type { Address } from "@/services/api/types";
 import styles from "../pages.module.css";
 import addressStyles from "./addresses.module.css";
@@ -36,7 +37,7 @@ export default function AddressesPage() {
 
     const loadAddresses = async () => {
         try {
-            const data = await authService.getAddresses();
+            const data = await addressesService.getAll();
             setAddresses(data);
         } catch (error) {
             console.error("Failed to load addresses", error);
@@ -83,13 +84,12 @@ export default function AddressesPage() {
             // I will just pass an empty string or 'N/A' as the API might expect it.
             const addressData = {
                 ...formData,
-                postalCode: "N/A"
             };
 
             if (editingAddress) {
-                await authService.updateAddress(editingAddress.id, addressData);
+                await addressesService.update(editingAddress.id, addressData);
             } else {
-                await authService.addAddress(addressData);
+                await addressesService.create(addressData);
             }
             await loadAddresses();
             handleCloseModal();
@@ -103,7 +103,7 @@ export default function AddressesPage() {
     const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this address?")) {
             try {
-                await authService.deleteAddress(id);
+                await addressesService.delete(id);
                 await loadAddresses();
             } catch (error) {
                 console.error("Failed to delete address", error);

@@ -6,6 +6,7 @@ import { useCart, CartItem } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
 import { useAuth } from '@/context/AuthContext'; // Import useAuth
 import { authService } from '@/services/api/auth.service'; // Import authService
+import { addressesService } from '@/services/api/addresses.service'; // Import addressesService
 import { ShippingForm } from '@/components/checkout/ShippingForm';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { ShippingDetails, ShippingRates, Order } from '@/types/checkout';
@@ -88,7 +89,7 @@ const CheckoutContent = () => {
         if (user) {
             const fetchAddresses = async () => {
                 try {
-                    const addresses = await authService.getAddresses();
+                    const addresses = await addressesService.getAll();
                     setUserAddresses(addresses);
 
                     // Auto-select default address if exists

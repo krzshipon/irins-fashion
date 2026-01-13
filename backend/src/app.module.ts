@@ -11,6 +11,7 @@ import { UploadModule } from './upload/upload.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { BannersModule } from './banners/banners.module';
+import { AddressesModule } from './addresses/addresses.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BannersModule } from './banners/banners.module';
     ProductsModule,
     OrdersModule,
     BannersModule,
+    AddressesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

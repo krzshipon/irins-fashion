@@ -1,26 +1,4 @@
-import { User, Address } from './types';
-
-// Mock addresses (still used for profile data)
-const MOCK_ADDRESSES: Address[] = [
-    {
-        id: 'addr_1',
-        label: 'Home',
-        recipientName: 'Irina Shayk',
-        address: 'House 12, Road 5, Block A, Dhaka 1209',
-        division: 'Dhaka',
-        phone: '01700000000',
-        isDefault: true,
-    },
-    {
-        id: 'addr_2',
-        label: 'Work',
-        recipientName: 'Irina Shayk',
-        address: 'Level 12, Gulshan Center Point, Dhaka 1212',
-        division: 'Dhaka',
-        phone: '01700000000',
-        isDefault: false,
-    },
-];
+import { User } from './types';
 
 export const authService = {
     async login(mobile: string, password: string): Promise<{ user: User }> {
@@ -61,12 +39,6 @@ export const authService = {
         const data = await response.json();
         // Unwrap nested data structure from NestJS interceptor
         return data.data?.user || data.user || data;
-    },
-
-    async getAddresses(): Promise<Address[]> {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        return MOCK_ADDRESSES;
     },
 
     async updateProfile(data: { name?: string; email?: string; mobile?: string }): Promise<User> {
@@ -141,33 +113,5 @@ export const authService = {
         return {
             success: true,
         };
-    },
-
-    // Address Management (Mock)
-    async addAddress(address: Omit<Address, 'id'>): Promise<Address> {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        const newAddress = {
-            ...address,
-            id: `addr_${Date.now()}`,
-        };
-        // In a real app, we would push to MOCK_ADDRESSES or backend
-        // MOCK_ADDRESSES.push(newAddress); 
-        return newAddress;
-    },
-
-    async updateAddress(id: string, updates: Partial<Address>): Promise<Address> {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        // Find and update mock address
-        const index = MOCK_ADDRESSES.findIndex(a => a.id === id);
-        if (index !== -1) {
-            // MOCK_ADDRESSES[index] = { ...MOCK_ADDRESSES[index], ...updates };
-            return { ...MOCK_ADDRESSES[index], ...updates };
-        }
-        throw new Error('Address not found');
-    },
-
-    async deleteAddress(id: string): Promise<void> {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        // MOCK_ADDRESSES = MOCK_ADDRESSES.filter(a => a.id !== id);
     },
 };
