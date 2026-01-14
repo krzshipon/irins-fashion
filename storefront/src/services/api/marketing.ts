@@ -43,7 +43,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 // Admin app can manage these through: POST/PUT/DELETE /api/banners
 export const getHeroBanners = async (): Promise<Banner[]> => {
     try {
-        const res = await fetch(`${API_URL}/banners`, { cache: 'no-store' });
+        const res = await fetch(`${API_URL}/banners`, { next: { revalidate: 3600, tags: ['banners'] } });
         if (!res.ok) {
             console.warn('Failed to fetch banners from API, using fallback');
             return MOCK_BANNERS;

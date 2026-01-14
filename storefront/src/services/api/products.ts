@@ -15,7 +15,7 @@ export const getAllProducts = async (
     try {
         let url = `${API_URL}/products`;
 
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { next: { revalidate: 3600, tags: ['products'] } });
         if (!res.ok) {
             console.error('Failed to fetch all products');
             return { products: [] };
@@ -74,7 +74,7 @@ export const getAllProducts = async (
 
 export const getFeaturedProducts = async (): Promise<Product[]> => {
     try {
-        const res = await fetch(`${API_URL}/products?take=8`, { cache: 'no-store' });
+        const res = await fetch(`${API_URL}/products?take=8`, { next: { revalidate: 3600, tags: ['featured-products'] } });
         if (!res.ok) {
             console.error('Failed to fetch featured products');
             return [];
@@ -107,7 +107,7 @@ export const getProductsBySlug = async (
     sort?: SortOption
 ): Promise<{ categoryName: string; products: Product[]; category?: Category }> => {
     try {
-        const res = await fetch(`${API_URL}/products?category=${slug}`, { cache: 'no-store' });
+        const res = await fetch(`${API_URL}/products?category=${slug}`, { next: { revalidate: 3600, tags: [`category-${slug}`] } });
 
         if (!res.ok) {
             return { categoryName: '', products: [] };
@@ -173,7 +173,7 @@ export const getProductsBySlug = async (
 
 export const getProductBySlug = async (slug: string): Promise<Product | undefined> => {
     try {
-        const res = await fetch(`${API_URL}/products/slug/${slug}`, { cache: 'no-store' });
+        const res = await fetch(`${API_URL}/products/slug/${slug}`, { next: { revalidate: 3600, tags: [`product-${slug}`] } });
         if (!res.ok) {
             return undefined;
         }
@@ -189,7 +189,7 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
 // Kept for legacy support if needed, but updated to use API
 export const getProductBySku = async (sku: string): Promise<Product | undefined> => {
     try {
-        const res = await fetch(`${API_URL}/products/sku/${sku}`, { cache: 'no-store' });
+        const res = await fetch(`${API_URL}/products/sku/${sku}`, { next: { revalidate: 3600, tags: [`product-sku-${sku}`] } });
         if (!res.ok) return undefined;
         const response = await res.json();
         // Handle wrapped response
