@@ -5,9 +5,7 @@
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: var(--shadow-md);
     position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    /* Removed flex and height to match original behavior */
 }
 
 .card:hover {
@@ -25,7 +23,6 @@
 
 .link {
     display: block;
-    height: 100%;
     width: 100%;
     text-decoration: none;
     color: inherit;
