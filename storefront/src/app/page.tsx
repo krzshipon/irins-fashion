@@ -11,6 +11,7 @@ import { useLocalization } from '@/context/LocalizationContext';
 import CategorySection from '@/components/home/CategorySection';
 import CategoryProductRow from '@/components/home/CategoryProductRow';
 import ProductCard from '@/components/common/ProductCard';
+import HomeSkeleton from '@/components/home/HomeSkeleton';
 
 export default function Home() {
   const { t, locale } = useLocalization();
@@ -55,7 +56,7 @@ export default function Home() {
   }, [banners.length]);
 
   if (loading) {
-    return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Loading...</div>;
+    return <HomeSkeleton />;
   }
 
   return (
