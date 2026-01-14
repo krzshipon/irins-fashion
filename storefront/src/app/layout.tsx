@@ -6,8 +6,8 @@ import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap' });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: 'swap' });
 
 export const metadata: Metadata = {
   title: "Irin's Fashion | Modest & Elegant",

@@ -8,6 +8,11 @@ import { useCart } from '@/context/CartContext';
 import { useLocalization } from '@/context/LocalizationContext';
 import { getLocalizedContent } from '@/lib/localizationUtils';
 import { applyDiscount } from '@/lib/priceUtils';
+import dynamic from 'next/dynamic';
+
+const SizeChartModal = dynamic(() => import('./SizeChartModal'), {
+    loading: () => null
+});
 
 interface ProductInfoProps {
     product: Product;
@@ -336,23 +341,10 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
 
             {/* Size Chart Modal */}
             {showSizeChart && product.sizeChart && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }} onClick={() => setShowSizeChart(false)}>
-                    <div style={{
-                        backgroundColor: '#fff', padding: '20px', borderRadius: '8px',
-                        maxWidth: '90%', maxHeight: '90%', overflow: 'auto', position: 'relative'
-                    }} onClick={e => e.stopPropagation()}>
-                        <button
-                            onClick={() => setShowSizeChart(false)}
-                            style={{ position: 'absolute', top: '10px', right: '10px', border: 'none', background: 'transparent', fontSize: '20px', cursor: 'pointer' }}
-                        >✕</button>
-                        <h3 style={{ marginBottom: '15px' }}>Size Guide</h3>
-                        <img src={product.sizeChart} alt="Size Chart" style={{ maxWidth: '100%', height: 'auto' }} />
-                    </div>
-                </div>
+                <SizeChartModal
+                    imageUrl={product.sizeChart}
+                    onClose={() => setShowSizeChart(false)}
+                />
             )}
         </div>
     );
