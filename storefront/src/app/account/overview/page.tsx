@@ -4,35 +4,40 @@ import { useEffect, useState } from "react";
 import { User, Package, MapPin, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext"; // Import useAuth
 import { orderService } from "@/services/api/order.service";
+import { addressesService } from "@/services/api/addresses.service";
 import type { Order } from "@/services/api/types";
 import Link from "next/link";
 import styles from "../pages.module.css";
 
 export default function OverviewPage() {
-    const { user, loading: authLoading } = useAuth(); // Use context
+    const { user, loading: authLoading } = useAuth();
     const [recentOrder, setRecentOrder] = useState<Order | null>(null);
-    const [ordersLoading, setOrdersLoading] = useState(true);
+    const [defaultAddress, setDefaultAddress] = useState<any | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadOrders = async () => {
+        const loadData = async () => {
             try {
-                const orders = await orderService.getOrders();
+                const [orders, addresses] = await Promise.all([
+                    orderService.getOrders(),
+                    addressesService.getAll()
+                ]);
                 setRecentOrder(orders[0] || null);
+                const def = addresses.find((a: any) => a.isDefault) || addresses[0] || null;
+                setDefaultAddress(def);
             } catch (error) {
-                console.error("Failed to load orders", error);
+                console.error("Failed to load overview data", error);
             } finally {
-                setOrdersLoading(false);
+                setLoading(false);
             }
         };
 
         if (user) {
-            loadOrders();
-        } else {
-            setOrdersLoading(false);
+            loadData();
+        } else if (!authLoading) {
+            setLoading(false);
         }
-    }, [user]);
-
-    const loading = authLoading || ordersLoading;
+    }, [user, authLoading]);
 
     if (loading) {
         return (
@@ -73,9 +78,16 @@ export default function OverviewPage() {
                         <Link href="/account/addresses" className={styles.cardAction}>Manage</Link>
                     </div>
                     <div className={styles.cardContent}>
-                        <p className={styles.addressTitle}>Home</p>
-                        <p>House 12, Road 5, Block A</p>
-                        <p>Dhaka - 1209</p>
+                        {defaultAddress ? (
+                            <>
+                                <p className={styles.addressTitle}>{defaultAddress.label}</p>
+                                <p>{defaultAddress.address}</p>
+                                <p>{defaultAddress.division}</p>
+                                <p className="text-sm text-text-muted mt-1">{defaultAddress.phone}</p>
+                            </>
+                        ) : (
+                            <p className="text-text-muted">No default address set.</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -104,7 +116,14 @@ export default function OverviewPage() {
                         <div className={styles.orderItems}>
                             {recentOrder.items.map((item) => (
                                 <div key={item.id} className={styles.orderItem}>
-                                    <img src={item.productImage} alt={item.productName} className={styles.orderItemImage} />
+                                    <img
+                                        src={item.productImage || '/images/placeholder-product.png'}
+                                        alt={item.productName}
+                                        className={styles.orderItemImage}
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src = '/images/placeholder-product.png';
+                                        }}
+                                    />
                                     <span className={styles.orderItemQty}>x{item.quantity}</span>
                                 </div>
                             ))}
