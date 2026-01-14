@@ -103,6 +103,7 @@
     height: 75vh;
     min-height: 600px;
     cursor: zoom-in;
+    position: relative;
 }
 
 .mainImage {
