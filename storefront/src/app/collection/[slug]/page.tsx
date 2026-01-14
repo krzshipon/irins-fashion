@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getProductsBySlug } from '@/services/api/products';
+import { getProductsBySlug, SortOption } from '@/services/api/products';
+import CategoryClient from '@/components/category/CategoryClient';
+import { Suspense } from 'react';
 
 // Type for the page props
 type Props = {
@@ -9,7 +11,7 @@ type Props = {
 };
 
 // Generate SEO Metadata dynamically
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
     const { categoryName } = await getProductsBySlug(slug);
 
@@ -25,9 +27,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
 }
 
-import CategoryClientPage from '@/components/category/CategoryClientPage';
-
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({ params, searchParams }: Props) {
     const { slug } = await params;
-    return <CategoryClientPage slug={slug} />;
+    const resolvedSearchParams = await searchParams;
+
+    // Parse filters
+    const minPrice = resolvedSearchParams.minPrice ? Number(resolvedSearchParams.minPrice) : undefined;
+    const maxPrice = resolvedSearchParams.maxPrice ? Number(resolvedSearchParams.maxPrice) : undefined;
+    const isNew = resolvedSearchParams.isNew === 'true';
+    const sort = resolvedSearchParams.sort as SortOption | undefined;
+
+    // Fetch filtered data on server
+    const { products, category } = await getProductsBySlug(slug, { minPrice, maxPrice, isNew }, sort);
+
+    return (
+        <Suspense fallback={<div className="container" style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>}>
+            <CategoryClient
+                slug={slug}
+                initialProducts={products}
+                category={category || null}
+            />
+        </Suspense>
+    );
 }

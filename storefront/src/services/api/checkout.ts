@@ -1,6 +1,7 @@
 import { Order, ShippingRates } from '@/types/checkout';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Use proxy for client-side requests
+const API_URL = '/api/backend';
 
 // Fallback shipping rates
 const FALLBACK_RATES: ShippingRates = {

@@ -1,6 +1,7 @@
 import { Address } from './types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Use proxy for client-side requests to ensure cookies are sent
+const API_URL = '/api/backend';
 
 export const addressesService = {
     async getAll(): Promise<Address[]> {

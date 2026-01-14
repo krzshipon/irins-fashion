@@ -1,6 +1,7 @@
 import { Order, TrackingEvent, OrderStatus } from './types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Use proxy for client-side requests
+const API_URL = '/api/backend';
 
 // Helper to generate tracking timeline based on order status
 function generateTrackingEvents(order: Order): TrackingEvent[] {
