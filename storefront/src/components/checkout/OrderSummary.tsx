@@ -62,6 +62,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                                     src={item.images?.find(img => img.isPrimary)?.url || item.images?.[0]?.url || '/placeholder.png'}
                                     alt={item.name}
                                     fill
+                                    sizes="80px"
                                     style={{ objectFit: 'cover' }}
                                 />
                                 <div style={{

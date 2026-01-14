@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Package, Loader2, ArrowRight, Truck, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { orderService } from "@/services/api/order.service";
 import type { Order } from "@/services/api/types";
@@ -112,13 +113,16 @@ export default function OrdersPage() {
                                 {/* Items Horizontal Scroll */}
                                 <div className={styles.items}>
                                     {order.items.map((item) => (
-                                        <img
-                                            key={item.id}
-                                            src={item.productImage}
-                                            alt={item.productName}
-                                            className={styles.itemImage}
-                                            title={`${item.productName} x${item.quantity}`}
-                                        />
+                                        <div key={item.id} style={{ position: 'relative', width: '70px', height: '70px', flexShrink: 0 }}>
+                                            <Image
+                                                src={item.productImage}
+                                                alt={item.productName}
+                                                className={styles.itemImage}
+                                                title={`${item.productName} x${item.quantity}`}
+                                                fill
+                                                sizes="70px"
+                                            />
+                                        </div>
                                     ))}
                                     {order.items.length > 5 && (
                                         <div style={{

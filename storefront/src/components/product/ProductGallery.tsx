@@ -9,6 +9,8 @@ interface ProductGalleryProps {
     selectedColor: string | null;
 }
 
+import Image from 'next/image';
+
 export default function ProductGallery({ images, title, selectedColor }: ProductGalleryProps) {
     const [selectedImage, setSelectedImage] = useState(images[0]);
 
@@ -31,20 +33,29 @@ export default function ProductGallery({ images, title, selectedColor }: Product
                         onClick={() => setSelectedImage(img)}
                         aria-label={`View image ${index + 1} of ${title}`}
                     >
-                        <img
-                            src={img}
-                            alt={`${title} view ${index + 1}`}
-                            className={styles.thumbnailImage}
-                        />
+                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                            <Image
+                                src={img}
+                                alt={`${title} view ${index + 1}`}
+                                className={styles.thumbnailImage}
+                                fill
+                                sizes="80px"
+                                style={{ objectFit: 'cover' }}
+                            />
+                        </div>
                     </button>
                 ))}
             </div>
 
             <div className={styles.mainImageWrapper}>
-                <img
+                <Image
                     src={selectedImage}
                     alt={title}
                     className={styles.mainImage}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{ objectFit: 'cover' }}
+                    priority
                 />
             </div>
         </div>

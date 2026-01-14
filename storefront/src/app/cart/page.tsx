@@ -56,6 +56,7 @@ export default function CartPage() {
                                                 src={displayImage}
                                                 alt={item.name}
                                                 fill
+                                                sizes="130px"
                                                 className={styles.itemImage}
                                             />
                                         ) : (

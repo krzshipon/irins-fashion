@@ -1,5 +1,5 @@
 import Skeleton from '@/components/common/Skeleton';
-import ProductGridSkeleton from './ProductGridSkeleton';
+import ProductGridSkeleton from '@/components/common/ProductGridSkeleton';
 import styles from '@/app/shop/shop.module.css';
 
 export default function ShopSkeleton() {
