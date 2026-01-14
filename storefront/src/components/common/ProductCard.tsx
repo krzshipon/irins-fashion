@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import styles from '@/app/page.module.css'; // Reusing styles for now to ensure consistency
+import styles from './ProductCard.module.css';
 import { Product } from '@/services/api/types';
 import { useLocalization } from '@/context/LocalizationContext';
 import { useCart } from '@/context/CartContext';
@@ -33,15 +33,18 @@ export default function ProductCard({ product }: ProductCardProps) {
     // Use localized category name if available
     const categoryName = getLocalizedContent(product.category?.localizedNames, locale, product.category?.name || '');
 
+    const isInCart = cartItems.some(item => item.id === product.id);
+
     return (
         <div className={styles.card}>
-            <div style={{ position: 'relative', height: '350px' }}>
-                <Link href={`/product/${product.slug}`} style={{ display: 'block', height: '100%', width: '100%' }}>
+            <div className={styles.imageWrapper}>
+                <Link href={`/product/${product.slug}`} className={styles.link}>
                     <Image
                         src={primaryImage}
                         alt={localizedName}
                         fill
-                        style={{ objectFit: 'cover' }}
+                        className={styles.image}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     {/* Render Badges */}
                     {(() => {
@@ -65,15 +68,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         if (allBadges.length === 0) return null;
 
                         return (
-                            <div style={{
-                                position: 'absolute',
-                                top: '10px',
-                                left: '10px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '5px',
-                                zIndex: 10
-                            }}>
+                            <div className={styles.badgesContainer}>
                                 {allBadges.map((badge, index) => {
                                     let backgroundColor = '#000000';
                                     let color = '#ffffff';
@@ -95,16 +90,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                                     }
 
                                     return (
-                                        <span key={index} style={{
-                                            backgroundColor,
-                                            color,
-                                            padding: '4px 8px',
-                                            fontSize: '10px',
-                                            fontWeight: 'bold',
-                                            borderRadius: '4px',
-                                            textTransform: 'uppercase',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                        }}>
+                                        <span key={index} className={styles.badge} style={{ backgroundColor, color }}>
                                             {badge.text}
                                         </span>
                                     );
@@ -114,13 +100,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                     })()}
                 </Link>
                 <button
-                    className={styles.addToCartBtn}
+                    className={`${styles.addToCartBtn} ${isInCart ? styles.active : ''}`}
                     title={t.products.addToCart}
                     aria-label={t.products.addToCart}
-                    style={{
-                        backgroundColor: cartItems.some(item => item.id === product.id) ? '#046A38' : undefined,
-                        color: cartItems.some(item => item.id === product.id) ? '#ffffff' : undefined
-                    }}
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -134,10 +116,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <ShoppingBag size={20} />
                 </button>
             </div>
-            <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`/product/${product.slug}`} className={styles.link}>
                 <div className={styles.cardContent}>
-                    <div className={styles.cardCategory}>{categoryName}</div>
-                    <h3 className={styles.cardTitle}>{localizedName}</h3>
+                    <div>
+                        <div className={styles.cardCategory}>{categoryName}</div>
+                        <h3 className={styles.cardTitle}>{localizedName}</h3>
+                    </div>
                     <div className={styles.cardPrice}>
                         {(() => {
                             // Calculate discounted price
@@ -150,24 +134,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                             const crossedOutPrice = hasDiscount ? product.price : product.originalPrice;
 
                             return (
-                                <>
+                                <span className={hasDiscount ? styles.discounted : ''}>
                                     {showCrossedOut && crossedOutPrice && (
-                                        <span style={{
-                                            textDecoration: 'line-through',
-                                            color: '#9ca3af',
-                                            fontSize: '0.9em',
-                                            marginRight: '8px'
-                                        }}>
+                                        <span className={styles.crossedOutPrice}>
                                             {product.currency} {crossedOutPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                         </span>
                                     )}
-                                    <span style={{
-                                        color: showCrossedOut ? '#dc2626' : 'inherit',
-                                        fontWeight: showCrossedOut ? 'bold' : 'normal'
-                                    }}>
+                                    <span className={styles.priceValue}>
                                         {product.currency} {displayPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                     </span>
-                                </>
+                                </span>
                             );
                         })()}
                     </div>

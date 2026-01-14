@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styles from './Header.module.css';
 import { useLocalization } from '@/context/LocalizationContext';
@@ -84,7 +85,15 @@ export default function Header() {
                                     aria-label="User menu"
                                 >
                                     {user.avatarUrl ? (
-                                        <img src={user.avatarUrl} alt={user.name} className={styles.avatarImg} />
+                                        <div className={styles.avatarImgWrapper}>
+                                            <Image
+                                                src={user.avatarUrl}
+                                                alt={user.name || 'User'}
+                                                fill
+                                                style={{ objectFit: 'cover' }}
+                                                className={styles.avatarImg}
+                                            />
+                                        </div>
                                     ) : (
                                         getInitials(user.name || 'User')
                                     )}
