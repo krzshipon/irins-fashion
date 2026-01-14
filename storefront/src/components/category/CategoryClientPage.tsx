@@ -9,6 +9,7 @@ import styles from '@/app/collection/[slug]/page.module.css'; // Reusing styles
 import CategoryFilters from '@/components/category/CategoryFilters';
 import SortSelect from '@/components/category/SortSelect';
 import CategoryHeader from '@/components/category/CategoryHeader';
+import ProductGridSkeleton from '@/components/common/ProductGridSkeleton';
 
 interface CategoryClientPageProps {
     slug: string;
@@ -109,10 +110,7 @@ export default function CategoryClientPage({ slug }: CategoryClientPageProps) {
                     </div>
 
                     {loading ? (
-                        <div className={styles.loading}>
-                            <div className={styles.spinner}></div>
-                            <p>Loading products...</p>
-                        </div>
+                        <ProductGridSkeleton />
                     ) : (
                         <>
                             <div className={styles.grid}>

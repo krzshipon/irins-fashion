@@ -10,12 +10,14 @@ import Link from 'next/link';
 import SortSelect from '@/components/category/SortSelect';
 import styles from './shop.module.css';
 
-import { getCategories } from '@/services/api/categories'; // Added import
-import { Category } from '@/services/api/types'; // Added import
+import { getCategories } from '@/services/api/categories';
+import { Category } from '@/services/api/types';
+import ProductGridSkeleton from '@/components/common/ProductGridSkeleton';
+import ShopSkeleton from '@/components/shop/ShopSkeleton';
 
 function ShopContent() {
-    const { dictionary: t, locale } = useLocalization(); // Destructure locale
-    const router = useRouter(); // Import useRouter
+    const { dictionary: t, locale } = useLocalization();
+    const router = useRouter();
     const searchParams = useSearchParams();
     const collectionParam = searchParams?.get('collection');
     const sortParam = searchParams?.get('sort') as SortOption | null;
@@ -103,34 +105,18 @@ function ShopContent() {
     };
 
     const clearFilters = () => {
-        // Clear everything but keep collection context if needed? 
-        // User asked for "reset" when going to new collection, implying global reset or context switch.
-        // "Clear All Filters" usually clears currently applied filters.
-        // Let's clear: categories, minPrice, maxPrice. Keep collection if it's "New Arrivals" context? 
-        // Actually, if I'm in "New Arrivals" page (collection=new), "Clear All" might mean clear that too OR clear additional filters.
-        // Let's assume it clears "user applied" filters.
-
         const params = new URLSearchParams(searchParams?.toString() || '');
         params.delete('categories');
         params.delete('minPrice');
         params.delete('maxPrice');
-        // If "isNew" is driven by collection=new, we might not want to clear 'collection' unless the user explicitly wants to leave that view.
-        // But the "isNew" checkbox toggles 'isNew' state locally in the previous code which didn't seem to update URL 'collection'.
-        // Wait, "Status" filter had a checkbox for "New Arrival".
 
         if (params.get('collection') === 'new') {
-            // If we are in collection=new mode, maybe we don't clear it via "Clear All"? 
-            // But the checkbox below effectively toggles it.
+            // Context specific logic
         }
-        // Let's just clear specific filters for now.
         router.push(`?${params.toString()}`);
     };
 
-    // Status Filter Handler
     const handleStatusFilter = (checked: boolean) => {
-        // If checked, we might want to set collection=new or just a filter. 
-        // The previous code used collection=new to initialize isNew.
-        // Let's standarize on using 'collection' param for this since backend likely uses it or we mapped it.
         updateUrlParams({ collection: checked ? 'new' : null });
     };
 
@@ -235,10 +221,7 @@ function ShopContent() {
 
                     {/* Product Grid */}
                     {loading ? (
-                        <div className={styles.loading}>
-                            <div className={styles.spinner}></div>
-                            <p>{t.common.loading}</p>
-                        </div>
+                        <ProductGridSkeleton />
                     ) : products.length > 0 ? (
                         <div className={styles.grid}>
                             {products.map((product) => (
@@ -258,7 +241,7 @@ function ShopContent() {
 
 export default function ShopPage() {
     return (
-        <Suspense fallback={<div className={styles.loading}><p>Loading...</p></div>}>
+        <Suspense fallback={<ShopSkeleton />}>
             <ShopContent />
         </Suspense>
     );
