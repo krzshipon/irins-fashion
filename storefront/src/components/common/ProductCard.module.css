@@ -94,10 +94,8 @@
 .cardContent {
     padding: var(--spacing-md);
     text-align: center;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    padding: var(--spacing-md);
+    text-align: center;
 }
 
 .cardCategory {
@@ -118,7 +116,6 @@
 .cardPrice {
     font-weight: 600;
     color: var(--color-primary);
-    margin-top: auto;
 }
 
 .crossedOutPrice {
