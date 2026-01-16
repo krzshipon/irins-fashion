@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { Fragment } from 'react';
 import { useLocalization } from '@/context/LocalizationContext';
 import styles from './shipping.module.css';
 
@@ -104,14 +105,14 @@ export default function ShippingPage() {
                     <h2 className={styles.sectionTitle}>{t.shippingPage.howItWorks}</h2>
                     <div className={styles.processSteps}>
                         {steps.map((step, index) => (
-                            <>
-                                <div key={index} className={styles.step}>
+                            <Fragment key={index}>
+                                <div className={styles.step}>
                                     <div className={styles.stepNumber}>{index + 1}</div>
                                     <h3>{step.title}</h3>
                                     <p>{step.desc}</p>
                                 </div>
                                 {index < steps.length - 1 && <div className={styles.stepLine}></div>}
-                            </>
+                            </Fragment>
                         ))}
                     </div>
                 </section>

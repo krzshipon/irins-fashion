@@ -115,7 +115,7 @@ export default function OrdersPage() {
                                     {order.items.map((item) => (
                                         <div key={item.id} style={{ position: 'relative', width: '70px', height: '70px', flexShrink: 0 }}>
                                             <Image
-                                                src={item.productImage}
+                                                src={item.productImage || "/images/placeholder-product.png"}
                                                 alt={item.productName}
                                                 className={styles.itemImage}
                                                 title={`${item.productName} x${item.quantity}`}
