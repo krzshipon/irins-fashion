@@ -77,9 +77,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {categories.map((category) => (
+      {categories.map((category, index) => (
         <CategoryProductRow
           key={category.id}
+          index={index}
           title={category.name} // Pass the default name, the component likely handles localization if it uses the hook internally or we pass both
           categorySlug={category.slug}
           link={`/collection/${category.slug}`}

@@ -1,41 +1,48 @@
 "use client";
 
 import Link from 'next/link';
+import { useEffect, useState, useRef } from 'react';
 import ProductCard from '@/components/common/ProductCard';
+import Skeleton from '@/components/common/Skeleton';
 import { Product } from '@/services/api/types';
-import styles from './CategoryProductRow.module.css';
+import { getProductsBySlug } from '@/services/api/products';
 import { useLocalization } from '@/context/LocalizationContext';
+import styles from './CategoryProductRow.module.css';
 
 interface CategoryProductRowProps {
-    titleKey?: string; // Made optional
-    title?: string;    // Direct title override
-    categorySlug: string; // e.g. 'hijab' for fetching products
-    link: string; // Link to the full collection
+    titleKey?: string;
+    title?: string;
+    categorySlug: string;
+    link: string;
+    index: number;
 }
 
-import { useEffect, useState, useRef } from 'react';
-import { getProductsBySlug } from '@/services/api/products';
-
-export default function CategoryProductRow({ titleKey, title, categorySlug, link }: CategoryProductRowProps) {
+export default function CategoryProductRow({ titleKey, title, categorySlug, link, index }: CategoryProductRowProps) {
     const { t } = useLocalization();
     const [products, setProducts] = useState<Product[]>([]);
-    const hasFetched = useRef<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Prevent duplicate fetches (React Strict Mode calls useEffect twice in dev)
-        if (hasFetched.current === categorySlug) return;
-
         const fetchProducts = async () => {
-            hasFetched.current = categorySlug;
-            // Use getProductsBySlug which fetches by category slug
-            // Backend currently doesn't support 'limit' via this helper, so we slice client-side for now
-            const { products: fetchedProducts } = await getProductsBySlug(categorySlug);
-            setProducts(fetchedProducts.slice(0, 4));
+            try {
+                const { products: fetchedProducts } = await getProductsBySlug(categorySlug);
+                setProducts(fetchedProducts.slice(0, 4));
+            } catch (error) {
+                console.error("Failed to fetch products for category:", categorySlug, error);
+            } finally {
+                setIsLoading(false);
+            }
         };
-        fetchProducts();
-    }, [categorySlug]);
 
-    if (products.length === 0) return null;
+        // Stagger loading based on index (one by one effect)
+        const timeoutId = setTimeout(() => {
+            fetchProducts();
+        }, index * 800); // 800ms delay per row
+
+        return () => clearTimeout(timeoutId);
+    }, [categorySlug, index]);
+
+    if (!isLoading && products.length === 0) return null;
 
     return (
         <section className={`container ${styles.section}`}>
@@ -47,9 +54,28 @@ export default function CategoryProductRow({ titleKey, title, categorySlug, link
             </div>
 
             <div className={styles.grid}>
-                {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
+                {isLoading ? (
+                    // Skeleton Loading State
+                    Array.from({ length: 4 }).map((_, index) => (
+                        <div key={index} style={{
+                            background: 'var(--color-surface)',
+                            borderRadius: 'var(--radius-md)',
+                            overflow: 'hidden',
+                            boxShadow: 'var(--shadow-sm)'
+                        }}>
+                            <Skeleton height={350} width="100%" />
+                            <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                                <Skeleton height={12} width="40%" />
+                                <Skeleton height={20} width="80%" />
+                                <Skeleton height={16} width="30%" />
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    products.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))
+                )}
             </div>
         </section>
     );
