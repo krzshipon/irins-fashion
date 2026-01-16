@@ -5,9 +5,43 @@ import Link from "next/link";
 import { ArrowLeft, User, Mail, Phone, Check, Save } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./profile.module.css";
+import Skeleton from "@/components/common/Skeleton";
 
 export default function ProfilePage() {
-    const { user, updateProfile } = useAuth();
+    const { user, updateProfile, loading: authLoading } = useAuth();
+
+    if (authLoading) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.pageHeader}>
+                    <Skeleton width={200} height={32} />
+                    <Skeleton width={120} height={20} />
+                </div>
+
+                <div className={styles.avatarSection}>
+                    <Skeleton width={100} height={100} borderRadius="50%" />
+                    <div className={styles.avatarInfo}>
+                        <Skeleton width={150} height={24} style={{ marginBottom: '8px' }} />
+                        <Skeleton width={120} height={16} />
+                    </div>
+                </div>
+
+                <div className={styles.form}>
+                    <div className={styles.formSection}>
+                        <Skeleton width={180} height={24} style={{ marginBottom: '24px' }} />
+                        <div className={styles.fieldGroup} style={{ marginBottom: '20px' }}>
+                            <Skeleton width={100} height={16} style={{ marginBottom: '8px' }} />
+                            <Skeleton width="100%" height={48} borderRadius={8} />
+                        </div>
+                        <div className={styles.fieldGroup} style={{ marginBottom: '20px' }}>
+                            <Skeleton width={100} height={16} style={{ marginBottom: '8px' }} />
+                            <Skeleton width="100%" height={48} borderRadius={8} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState("");

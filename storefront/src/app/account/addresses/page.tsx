@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Loader2, X, Check, Trash2, Pencil, ChevronDown, User, MapPin, Phone } from "lucide-react";
+import { Plus, X, Check, Trash2, Pencil, ChevronDown, User, MapPin, Phone } from "lucide-react";
+import Skeleton from "@/components/common/Skeleton";
 import { authService } from "@/services/api/auth.service";
 import { addressesService } from "@/services/api/addresses.service";
 import type { Address } from "@/services/api/types";
@@ -113,8 +114,30 @@ export default function AddressesPage() {
 
     if (loading) {
         return (
-            <div className={styles.loading}>
-                <Loader2 className={styles.loadingIcon} size={32} />
+            <div className={styles.page}>
+                <Skeleton width={180} height={32} style={{ marginBottom: '24px' }} />
+                <div className={addressStyles.grid}>
+                    {[1, 2].map(i => (
+                        <div key={i} className={addressStyles.addressCard}>
+                            <div className={addressStyles.cardHeader}>
+                                <Skeleton width={100} height={20} />
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <Skeleton width={24} height={24} />
+                                    <Skeleton width={24} height={24} />
+                                </div>
+                            </div>
+                            <div className={addressStyles.cardContent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <Skeleton width="60%" height={16} />
+                                <Skeleton width="90%" height={32} />
+                                <Skeleton width="40%" height={16} />
+                            </div>
+                        </div>
+                    ))}
+                    <div className={addressStyles.addCard} style={{ border: '1px dashed #e5e5e5' }}>
+                        <Skeleton width={32} height={32} borderRadius="50%" style={{ marginBottom: '8px' }} />
+                        <Skeleton width={120} height={20} />
+                    </div>
+                </div>
             </div>
         );
     }

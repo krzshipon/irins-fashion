@@ -46,12 +46,19 @@ export default function CartPage() {
                                             }
                                         }
 
-                                        // Fallback to primary product image
-                                        if (!displayImage && item.images && item.images.length > 0) {
-                                            displayImage = item.images.find(img => img.isPrimary)?.url || item.images[0].url;
+                                        // Fallback to placeholder if no image found
+                                        if (!displayImage) {
+                                            if (item.images && item.images.length > 0) {
+                                                displayImage = item.images.find(img => img.isPrimary)?.url || item.images[0].url;
+                                            }
                                         }
 
-                                        return displayImage ? (
+                                        // Final fallback
+                                        if (!displayImage) {
+                                            displayImage = '/images/placeholder-product.png';
+                                        }
+
+                                        return (
                                             <Image
                                                 src={displayImage}
                                                 alt={item.name}
@@ -59,8 +66,6 @@ export default function CartPage() {
                                                 sizes="130px"
                                                 className={styles.itemImage}
                                             />
-                                        ) : (
-                                            <div style={{ width: '100%', height: '100%', background: '#eee' }} />
                                         );
                                     })()}
                                 </div>

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Package, MapPin, Loader2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext"; // Import useAuth
+import { User, Package, MapPin } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import { orderService } from "@/services/api/order.service";
 import { addressesService } from "@/services/api/addresses.service";
 import type { Order } from "@/services/api/types";
 import Link from "next/link";
 import styles from "../pages.module.css";
+import Skeleton from "@/components/common/Skeleton";
 
 export default function OverviewPage() {
     const { user, loading: authLoading } = useAuth();
@@ -41,8 +42,62 @@ export default function OverviewPage() {
 
     if (loading) {
         return (
-            <div className={styles.loading}>
-                <Loader2 className={styles.loadingIcon} size={32} />
+            <div className={styles.page}>
+                <Skeleton width={150} height={32} style={{ marginBottom: '24px' }} />
+
+                <div className={styles.grid}>
+                    {/* Profile Card Skeleton */}
+                    <div className={styles.card}>
+                        <div className={styles.cardHeader}>
+                            <Skeleton width={120} height={24} />
+                            <Skeleton width={40} height={20} />
+                        </div>
+                        <div className={styles.cardContent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <Skeleton width="80%" height={20} />
+                            <Skeleton width="60%" height={20} />
+                            <Skeleton width="70%" height={20} />
+                        </div>
+                    </div>
+
+                    {/* Address Preview Skeleton */}
+                    <div className={styles.card}>
+                        <div className={styles.cardHeader}>
+                            <Skeleton width={140} height={24} />
+                            <Skeleton width={60} height={20} />
+                        </div>
+                        <div className={styles.cardContent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <Skeleton width="50%" height={20} />
+                            <Skeleton width="90%" height={40} />
+                            <Skeleton width="40%" height={20} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Order Skeleton */}
+                <div className={styles.orderCard} style={{ marginTop: '24px' }}>
+                    <div className={styles.orderHeader}>
+                        <Skeleton width={130} height={24} />
+                        <Skeleton width={70} height={20} />
+                    </div>
+                    <div className={styles.orderBody}>
+                        <div className={styles.orderMetaRow}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <Skeleton width={100} height={20} />
+                                <Skeleton width={150} height={16} />
+                            </div>
+                            <Skeleton width={80} height={24} borderRadius={12} />
+                        </div>
+                        <div className={styles.orderItems} style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                            {[1, 2, 3].map((i) => (
+                                <Skeleton key={i} width={70} height={70} borderRadius={8} />
+                            ))}
+                        </div>
+                        <div className={styles.orderFooter} style={{ marginTop: '16px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                            <Skeleton width={120} height={24} />
+                            <Skeleton width={100} height={36} borderRadius={6} />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

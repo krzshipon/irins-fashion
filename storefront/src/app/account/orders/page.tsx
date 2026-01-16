@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Package, Loader2, ArrowRight, Truck, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Package, ArrowRight, Truck, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { orderService } from "@/services/api/order.service";
 import type { Order } from "@/services/api/types";
 import styles from "./orders.module.css";
 import { useLocalization } from "@/context/LocalizationContext";
+import Skeleton from "@/components/common/Skeleton";
 
 type TabStatus = 'all' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
@@ -57,8 +58,45 @@ export default function OrdersPage() {
 
     if (loading) {
         return (
-            <div className={styles.empty}>
-                <Loader2 className="animate-spin" size={32} />
+            <div className={styles.page}>
+                <div className={styles.header}>
+                    <Skeleton width={180} height={36} style={{ marginBottom: '8px' }} />
+                    <Skeleton width={250} height={20} />
+                </div>
+
+                <div className={styles.tabs} style={{ marginBottom: '24px' }}>
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <Skeleton key={i} width={100} height={40} borderRadius={20} style={{ marginRight: '12px' }} />
+                    ))}
+                </div>
+
+                <div className={styles.list}>
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className={styles.card}>
+                            <div className={styles.cardHeader}>
+                                <div>
+                                    <Skeleton width={120} height={20} style={{ marginBottom: '4px' }} />
+                                    <Skeleton width={180} height={16} />
+                                </div>
+                                <Skeleton width={100} height={24} borderRadius={12} />
+                            </div>
+                            <div className={styles.cardBody}>
+                                <div className={styles.items} style={{ display: 'flex', gap: '12px' }}>
+                                    <Skeleton width={70} height={70} borderRadius={8} />
+                                    <Skeleton width={70} height={70} borderRadius={8} />
+                                    <Skeleton width={70} height={70} borderRadius={8} />
+                                </div>
+                                <div className={styles.summary} style={{ marginTop: '16px' }}>
+                                    <div>
+                                        <Skeleton width={100} height={14} style={{ marginBottom: '4px' }} />
+                                        <Skeleton width={80} height={20} />
+                                    </div>
+                                    <Skeleton width={140} height={40} borderRadius={8} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }

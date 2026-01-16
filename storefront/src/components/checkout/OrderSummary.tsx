@@ -59,7 +59,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, shi
                                 backgroundColor: '#f5f5f5',
                             }}>
                                 <Image
-                                    src={item.images?.find(img => img.isPrimary)?.url || item.images?.[0]?.url || '/placeholder.png'}
+                                    src={item.images?.find(img => img.isPrimary)?.url || item.images?.[0]?.url || '/images/placeholder-product.png'}
                                     alt={item.name}
                                     fill
                                     sizes="80px"
