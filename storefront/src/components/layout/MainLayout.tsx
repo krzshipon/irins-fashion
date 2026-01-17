@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import ScrollToTop from '@/components/common/ScrollToTop';
 import { getCategories } from '@/services/api/categories';
 
 interface MainLayoutProps {
@@ -12,6 +13,7 @@ export default async function MainLayout({ children }: MainLayoutProps) {
 
     return (
         <>
+            <ScrollToTop />
             <Header />
             <main>
                 {children}
