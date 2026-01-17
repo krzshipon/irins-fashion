@@ -11,7 +11,7 @@ export default async function CheckoutPage() {
     ]);
 
     return (
-        <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center' }}>Loading Checkout...</div>}>
+        <Suspense>
             <CheckoutClient
                 initialShippingRates={shippingRates}
                 initialDivisions={divisions}
