@@ -40,7 +40,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     const sortedCategories = categories.sort((a, b) => a.sortOrder - b.sortOrder);
 
     return (
-        <Suspense fallback={<ShopSkeleton />}>
+        <Suspense>
             <ShopClient
                 initialProducts={productsData.products}
                 categories={sortedCategories}

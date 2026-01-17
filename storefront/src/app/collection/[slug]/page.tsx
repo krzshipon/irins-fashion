@@ -41,7 +41,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     const { products, category } = await getProductsBySlug(slug, { minPrice, maxPrice, isNew }, sort);
 
     return (
-        <Suspense fallback={<div className="container" style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>}>
+        <Suspense>
             <CategoryClient
                 slug={slug}
                 initialProducts={products}
