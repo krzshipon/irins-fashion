@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Montserrat } from "next/font/google"; // proper standard imports
+import { Playfair_Display, Lato } from "next/font/google"; // proper standard imports
 import "@/styles/globals.css";
 import { LocalizationProvider } from "@/context/LocalizationContext";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: 'swap' });
-const montserrat = Montserrat({
-  weight: ['300', '400', '500', '600', '700'],
+const lato = Lato({
+  weight: ['300', '400', '700'],
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  variable: "--font-lato",
   display: 'swap'
 });
 
@@ -27,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${playfair.variable} ${montserrat.variable}`} suppressHydrationWarning>
+      <body className={`${playfair.variable} ${lato.variable}`} suppressHydrationWarning>
         <LocalizationProvider>
           <CartProvider>
             <AuthProvider>
