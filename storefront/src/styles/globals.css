@@ -16,10 +16,12 @@
     body {
         max-width: 100vw;
         overflow-x: hidden;
-        font-family: var(--font-base);
+        font-family: var(--font-family-base);
         background-color: var(--color-background);
         color: var(--color-text-main);
         line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     a {
@@ -40,7 +42,7 @@
     h4,
     h5,
     h6 {
-        font-family: var(--font-base);
+        font-family: var(--font-family-display);
         font-weight: 600;
         line-height: 1.2;
     }

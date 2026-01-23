@@ -107,7 +107,7 @@
     font-size: 1.1rem;
     margin-bottom: var(--spacing-sm);
     color: var(--color-text-main);
-    font-family: var(--font-playfair);
+    font-family: var(--font-family-display);
 }
 
 .cardPrice {

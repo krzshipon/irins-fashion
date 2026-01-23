@@ -12,7 +12,7 @@
 }
 
 .title {
-    font-family: var(--font-playfair);
+    font-family: var(--font-family-display);
     font-size: 2.5rem;
     font-weight: 500;
     color: #1a1a1a;
@@ -40,7 +40,7 @@
 }
 
 .emptyTitle {
-    font-family: var(--font-playfair);
+    font-family: var(--font-family-display);
     font-size: 2rem;
     color: #333;
     margin: 0;
@@ -108,7 +108,7 @@
 }
 
 .itemName {
-    font-family: var(--font-playfair);
+    font-family: var(--font-family-display);
     font-size: 1.25rem;
     font-weight: 500;
     color: #1a1a1a;
@@ -215,7 +215,7 @@
 }
 
 .summaryTitle {
-    font-family: var(--font-playfair);
+    font-family: var(--font-family-display);
     font-size: 1.5rem;
     margin: 0 0 2rem 0;
     padding-bottom: 1rem;

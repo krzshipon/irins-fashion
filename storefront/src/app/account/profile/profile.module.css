@@ -12,7 +12,7 @@
 }
 
 .pageTitle {
-    font-family: var(--font-playfair);
+    font-family: var(--font-family-display);
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--color-text-main);
