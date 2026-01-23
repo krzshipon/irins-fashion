@@ -1,10 +1,21 @@
 .header {
-    background-color: var(--color-surface);
-    box-shadow: var(--shadow-sm);
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+    /* Subtle border-like shadow */
     position: sticky;
     top: 0;
     z-index: 100;
     padding: var(--spacing-md) 0;
+    transition: all 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+    .header {
+        background-color: rgba(18, 18, 18, 0.85);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
 }
 
 .container {
@@ -15,45 +26,67 @@
 
 .logo {
     font-family: var(--font-family-display);
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: 600;
     color: var(--color-primary);
     text-decoration: none;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
 }
 
 .nav {
     display: flex;
-    gap: var(--spacing-lg);
+    gap: 2.5rem;
+    /* More breathing room */
 }
 
 .navLink {
     color: var(--color-text-main);
     font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     transition: color 0.2s;
-    font-size: 0.95rem;
+    position: relative;
+}
+
+.navLink::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease;
 }
 
 .navLink:hover {
     color: var(--color-primary);
 }
 
+.navLink:hover::after {
+    width: 100%;
+}
+
 .actions {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: 1.5rem;
 }
 
 .langSwitch {
-    border: 1px solid var(--color-border);
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    border: none;
+    background: none;
+    padding: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
 .langSwitch:hover {
-    border-color: var(--color-primary);
     color: var(--color-primary);
 }
 
@@ -81,20 +114,20 @@
 
 .cartBadge {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--color-primary);
-    color: white;
-    font-size: 0.65rem;
+    top: -4px;
+    right: -6px;
+    background-color: var(--color-secondary);
+    /* Gold/Action color often looks better for notifs */
+    color: #1a1a1a;
+    font-size: 0.6rem;
     font-weight: 700;
-    height: 18px;
-    width: 18px;
+    height: 16px;
+    width: 16px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid var(--color-surface);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* User Dropdown Styles */
@@ -121,17 +154,17 @@
 }
 
 .avatarBtn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background-color: var(--color-primary);
-    color: #ffffff;
+    background-color: var(--color-surface-dim);
+    color: var(--color-text-main);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 700;
-    border: 1px solid var(--color-border);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid transparent;
     transition: all 0.2s ease;
     cursor: pointer;
     overflow: hidden;
@@ -139,8 +172,8 @@
 }
 
 .avatarBtn:hover {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-primary-light);
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
 }
 
 .avatarImgWrapper {
