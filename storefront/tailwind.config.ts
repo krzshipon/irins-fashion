@@ -21,6 +21,7 @@ const config: Config = {
                 },
                 background: "var(--color-background)",
                 surface: "var(--color-surface)",
+                "surface-dim": "var(--color-surface-dim)",
                 border: "var(--color-border)",
                 text: {
                     main: "var(--color-text-main)",

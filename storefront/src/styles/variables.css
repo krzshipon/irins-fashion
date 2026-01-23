@@ -5,16 +5,23 @@
   --color-secondary: #D4AF37; /* Gold */
   --color-secondary-light: #F3E5AB;
 
-  /* Neutral Colors */
+  /* Semantic Colors */
   --color-background: #FAFAF8; /* Light Cream */
   --color-surface: #FFFFFF;
+  --color-surface-dim: #F5F5F5; /* Light Grey for cards/inputs */
+  
   --color-text-main: #1A1A1A;
   --color-text-muted: #666666;
+  --color-text-inverted: #FFFFFF;
+
   --color-border: #E5E5E5;
+  --color-border-hover: #1A1A1A;
 
   /* Feedback */
   --color-success: #2E7D32;
   --color-error: #D32F2F;
+  --color-warning: #F59E0B;
+  --color-info: #3B82F6;
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -25,7 +32,7 @@
 
   /* Typography */
   --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-family-display: "Playfair Display", serif; /* Fallback to serif if not loaded */
+  --font-family-display: "Playfair Display", serif;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -41,10 +48,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --color-primary: #2C6E5A; /* Lighter emerald for dark mode */
+    --color-primary-light: #4A8C76;
+    
     --color-background: #121212;
     --color-surface: #1E1E1E;
+    --color-surface-dim: #2A2A2A;
+    
     --color-text-main: #FFFFFF;
-    --color-text-muted: #B0B0B0;
+    --color-text-muted: #A0A0A0;
+    --color-text-inverted: #000000;
+    
     --color-border: #333333;
+    --color-border-hover: #666666;
   }
 }

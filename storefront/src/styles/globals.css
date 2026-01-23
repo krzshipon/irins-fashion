@@ -2,45 +2,7 @@
 
 @import './variables.css';
 
-/* Tailwind v4: Theme tokens with static values */
-@theme {
-    /* Colors - must be static values, not var() references */
-    --color-primary: #1B4D3E;
-    --color-primary-light: #2C6E5A;
-    --color-primary-dark: #1B4D3E;
-    --color-secondary: #D4AF37;
-    --color-secondary-light: #F3E5AB;
-    --color-secondary-dark: #D4AF37;
-    --color-background: #FAFAF8;
-    --color-surface: #FFFFFF;
-    --color-text-main: #1A1A1A;
-    --color-text-muted: #666666;
-    --color-border: #E5E5E5;
-    --color-success: #2E7D32;
-    --color-error: #D32F2F;
 
-    /* Font Families */
-    --font-display: "Playfair Display", serif;
-    --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 16px;
-    --radius-full: 9999px;
-
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 4rem;
-}
 
 /* Base reset styles - wrapped in @layer base so Tailwind utilities take precedence */
 @layer base {

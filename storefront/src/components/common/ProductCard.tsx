@@ -75,13 +75,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                                     switch (badge.type) {
                                         case 'new':
-                                            backgroundColor = '#046A38'; // Emerald Green
+                                            backgroundColor = 'var(--color-primary)'; // Emerald Green
                                             break;
                                         case 'discount':
-                                            backgroundColor = '#dc2626'; // Red
+                                            backgroundColor = 'var(--color-error)'; // Red
                                             break;
                                         case 'bestseller':
-                                            backgroundColor = '#f59e0b'; // Amber
+                                            backgroundColor = 'var(--color-warning)'; // Amber
                                             break;
                                         case 'custom':
                                             backgroundColor = badge.color || '#000000';

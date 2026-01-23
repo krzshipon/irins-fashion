@@ -148,7 +148,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
     const getColorHex = (colorName: string) => {
         const color = product.colors?.find(c => c.name === colorName);
         if (color && color.code) return color.code;
-        return '#CCCCCC'; // Default fallback
+        return 'var(--color-border)'; // Default fallback
     };
 
     // Derived lists for rendering
@@ -170,9 +170,9 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                             let backgroundColor = '#000000';
                             let color = '#ffffff';
                             switch (badge.type) {
-                                case 'new': backgroundColor = '#046A38'; break;
-                                case 'discount': backgroundColor = '#dc2626'; break;
-                                case 'bestseller': backgroundColor = '#f59e0b'; break;
+                                case 'new': backgroundColor = 'var(--color-primary)'; break;
+                                case 'discount': backgroundColor = 'var(--color-error)'; break;
+                                case 'bestseller': backgroundColor = 'var(--color-warning)'; break;
                                 case 'custom': backgroundColor = badge.color || '#000'; color = badge.textColor || '#fff'; break;
                             }
                             return (
@@ -192,7 +192,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                     {(product.discount || (product.originalPrice && product.originalPrice > currentPrice)) && (
                         <span style={{
                             textDecoration: 'line-through',
-                            color: '#6b7280',
+                            color: 'var(--color-text-muted)',
                             fontSize: '0.8em',
                             marginRight: '12px',
                             fontWeight: 'normal'
@@ -201,7 +201,7 @@ export default function ProductInfo({ product, selectedColor, onColorSelect, ini
                         </span>
                     )}
                     <span style={{
-                        color: (product.discount || product.originalPrice) ? '#dc2626' : 'inherit',
+                        color: (product.discount || product.originalPrice) ? 'var(--color-error)' : 'inherit',
                         fontWeight: (product.discount || product.originalPrice) ? 'bold' : '500'
                     }}>
                         {product.currency} {currentPrice?.toLocaleString() || 'N/A'}

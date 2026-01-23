@@ -339,10 +339,10 @@ export default function CheckoutClient({ initialShippingRates, initialDivisions 
     if (checkoutItems.length === 0) return null;
 
     return (
-        <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
+        <div style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh' }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px' }}>
                 <h1 style={{
-                    fontSize: '32px', fontWeight: '600', color: '#111', marginBottom: '40px', fontFamily: 'serif'
+                    fontSize: '32px', fontWeight: '600', color: 'var(--color-text-main)', marginBottom: '40px', fontFamily: 'var(--font-family-display)'
                 }}>
                     {t.checkout.title}
                 </h1>
@@ -352,38 +352,38 @@ export default function CheckoutClient({ initialShippingRates, initialDivisions 
                         {/* Address Selection */}
                         {user && userAddresses.length > 0 && (
                             <div style={{ marginBottom: '32px' }}>
-                                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#111' }}>Shipping Address</h3>
+                                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: 'var(--color-text-main)' }}>Shipping Address</h3>
                                 <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                                     {userAddresses.map((addr) => (
                                         <div
                                             key={addr.id}
                                             onClick={() => selectAddress(addr)}
                                             style={{
-                                                border: selectedAddressId === addr.id ? '2px solid #111' : '1px solid #e5e5e5',
+                                                border: selectedAddressId === addr.id ? '2px solid var(--color-text-main)' : '1px solid var(--color-border)',
                                                 borderRadius: '12px', padding: '16px', cursor: 'pointer',
-                                                backgroundColor: selectedAddressId === addr.id ? '#fafafa' : '#fff',
+                                                backgroundColor: selectedAddressId === addr.id ? 'var(--color-surface-dim)' : 'var(--color-surface)',
                                                 position: 'relative', transition: 'all 0.2s ease'
                                             }}
                                         >
                                             {selectedAddressId === addr.id && (
-                                                <div style={{ position: 'absolute', top: '12px', right: '12px', color: '#111' }}><Check size={20} /></div>
+                                                <div style={{ position: 'absolute', top: '12px', right: '12px', color: 'var(--color-text-main)' }}><Check size={20} /></div>
                                             )}
                                             <div style={{ fontWeight: '600', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                                                 <MapPin size={16} /> {addr.label}
                                             </div>
-                                            <p style={{ fontSize: '14px', color: '#374151', marginBottom: '4px' }}>{addr.recipientName}</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>{addr.address}, {addr.division}</p>
-                                            <p style={{ fontSize: '14px', color: '#6b7280' }}>{addr.phone}</p>
+                                            <p style={{ fontSize: '14px', color: 'var(--color-text-main)', marginBottom: '4px' }}>{addr.recipientName}</p>
+                                            <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>{addr.address}, {addr.division}</p>
+                                            <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>{addr.phone}</p>
                                         </div>
                                     ))}
                                     <div
                                         onClick={handleNewAddressClick}
                                         style={{
-                                            border: showNewAddressForm ? '2px solid #111' : '1px dashed #d1d5db',
+                                            border: showNewAddressForm ? '2px solid var(--color-text-main)' : '1px dashed var(--color-border)',
                                             borderRadius: '12px', padding: '16px', cursor: 'pointer',
                                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                            backgroundColor: showNewAddressForm ? '#fafafa' : '#fff',
-                                            color: showNewAddressForm ? '#111' : '#6b7280', minHeight: '140px'
+                                            backgroundColor: showNewAddressForm ? 'var(--color-surface-dim)' : 'var(--color-surface)',
+                                            color: showNewAddressForm ? 'var(--color-text-main)' : 'var(--color-text-muted)', minHeight: '140px'
                                         }}
                                     >
                                         <Plus size={24} /> <span style={{ fontWeight: '600', fontSize: '14px' }}>Add New Address</span>
@@ -406,8 +406,8 @@ export default function CheckoutClient({ initialShippingRates, initialDivisions 
 
                     <div>
                         <div style={{
-                            backgroundColor: '#f8f8f8', borderRadius: '12px', padding: '32px',
-                            border: '1px solid #e5e5e5', position: 'sticky', top: '20px'
+                            backgroundColor: 'var(--color-surface-dim)', borderRadius: '12px', padding: '32px',
+                            border: '1px solid var(--color-border)', position: 'sticky', top: '20px'
                         }}>
                             <OrderSummary
                                 items={checkoutItems}

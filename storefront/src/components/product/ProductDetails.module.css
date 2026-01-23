@@ -61,7 +61,7 @@
 }
 
 .thumbnailButton {
-    border: 2px solid transparent;
+    border: 1px solid var(--color-text-main);
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
@@ -70,7 +70,7 @@
     height: 100px;
     flex-shrink: 0;
     position: relative;
-    background: #f5f5f5;
+    background: var(--color-surface-dim);
 }
 
 .thumbnailButton:hover {
@@ -85,7 +85,7 @@
 }
 
 .activeThumbnail {
-    border-color: #1a1a1a;
+    border-color: var(--color-text-main);
 }
 
 .thumbnailImage {
@@ -98,7 +98,7 @@
     flex: 1;
     border-radius: 20px;
     overflow: hidden;
-    background: #f5f5f5;
+    background: var(--color-surface-dim);
     /* Remove fixed aspect ratio to let it grow */
     height: 75vh;
     min-height: 600px;
@@ -136,7 +136,7 @@
     text-transform: uppercase;
     font-size: 0.9rem;
     letter-spacing: 2px;
-    color: #666;
+    color: var(--color-text-muted);
     font-weight: 500;
 }
 
@@ -144,20 +144,20 @@
     font-size: 2.5rem;
     font-weight: 400;
     /* Outfit/Elegant font */
-    color: #1a1a1a;
+    color: var(--color-text-main);
     line-height: 1.2;
 }
 
 .price {
     font-size: 1.75rem;
-    color: #1a1a1a;
+    color: var(--color-text-main);
     font-weight: 500;
     margin-top: 0.5rem;
 }
 
 .divider {
     height: 1px;
-    background-color: #eee;
+    background-color: var(--color-border);
     margin: 0.5rem 0;
 }
 
@@ -175,7 +175,7 @@
 }
 
 .optionLabel span {
-    color: #666;
+    color: var(--color-text-muted);
     font-weight: 400;
 }
 
@@ -190,7 +190,7 @@
     min-width: 48px;
     height: 48px;
     padding: 0 1rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     background: white;
     border-radius: 8px;
     cursor: pointer;
@@ -203,9 +203,9 @@
 }
 
 .activeSize {
-    background: #1a1a1a;
-    color: white;
-    border-color: #1a1a1a;
+    background: var(--color-text-main);
+    color: var(--color-text-inverted);
+    border-color: var(--color-text-main);
 }
 
 .colorButton {
@@ -225,7 +225,7 @@
     left: -4px;
     right: -4px;
     bottom: -4px;
-    border: 1px solid #1a1a1a;
+    border: 1px solid var(--color-text-main);
     border-radius: 50%;
 }
 
@@ -237,8 +237,8 @@
 
 .addToCartBtn {
     flex: 1;
-    background: #1a1a1a;
-    color: white;
+    background: var(--color-text-main);
+    color: var(--color-text-inverted);
     height: 56px;
     border-radius: 50px;
     border: none;
@@ -258,7 +258,7 @@
 
 .description {
     line-height: 1.8;
-    color: #444;
+    color: var(--color-text-muted);
     font-size: 1.05rem;
 }
 
@@ -268,10 +268,10 @@
     justify-content: space-between;
     width: 140px;
     height: 56px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 50px;
     overflow: hidden;
-    background-color: #f9f9f9;
+    background-color: var(--color-surface-dim);
 }
 
 .qtyBtn {
@@ -281,7 +281,7 @@
     background: transparent;
     cursor: pointer;
     font-size: 1.25rem;
-    color: #333;
+    color: var(--color-text-main);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -289,24 +289,24 @@
 }
 
 .qtyBtn:hover {
-    background-color: #ececec;
+    background-color: var(--color-border);
 }
 
 .qtyValue {
     font-size: 1.1rem;
     font-weight: 500;
-    color: #1a1a1a;
+    color: var(--color-text-main);
     min-width: 24px;
     text-align: center;
 }
 
 .orderNowBtn {
     flex: 1;
-    background: #fff;
-    color: #1a1a1a;
+    background: var(--color-surface);
+    color: var(--color-text-main);
     height: 56px;
     border-radius: 50px;
-    border: 2px solid #1a1a1a;
+    border: 2px solid var(--color-text-main);
     font-size: 1.1rem;
     font-weight: 500;
     cursor: pointer;
@@ -318,8 +318,8 @@
 }
 
 .orderNowBtn:hover {
-    background: #1a1a1a;
-    color: #fff;
+    background: var(--color-text-main);
+    color: var(--color-text-inverted);
 }
 
 /* Standalone Quantity Section */
@@ -334,10 +334,10 @@
     align-items: center;
     gap: 0;
     width: fit-content;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 50px;
     overflow: hidden;
-    background-color: #f9f9f9;
+    background-color: var(--color-surface-dim);
 }
 
 .quantitySelector .qtyBtn {

@@ -17,7 +17,7 @@
     position: relative;
     height: 350px;
     width: 100%;
-    background-color: #f5f5f5;
+    background-color: var(--color-surface-dim);
     overflow: hidden;
 }
 
@@ -83,9 +83,9 @@
 }
 
 .addToCartBtn.active {
-    background-color: #046A38;
+    background-color: var(--color-primary);
     /* Emerald Green */
-    color: #ffffff;
+    color: var(--color-text-inverted);
 }
 
 .cardContent {
@@ -117,7 +117,7 @@
 
 .crossedOutPrice {
     text-decoration: line-through;
-    color: #9ca3af;
+    color: var(--color-text-muted);
     font-size: 0.9em;
     margin-right: 8px;
     font-weight: normal;
@@ -129,6 +129,6 @@
 }
 
 .discounted .priceValue {
-    color: #dc2626;
+    color: var(--color-error);
     font-weight: bold;
 }
